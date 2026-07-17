@@ -686,39 +686,35 @@ h2 {
 }
 
 .ad-slot {
-  min-height: 112px;
-  display: grid;
-  place-content: center;
+  min-height: 250px;
+  display: block;
   gap: 5px;
   margin-top: 16px;
-  border: 1px dashed #b9cce6;
+  border: 1px solid #d9e3ef;
   border-radius: 11px;
-  background:
-    linear-gradient(rgba(69, 126, 205, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(69, 126, 205, 0.035) 1px, transparent 1px),
-    #f9fbff;
-  background-size: 24px 24px;
+  background: #f9fbff;
   color: #7a8da6;
   text-align: center;
-  padding: 12px;
+  padding: 8px;
+  overflow: hidden;
 }
 
 .ad-slot span {
+  display: block;
+  margin-bottom: 6px;
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.ad-slot p {
-  margin: 0;
-  color: #8a9bb0;
-  font-size: 11px;
-  line-height: 1.35;
+.ad-slot .adsbygoogle {
+  width: 100%;
+  min-height: 220px;
 }
 
 .ad-slot-compact {
-  min-height: 82px;
+  min-height: 250px;
   margin-top: 2px;
 }
 
@@ -1862,7 +1858,7 @@ h2 {
   }
 
   .ad-slot {
-    min-height: 88px;
+    min-height: 250px;
   }
 
   .svg-mount {

@@ -7,12 +7,20 @@ const VECTOR_SELECTOR = "path,rect,circle,ellipse,line,polyline,polygon,text,g,u
 function isUnsafeAttribute(name, value) {
   const cleanName = String(name).trim().toLowerCase();
   const cleanValue = String(value).trim().toLowerCase();
-  return cleanName.startsWith("on") || cleanValue.startsWith("javascript:");
+  const isLink = cleanName === "href" || cleanName === "xlink:href" || cleanName === "src";
+  const localCssValue = cleanValue.replace(/url\(\s*['"]?#[-\w:.]+['"]?\s*\)/g, "");
+
+  return cleanName.startsWith("on")
+    || cleanValue.includes("javascript:")
+    || cleanValue.includes("data:text/html")
+    || (isLink && cleanValue !== "" && !cleanValue.startsWith("#"))
+    || localCssValue.includes("url(")
+    || localCssValue.includes("@import");
 }
 
 function sanitizeSvg(svg) {
-  svg.querySelectorAll("script,foreignObject").forEach((node) => node.remove());
-  svg.querySelectorAll("*").forEach((node) => {
+  svg.querySelectorAll("script,foreignObject,style,link,meta,iframe,object,embed,image,audio,video,feImage,animate,animateMotion,animateTransform,set").forEach((node) => node.remove());
+  [svg, ...svg.querySelectorAll("*")].forEach((node) => {
     [...node.attributes].forEach((attr) => {
       if (isUnsafeAttribute(attr.name, attr.value)) {
         node.removeAttribute(attr.name);

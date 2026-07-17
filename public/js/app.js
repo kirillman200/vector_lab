@@ -76,13 +76,18 @@ function initializePanelTabs(tabList) {
   const panels = tabs.map((tab) => document.getElementById(tab.dataset.tabTarget));
 
   function activateTab(nextTab, moveFocus = false) {
+    let activePanel = null;
     tabs.forEach((tab, index) => {
       const active = tab === nextTab;
       tab.classList.toggle("active", active);
       tab.setAttribute("aria-selected", String(active));
       tab.tabIndex = active ? 0 : -1;
-      if (panels[index]) panels[index].hidden = !active;
+      if (panels[index]) {
+        panels[index].hidden = !active;
+        if (active) activePanel = panels[index];
+      }
     });
+    if (activePanel) requestAnimationFrame(() => window.requestAdsIn?.(activePanel));
     if (moveFocus) nextTab.focus();
   }
 

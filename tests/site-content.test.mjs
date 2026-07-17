@@ -5,6 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const siteRoot = join(root, "public");
 const origin = "https://svgvectorlab.com";
 const routes = new Map([
   ["/", "index.html"],
@@ -20,6 +21,10 @@ const routes = new Map([
 ]);
 
 function read(relativePath) {
+  return readFileSync(join(siteRoot, relativePath), "utf8");
+}
+
+function readRoot(relativePath) {
   return readFileSync(join(root, relativePath), "utf8");
 }
 
@@ -72,7 +77,7 @@ test("root-relative internal links resolve to files", () => {
         : urlPath.endsWith("/")
           ? `${urlPath.slice(1)}index.html`
           : urlPath.slice(1);
-      assert.ok(existsSync(join(root, relativeTarget)), `${file} links to missing ${urlPath}`);
+      assert.ok(existsSync(join(siteRoot, relativeTarget)), `${file} links to missing ${urlPath}`);
     }
   }
 });
@@ -85,7 +90,7 @@ test("sitemap and robots expose every indexable route", () => {
 });
 
 test("hosting and advertising files are safe", () => {
-  assert.ok(existsSync(join(root, "_headers")));
+  assert.ok(existsSync(join(siteRoot, "_headers")));
   const manifest = JSON.parse(read("site.webmanifest"));
   assert.equal(manifest.name, "SVG Vector Lab");
   assert.equal(manifest.short_name, "SVG Vector Lab");
@@ -95,4 +100,84 @@ test("hosting and advertising files are safe", () => {
   const ads = read("ads.txt").trim();
   assert.match(ads, /^google\.com, pub-\d+, DIRECT, f08c47fec0942fa0$/);
   assert.doesNotMatch(ads, /pub-0{8,}/, "placeholder publisher IDs must not be published");
+
+  const headers = read("_headers");
+  assert.match(headers, /Strict-Transport-Security:/);
+  assert.match(headers, /X-Frame-Options: DENY/);
+
+  const worker = readRoot("src/worker.mjs");
+  assert.match(worker, /Content-Security-Policy/);
+  assert.match(worker, /'strict-dynamic'/);
+  assert.match(worker, /element\.setAttribute\("nonce", nonce\)/);
+  assert.match(worker, /headers\.set\("Strict-Transport-Security"/);
+  assert.match(worker, /headers\.set\("X-Frame-Options", "DENY"\)/);
+  assert.match(worker, /\.workers\.dev/);
+  assert.match(worker, /X-Robots-Tag/);
+});
+
+test("Cloudflare publishes only the public allowlist", () => {
+  const wrangler = JSON.parse(readRoot("wrangler.jsonc"));
+  assert.equal(wrangler.assets.directory, "./public");
+  assert.equal(wrangler.assets.binding, "ASSETS");
+  assert.equal(wrangler.assets.run_worker_first, true);
+  assert.equal(wrangler.assets.not_found_handling, "404-page");
+  assert.equal(wrangler.main, "src/worker.mjs");
+  assert.equal(wrangler.workers_dev, false);
+  assert.equal(wrangler.preview_urls, false);
+
+  const forbiddenPublicPaths = [
+    ".git",
+    ".gitignore",
+    ".env",
+    "wrangler.jsonc",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "LAUNCH_CHECKLIST.md",
+    "tests",
+    ".github",
+  ];
+  for (const relativePath of forbiddenPublicPaths) {
+    assert.equal(
+      existsSync(join(siteRoot, relativePath)),
+      false,
+      `${relativePath} must not be inside the public deployment directory`,
+    );
+  }
+
+  const assetsIgnore = read(".assetsignore");
+  assert.match(assetsIgnore, /^\.git\*/m);
+  assert.match(assetsIgnore, /^\.env\*/m);
+  assert.match(assetsIgnore, /^\*\.pem$/m);
+});
+
+test("every editor tab contains the configured responsive AdSense unit", () => {
+  const html = read("index.html");
+  const loaderMatches = html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-7469113252837951/g) || [];
+  assert.equal(loaderMatches.length, 1, "the AdSense loader must appear exactly once");
+
+  const units = [...html.matchAll(/<ins class="adsbygoogle"([\s\S]*?)<\/ins>/g)];
+  assert.equal(units.length, 5, "one ad unit is required in each editor tab");
+  for (const [, attributes] of units) {
+    assert.match(attributes, /data-ad-client="ca-pub-7469113252837951"/);
+    assert.match(attributes, /data-ad-slot="2173866609"/);
+    assert.match(attributes, /data-ad-format="auto"/);
+    assert.match(attributes, /data-full-width-responsive="true"/);
+  }
+
+  for (const panelId of [
+    "left-source-panel",
+    "left-layers-panel",
+    "right-design-panel",
+    "right-path-panel",
+    "right-notes-panel",
+  ]) {
+    const panelStart = html.indexOf(`id="${panelId}"`);
+    assert.notEqual(panelStart, -1, `missing panel ${panelId}`);
+    const nextPanel = html.indexOf('class="tab-panel"', panelStart + 1);
+    const panelMarkup = html.slice(panelStart, nextPanel === -1 ? html.length : nextPanel);
+    assert.match(panelMarkup, /class="adsbygoogle"/, `${panelId} is missing its ad unit`);
+  }
+
+  assert.doesNotMatch(html, /adsbygoogle\s*=.*\.push/s, "ad initialization must remain in the external script");
 });

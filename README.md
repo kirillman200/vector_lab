@@ -2,11 +2,11 @@
 
 A zero-dependency, in-browser SVG editor. Load real SVG markup and edit the actual elements — paths, shapes, attributes, transforms, and individual path points — with the source, layer list, and inspector staying in sync the whole time.
 
-![SVG Vector Lab](docs/screenshot.png)
+![SVG Vector Lab](public/docs/screenshot.png)
 
 ## Getting started
 
-Open `index.html` in a browser. That's it — no build step, no server, no dependencies. (Serving the folder with any static file server also works.)
+Open `public/index.html` in a browser. That's it — no build step and no dependencies. (Serving the `public` folder with any static file server also works.)
 
 Your work is autosaved to the browser's `localStorage` and restored on the next visit. Click **Sample** to start fresh.
 
@@ -44,48 +44,58 @@ Alongside the editor, the project includes About, Privacy, Terms, Contact, and S
 
 The production origin is `https://svgvectorlab.com`. Canonical URLs, social metadata, structured data, `robots.txt`, and `sitemap.xml` all use that origin.
 
-The repository includes `_headers` for Cloudflare Pages. It configures conservative security headers without changing editor behavior.
+Cloudflare publishes only the `public/` directory. Repository metadata, tests, documentation, and Wrangler configuration stay outside the web root. The static `_headers` file sets browser protections, while `src/worker.mjs` adds a fresh script nonce and Content Security Policy to every HTML response so AdSense can run under Google's supported strict-CSP model.
 
-For Cloudflare Pages, connect the GitHub repository once and use Git-integrated deployments. Set `main` as production, use `exit 0` as the dashboard build command, and select the repository root as the output directory. Future pushes deploy automatically.
+For Cloudflare Workers Builds, connect the GitHub repository once and use Git-integrated deployments. The included `wrangler.jsonc` points to the Worker and the `public/` asset directory, and disables public `workers.dev` and preview URLs so the custom domain remains the only production address. Future pushes deploy automatically; no local deploy command is required.
 
-Cloudflare Web Analytics can be enabled from the Pages project's Metrics screen. Pages injects the analytics beacon on the next deployment, so no analytics token or script needs to be committed. The Privacy Policy already includes the corresponding disclosure.
+Cloudflare Web Analytics can be enabled from the project's Metrics screen. Cloudflare injects the analytics beacon on the next deployment, so no analytics token or script needs to be committed. The Privacy Policy already includes the corresponding disclosure.
 
-The production `ads.txt` contains the authorized AdSense publisher record. Keep it synchronized with the value supplied by AdSense and confirm it remains available at `https://svgvectorlab.com/ads.txt`.
+The editor loads the AdSense library once and lazy-initializes one responsive unit in each tab. The production `ads.txt` contains the authorized publisher record. Keep it synchronized with AdSense and confirm it remains available at `https://svgvectorlab.com/ads.txt`.
+
+GitHub Actions runs the complete Node test suite and checks the Worker syntax on every push and pull request.
 
 ## Project structure
 
 ```
-index.html            App shell, panels, SEO metadata, crawlable footer
-styles.css            All styling
-js/path-data.js       Pure path-data parsing/serialization (browser + Node)
-js/svg-utils.js       Sanitizing, sizing, color, and shape-conversion helpers
-js/icons.js           Inline icon set and button decoration
-js/app.js             State, selection, drag interactions, inspector, history, IO
-tests/                Node test suite for the path-data module
-favicon.svg           App icon (also used by the web manifest)
-site.webmanifest      PWA/installability manifest
-robots.txt            Crawler policy + sitemap pointer
-sitemap.xml           Sitemap for every public route
-about/                Project background and product principles
-guides/               SVG tutorial hub and in-depth guides
-privacy/              Advertising-ready privacy disclosure
-terms/                Terms of use
-contact/              Public support and contact channels
-404.html              Custom not-found page
-_headers              Static-host security headers
-ads.txt               AdSense publisher authorization
-docs/og-card.png       Social-sharing image
-LAUNCH_CHECKLIST.md    Domain, hosting, search, policy, and AdSense handoff
+public/                 Only files published to the web
+  index.html            App shell, panels, metadata, ads, crawlable footer
+  styles.css            All styling
+  js/                   Editor, sanitizer, icons, path data, ad initialization
+  about/                Project background and product principles
+  guides/               SVG tutorial hub and in-depth guides
+  privacy/              Privacy and advertising disclosure
+  terms/                Terms of use
+  contact/              Public support and contact channels
+  docs/                 Social-sharing and screenshot images
+  404.html              Custom not-found page
+  _headers              Static-host security headers
+  ads.txt               AdSense publisher authorization
+  robots.txt            Crawler policy + sitemap pointer
+  sitemap.xml           Sitemap for every public route
+  .assetsignore         Defense-in-depth exclusions for accidental secrets
+src/worker.mjs          CSP nonce injection and static asset delivery
+tests/                  Node unit, content, ad, and deployment-boundary tests
+scripts/                Post-deployment security audit
+.github/workflows/      Push and pull-request test automation
+wrangler.jsonc          Cloudflare Worker and asset configuration
+SECURITY.md             Private reporting and deployment-boundary policy
+LAUNCH_CHECKLIST.md     Domain, hosting, search, policy, and AdSense handoff
 ```
 
 The scripts are plain (non-module) files loaded in order so the app keeps working when opened via `file://`, where ES modules are blocked.
 
 ## Tests
 
-The path-data module (path parsing including compact arc flags, serialization, translation, point extraction, handle building) is covered by unit tests:
+Run the full suite locally with:
 
 ```
-node --test tests/path-data.test.mjs
+node --test tests/*.test.mjs
+```
+
+After a production deployment, verify that public files work, private repository paths return 404, and security headers are present:
+
+```
+node scripts/check-live-security.mjs
 ```
 
 ## License

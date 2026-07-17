@@ -13,7 +13,7 @@ const {
   translatePathCommands,
   pathCommandPoints,
   buildPathHandles
-} = require("../js/path-data.js");
+} = require("../public/js/path-data.js");
 
 test("parses basic absolute commands", () => {
   const commands = parsePathData("M 10 20 L 30 40 Z");
