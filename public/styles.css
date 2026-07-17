@@ -1056,6 +1056,12 @@ h2 {
   font-size: 12px;
 }
 
+.path-row input[aria-invalid="true"] {
+  border-color: #c94848;
+  background: #fff5f5;
+  box-shadow: 0 0 0 2px rgba(201, 72, 72, 0.12);
+}
+
 .attr-list {
   display: grid;
   gap: 6px;

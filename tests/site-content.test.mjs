@@ -189,3 +189,13 @@ test("newly loaded artwork is fitted and centered by default", () => {
   assert.match(app, /scrollTop = Math\.max\(0, \(els\.stage\.scrollHeight - els\.stage\.clientHeight\) \/ 2\)/);
   assert.match(app, /recordHistory: false, fit: false/, "undo and redo should preserve manual zoom");
 });
+
+test("path command fields update the current command after overlay rerenders", () => {
+  const app = read("js/app.js");
+  assert.match(app, /forEach\(\(command, commandIndex\) =>/);
+  assert.match(app, /const currentCommand = state\.pathCommands\[commandIndex\]/);
+  assert.match(app, /currentCommand\.values\[i\] = value/);
+  assert.doesNotMatch(app, /command\.values\[i\] = Number\(input\.value/, "inputs must not mutate stale command closures");
+  assert.match(app, /input\.valueAsNumber/);
+  assert.match(app, /aria-invalid/);
+});

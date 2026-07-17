@@ -574,7 +574,7 @@ function buildPathControls(node) {
 
 function renderPathTable() {
   els.pathTable.replaceChildren();
-  state.pathCommands.forEach((command) => {
+  state.pathCommands.forEach((command, commandIndex) => {
     const row = document.createElement("div");
     row.className = "path-row";
     const cmd = document.createElement("strong");
@@ -584,12 +584,26 @@ function renderPathTable() {
     for (let i = 0; i < 7; i += 1) {
       const input = document.createElement("input");
       input.type = "number";
-      input.step = "1";
+      input.step = "any";
       input.value = command.values[i] ?? "";
       input.disabled = i >= command.values.length;
+      input.setAttribute("aria-label", `${command.code} parameter ${i + 1}`);
       input.addEventListener("input", () => {
-        command.values[i] = Number(input.value || 0);
+        const value = input.valueAsNumber;
+        const currentCommand = state.pathCommands[commandIndex];
+        if (!Number.isFinite(value) || !currentCommand || i >= currentCommand.values.length) {
+          input.setAttribute("aria-invalid", "true");
+          return;
+        }
+        input.removeAttribute("aria-invalid");
+        currentCommand.values[i] = value;
         applyPathCommands();
+      });
+      input.addEventListener("blur", () => {
+        if (input.getAttribute("aria-invalid") !== "true") return;
+        const currentValue = state.pathCommands[commandIndex]?.values[i];
+        input.value = Number.isFinite(currentValue) ? String(currentValue) : "";
+        input.removeAttribute("aria-invalid");
       });
       row.append(input);
     }
