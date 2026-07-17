@@ -291,8 +291,10 @@ function loadSvg(markup, options = {}) {
     if (options.fit !== false) {
       requestAnimationFrame(() => fitToView({ announce: false }));
     }
+    return true;
   } catch (error) {
     setStatus(error.message, true);
+    return false;
   }
 }
 
@@ -429,6 +431,10 @@ function refreshInspector() {
   });
 
   if (!node) {
+    const geometryPlaceholder = document.createElement("div");
+    geometryPlaceholder.className = "learn-panel geometry-placeholder";
+    geometryPlaceholder.textContent = "Select a vector to edit its geometry.";
+    els.geometryControls.append(geometryPlaceholder);
     els.learnPanel.textContent = "Select a vector to inspect how its coordinates and drawing commands work.";
     return;
   }

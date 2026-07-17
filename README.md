@@ -74,8 +74,10 @@ public/                 Only files published to the web
   robots.txt            Crawler policy + sitemap pointer
   sitemap.xml           Sitemap for every public route
   llms.txt               Concise machine-readable site and content map
+  auth.md                Anonymous agent-access and credential guidance
+  .well-known/           Agent Skills discovery index and skill artifact
   .assetsignore         Defense-in-depth exclusions for accidental secrets
-src/worker.mjs          CSP nonce injection and static asset delivery
+src/worker.mjs          Security/discovery headers, Markdown negotiation, and static assets
 tests/                  Node unit, content, ad, and deployment-boundary tests
 scripts/                Post-deployment security audit
 .github/workflows/      Push and pull-request test automation

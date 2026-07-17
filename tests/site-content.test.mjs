@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -108,6 +109,38 @@ test("llms.txt provides a structured map of the public site", () => {
   }
 });
 
+test("agent discovery files truthfully describe the public browser app", () => {
+  const robots = read("robots.txt");
+  assert.match(robots, /^Content-Signal: ai-train=no, search=yes, ai-input=yes$/m);
+
+  const auth = read("auth.md");
+  assert.match(auth, /^# .*auth\.md$/m);
+  assert.match(auth, /no accounts, protected HTTP APIs, registration flow/i);
+  assert.match(auth, /Supported method: anonymous browser access/);
+
+  const skillPath = ".well-known/agent-skills/svg-vector-editor/SKILL.md";
+  const skill = read(skillPath);
+  const index = JSON.parse(read(".well-known/agent-skills/index.json"));
+  assert.equal(index.$schema, "https://schemas.agentskills.io/discovery/0.2.0/schema.json");
+  assert.equal(index.skills.length, 1);
+  assert.equal(index.skills[0].name, "svg-vector-editor");
+  assert.equal(index.skills[0].type, "skill-md");
+  assert.equal(index.skills[0].url, `${origin}/${skillPath}`);
+  assert.equal(index.skills[0].digest, `sha256:${createHash("sha256").update(skill).digest("hex")}`);
+});
+
+test("the editor registers useful WebMCP tools on page load", () => {
+  const html = read("index.html");
+  const webmcp = read("js/webmcp.js");
+  assert.match(html, /<script src="js\/webmcp\.js"><\/script>/);
+  assert.match(webmcp, /document\.modelContext \|\| navigator\.modelContext/);
+  assert.match(webmcp, /registerTool\(tool, options\)/);
+  assert.match(webmcp, /new AbortController\(\)/);
+  for (const tool of ["get_current_svg", "set_svg_markup", "load_sample_svg", "fit_svg_to_view"]) {
+    assert.match(webmcp, new RegExp(`name: "${tool}"`));
+  }
+});
+
 test("hosting and advertising files are safe", () => {
   assert.ok(existsSync(join(siteRoot, "_headers")));
   const manifest = JSON.parse(read("site.webmanifest"));
@@ -132,6 +165,11 @@ test("hosting and advertising files are safe", () => {
   assert.match(worker, /headers\.set\("X-Frame-Options", "DENY"\)/);
   assert.match(worker, /\.workers\.dev/);
   assert.match(worker, /X-Robots-Tag/);
+  assert.match(worker, /headers\.set\("Link", HOMEPAGE_DISCOVERY_LINKS\)/);
+  assert.match(worker, /headers\.set\("Content-Signal", CONTENT_SIGNAL\)/);
+  assert.match(worker, /text\/markdown; charset=utf-8/);
+  assert.match(worker, /x-markdown-tokens/);
+  assert.ok((worker.match(/appendVary\(headers, "Accept"\)/g) || []).length >= 2);
 });
 
 test("Cloudflare publishes only the public allowlist", () => {
@@ -207,6 +245,23 @@ test("newly loaded artwork is fitted and centered by default", () => {
   assert.match(app, /scrollLeft = Math\.max\(0, \(els\.stage\.scrollWidth - els\.stage\.clientWidth\) \/ 2\)/);
   assert.match(app, /scrollTop = Math\.max\(0, \(els\.stage\.scrollHeight - els\.stage\.clientHeight\) \/ 2\)/);
   assert.match(app, /recordHistory: false, fit: false/, "undo and redo should preserve manual zoom");
+});
+
+test("the editor reserves space for startup UI and responsive ads", () => {
+  const html = read("index.html");
+  const css = read("styles.css");
+  const icons = read("js/icons.js");
+  const app = read("js/app.js");
+
+  for (const id of ["loadSampleBtn", "undoBtn", "redoBtn", "fitBtn", "loadInputBtn"]) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*class="[^"]*button-icon-pending`), `${id} must reserve its icon width`);
+  }
+  assert.match(html, /id="geometryControls"[^>]*>[\s\S]*?geometry-placeholder/);
+  assert.match(css, /\.button-icon-pending:not\(\.button-icon-ready\)::before/);
+  assert.match(css, /\.ad-slot \.adsbygoogle \{[\s\S]*?min-height: 250px;/);
+  assert.match(css, /height: calc\(100svh - 70px\);/);
+  assert.match(icons, /classList\.add\("button-icon-ready"\)/);
+  assert.match(app, /geometryPlaceholder\.className = "learn-panel geometry-placeholder"/);
 });
 
 test("path command fields update the current command after overlay rerenders", () => {

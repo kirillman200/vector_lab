@@ -25,6 +25,7 @@ function decorateButton(button, iconName, label = button.textContent.trim()) {
   if (!button || !icon) return;
   button.setAttribute("aria-label", label);
   button.innerHTML = `<svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">${icon}</svg><span class="button-label">${label}</span>`;
+  button.classList.add("button-icon-ready");
 }
 
 function iconOnly(button) {

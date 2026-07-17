@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "svg-vector-editor",
+      "type": "skill-md",
+      "description": "Use SVG Vector Lab's browser tools to inspect, load, sanitize, and frame SVG artwork locally.",
+      "url": "https://svgvectorlab.com/.well-known/agent-skills/svg-vector-editor/SKILL.md",
+      "digest": "sha256:fa0d8e100efdadf96ffdf5651f99423ab4ce675b2f64927b91f06042b12c60da"
+    }
+  ]
+}

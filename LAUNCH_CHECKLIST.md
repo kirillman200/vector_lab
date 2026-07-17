@@ -59,6 +59,12 @@ The included policy pages are a practical starting point, not legal advice.
 
 ## 7. Final quality check
 
+- Verify the homepage sends `Link` discovery headers and `Content-Signal`.
+- Request the homepage with `Accept: text/markdown`; confirm `Content-Type: text/markdown`, `Vary: Accept`, and `x-markdown-tokens`.
+- Verify `/auth.md`, `/.well-known/agent-skills/index.json`, and the indexed `SKILL.md` are publicly reachable.
+- In a WebMCP-capable browser, confirm the editor registers `get_current_svg`, `set_svg_markup`, `load_sample_svg`, and `fit_svg_to_view`.
+- Do not publish API catalog, OAuth/OIDC, OAuth Protected Resource, MCP Server Card, or DNS-AID records unless corresponding live APIs, authorization servers, MCP transports, or agent endpoints exist. If an agent endpoint is added later, publish its `_agents` SVCB/HTTPS record in Cloudflare DNS and enable DNSSEC before advertising it.
+
 - Run all tests:
 
   ```powershell

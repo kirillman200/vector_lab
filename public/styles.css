@@ -22,6 +22,10 @@ body {
   height: 100%;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   background-color: var(--bg);
@@ -92,6 +96,14 @@ button.active {
   fill: none;
 }
 
+/* Reserve the icon's final footprint before the button decorator runs. */
+.button-icon-pending:not(.button-icon-ready)::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
 .button-label {
   min-width: 0;
   overflow: hidden;
@@ -101,6 +113,10 @@ button.active {
 .icon-only {
   width: 34px;
   padding: 0;
+}
+
+.icon-only:not(.button-icon-ready) {
+  font-size: 0;
 }
 
 .icon-only .button-label {
@@ -430,6 +446,7 @@ textarea {
 
 .app-shell {
   height: calc(100vh - 70px);
+  height: calc(100svh - 70px);
   min-height: 620px;
   display: grid;
   grid-template-columns: clamp(270px, 21vw, 340px) minmax(0, 1fr) clamp(320px, 24vw, 420px);
@@ -549,6 +566,7 @@ textarea {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 .tab-panel[hidden] {
@@ -686,7 +704,7 @@ h2 {
 }
 
 .ad-slot {
-  min-height: 250px;
+  min-height: 286px;
   display: block;
   gap: 5px;
   margin-top: 16px;
@@ -710,11 +728,11 @@ h2 {
 
 .ad-slot .adsbygoogle {
   width: 100%;
-  min-height: 220px;
+  min-height: 250px;
 }
 
 .ad-slot-compact {
-  min-height: 250px;
+  min-height: 286px;
   margin-top: 2px;
 }
 
@@ -824,6 +842,8 @@ h2 {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  scrollbar-gutter: stable;
+  contain: layout paint;
   background-color: #fbfdff;
   background-image:
     linear-gradient(rgba(74, 129, 204, 0.10) 1px, transparent 1px),
@@ -884,6 +904,11 @@ h2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.geometry-placeholder {
+  grid-column: 1 / -1;
+  min-height: 31px;
 }
 
 .control-grid label {
@@ -1857,6 +1882,7 @@ h2 {
 @media (max-width: 1120px) {
   .app-shell {
     height: calc(100vh - 70px);
+    height: calc(100svh - 70px);
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     /* Row minimums must sum below the shell's min-height (620px) or the
        grid overflows its own box and spills under the footer. */
@@ -1944,8 +1970,10 @@ h2 {
   .app-shell {
     height: auto;
     min-height: calc(100vh - 126px);
+    min-height: calc(100svh - 126px);
     grid-template-columns: 1fr;
     grid-template-rows: minmax(58vh, 1fr) auto auto;
+    grid-template-rows: minmax(58svh, 1fr) auto auto;
     grid-template-areas:
       "work"
       "source"
@@ -1960,6 +1988,7 @@ h2 {
       "work"
       "inspector";
     grid-template-rows: minmax(72vh, 1fr) auto;
+    grid-template-rows: minmax(72svh, 1fr) auto;
   }
 
   .app-shell.hide-inspector {
@@ -1968,12 +1997,14 @@ h2 {
       "work"
       "source";
     grid-template-rows: minmax(72vh, 1fr) auto;
+    grid-template-rows: minmax(72svh, 1fr) auto;
   }
 
   .app-shell.hide-source.hide-inspector {
     grid-template-columns: 1fr;
     grid-template-areas: "work";
     grid-template-rows: minmax(72vh, 1fr);
+    grid-template-rows: minmax(72svh, 1fr);
   }
 
   .work-area {
@@ -2018,7 +2049,7 @@ h2 {
   }
 
   .ad-slot {
-    min-height: 250px;
+    min-height: 286px;
   }
 
   .svg-mount {
