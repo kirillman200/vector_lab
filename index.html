@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>SVG Vector Lab — Free Online SVG Editor for Paths, Points &amp; Attributes</title>
+  <meta name="description" content="Free in-browser SVG editor. Edit SVG paths, points, shapes, attributes and transforms visually with a live source view, layers, undo history, and SVG/PNG export. No signup, no upload — everything stays on your device.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="kiril">
+  <meta name="application-name" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+
+  <!-- IMPORTANT: replace https://svg-vector-lab.example.com with your real domain before deploying -->
+  <link rel="canonical" href="https://svg-vector-lab.example.com/">
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="SVG Vector Lab — Free Online SVG Editor for Paths, Points &amp; Attributes">
+  <meta property="og:description" content="Edit SVG paths, points, shapes, attributes and transforms visually in your browser. Live source view, layers, undo history, SVG/PNG export. Free, open source, nothing uploaded.">
+  <meta property="og:url" content="https://svg-vector-lab.example.com/">
+  <meta property="og:image" content="https://svg-vector-lab.example.com/docs/screenshot.png">
+  <meta property="og:image:width" content="1560">
+  <meta property="og:image:height" content="940">
+  <meta property="og:image:alt" content="SVG Vector Lab editor with source panel, canvas, and inspector">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SVG Vector Lab — Free Online SVG Editor">
+  <meta name="twitter:description" content="Edit SVG paths, points, shapes, attributes and transforms visually in your browser. Free, open source, nothing uploaded.">
+  <meta name="twitter:image" content="https://svg-vector-lab.example.com/docs/screenshot.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SVG Vector Lab",
+    "url": "https://svg-vector-lab.example.com/",
+    "description": "Free in-browser SVG editor for editing SVG paths, points, shapes, attributes and transforms visually, with a live source view, layers, undo history, and SVG/PNG export.",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any (web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "screenshot": "https://svg-vector-lab.example.com/docs/screenshot.png",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "kiril" },
+    "featureList": [
+      "Visual editing of SVG paths, rects, circles, ellipses, lines, polylines, polygons, text, groups and use elements",
+      "Drag path endpoints and Bezier control points",
+      "Resize and rotate handles, multi-select and rubber-band selection",
+      "Live synchronized SVG source view",
+      "Convert basic shapes to editable paths",
+      "Snap to other elements' corners, centers and vertices",
+      "Undo/redo history and localStorage autosave",
+      "Export to SVG or PNG at 1x to 8x resolution"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is SVG Vector Lab free to use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SVG Vector Lab is completely free and open source under the MIT license. There is no signup, no account, and no paid tier." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are my SVG files uploaded to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The editor runs entirely in your browser. Files you open, edit, and export never leave your device, and your work-in-progress is autosaved to your browser's local storage." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which SVG elements can I edit?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Paths, rectangles, circles, ellipses, lines, polylines, polygons, text, groups, and use references — including their attributes, transforms, fill and stroke, and for paths every individual command and point." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I convert shapes into paths?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Convert to path tool turns rects, circles, ellipses, lines, polygons, and polylines into equivalent SVG path commands you can then edit point by point." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I export my SVG as a PNG image?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can download the current drawing as a clean SVG file, or render it to PNG at 1x, 2x, 4x, or 8x resolution with an optional background color." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does SVG Vector Lab work offline?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is a static page with no server dependency — once loaded it keeps working offline, and you can also download the project and open index.html directly from your disk." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>SVG Vector Lab</h1>
+      <p>Edit real SVG elements, paths, attributes, transforms, and points.</p>
+    </div>
+    <div class="top-actions">
+      <button id="loadSampleBtn" title="Load sample SVG">Sample</button>
+      <label class="file-button" title="Open an SVG file">
+        Open
+        <input id="fileInput" type="file" accept=".svg,image/svg+xml">
+      </label>
+      <button id="copySvgBtn" title="Copy current SVG markup">Copy</button>
+      <label class="background-control" title="SVG background color and opacity">
+        <span>Background</span>
+        <input id="backgroundInput" type="color" value="#ffffff">
+        <input id="backgroundAlphaInput" type="range" min="0" max="100" step="1" value="100">
+        <output id="backgroundAlphaOutput">100%</output>
+      </label>
+      <label class="export-scale-control" title="PNG export resolution multiplier">
+        <span>PNG</span>
+        <select id="pngScaleInput">
+          <option value="1">1x</option>
+          <option value="2" selected>2x</option>
+          <option value="4">4x</option>
+          <option value="8">8x</option>
+        </select>
+      </label>
+      <button id="downloadSvgBtn" title="Download current SVG">SVG</button>
+      <button id="downloadPngBtn" title="Download current image as PNG">PNG</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="panel source-panel">
+      <section class="panel-block source-block">
+        <div class="section-head">
+          <h2>Source</h2>
+          <button id="loadInputBtn">Load</button>
+        </div>
+        <textarea id="svgInput" spellcheck="false"></textarea>
+        <div id="statusLine" class="status-line">Ready.</div>
+      </section>
+
+      <section class="panel-block layers-block">
+        <div class="section-head">
+          <h2>Vectors</h2>
+          <button id="refreshLayersBtn" title="Refresh vector list">Refresh</button>
+        </div>
+        <div id="layerList" class="layer-list"></div>
+      </section>
+    </aside>
+
+    <section class="work-area">
+      <div class="canvas-toolbar">
+        <div class="segmented">
+          <button data-zoom="0.5">50%</button>
+          <button data-zoom="1" class="active">100%</button>
+          <button data-zoom="1.5">150%</button>
+          <button data-zoom="2">200%</button>
+          <button data-zoom="3">300%</button>
+          <button data-zoom="4">400%</button>
+        </div>
+        <label class="zoom-control" title="Custom zoom percent">
+          <span>Zoom</span>
+          <input id="zoomInput" type="number" min="10" max="1200" step="5" value="100">
+          <span>%</span>
+        </label>
+        <label class="snap-control" title="Snap dragged path points to other elements">
+          <input id="snapToggle" type="checkbox">
+          <span>Snap</span>
+        </label>
+        <button id="fitBtn" title="Fit SVG to view (Space-drag pans, Ctrl+wheel zooms)">Fit</button>
+        <button id="toggleSourceBtn" title="Hide or show source and vector panels">Left panel</button>
+        <button id="toggleInspectorBtn" title="Hide or show inspector panel">Right panel</button>
+        <button id="undoBtn" title="Undo last SVG edit">Undo</button>
+        <button id="redoBtn" title="Redo last undone SVG edit">Redo</button>
+        <button id="convertPathBtn" title="Convert selected basic shape into editable SVG path commands">Convert to path</button>
+        <button id="deleteBtn" title="Delete selected vector">Delete</button>
+        <button id="duplicateBtn" title="Duplicate selected vector">Duplicate</button>
+      </div>
+      <div id="stage" class="stage">
+        <div id="precisionHud" class="precision-hud">x: -, y: -</div>
+        <div id="svgMount" class="svg-mount"></div>
+      </div>
+    </section>
+
+    <aside class="panel inspector-panel">
+      <section class="panel-block">
+        <div class="section-head">
+          <h2>Inspector</h2>
+          <span id="selectedName" class="selected-name">None</span>
+        </div>
+        <div class="control-grid">
+          <label class="color-field">Fill <span class="alpha-color"><input id="fillInput" type="color" value="#4e7cff"><input id="fillAlphaInput" type="range" min="0" max="100" step="1" value="100"><output id="fillAlphaOutput">100%</output></span></label>
+          <label class="color-field">Stroke <span class="alpha-color"><input id="strokeInput" type="color" value="#1d2733"><input id="strokeAlphaInput" type="range" min="0" max="100" step="1" value="100"><output id="strokeAlphaOutput">100%</output></span></label>
+          <label>Stroke width <input id="strokeWidthInput" type="number" step="0.25"></label>
+          <label>Opacity <input id="opacityInput" type="number" min="0" max="1" step="0.05"></label>
+        </div>
+        <div class="inline-actions">
+          <button id="fillNoneBtn">No fill</button>
+          <button id="strokeNoneBtn">No stroke</button>
+          <button id="bringForwardBtn">Forward</button>
+          <button id="sendBackwardBtn">Backward</button>
+        </div>
+      </section>
+
+      <section class="panel-block">
+        <h2>Geometry</h2>
+        <div id="geometryControls" class="control-grid"></div>
+      </section>
+
+      <section class="panel-block">
+        <h2>Transform</h2>
+        <div class="control-grid">
+          <label>Move X <input id="translateXInput" type="number" step="1" value="0"></label>
+          <label>Move Y <input id="translateYInput" type="number" step="1" value="0"></label>
+          <label>Scale <input id="scaleInput" type="number" step="0.05" value="1"></label>
+          <label>Rotate <input id="rotateInput" type="number" step="1" value="0"></label>
+        </div>
+        <button id="applyTransformBtn" class="wide-button">Apply transform</button>
+      </section>
+
+      <section class="panel-block path-block">
+        <div class="section-head">
+          <h2>Path Data</h2>
+          <button id="normalizePathBtn">Normalize</button>
+        </div>
+        <textarea id="pathInput" spellcheck="false"></textarea>
+        <div id="pathTable" class="path-table"></div>
+      </section>
+
+      <section class="panel-block">
+        <h2>Attributes</h2>
+        <div id="attrList" class="attr-list"></div>
+        <div class="attr-editor">
+          <input id="attrNameInput" placeholder="attribute">
+          <input id="attrValueInput" placeholder="value">
+          <button id="setAttrBtn">Set</button>
+        </div>
+      </section>
+
+      <section class="panel-block learn-block">
+        <h2>Vector Notes</h2>
+        <div id="learnPanel" class="learn-panel">Select a vector to inspect how its coordinates and drawing commands work.</div>
+      </section>
+    </aside>
+  </main>
+
+  <noscript>
+    <div class="noscript-note">
+      SVG Vector Lab is a free, in-browser SVG editor for paths, points, shapes, attributes, and transforms.
+      It needs JavaScript to run — please enable JavaScript, then reload this page.
+    </div>
+  </noscript>
+
+  <footer class="site-footer" id="about">
+    <div class="footer-inner">
+      <section>
+        <h2>About SVG Vector Lab</h2>
+        <p>
+          SVG Vector Lab is a <strong>free online SVG editor</strong> that runs entirely in your browser.
+          Open an SVG file (or paste its markup), then edit the real elements: drag shapes and path points on the
+          canvas, tune fills, strokes, opacity and transforms in the inspector, and watch the SVG source code
+          update live as you work. When you're done, copy the cleaned markup or export it as an SVG or PNG file.
+        </p>
+        <p>
+          It's also built for learning how SVG works. Select any vector and the notes panel explains its coordinate
+          model — how <code>path</code> commands like <code>M</code>, <code>L</code>, <code>C</code> and <code>A</code>
+          draw lines, Bézier curves and arcs, and how attributes map to visible geometry. Nothing is uploaded:
+          your artwork stays on your device, and work-in-progress is autosaved to your browser's local storage.
+        </p>
+      </section>
+
+      <section>
+        <h2>Features</h2>
+        <ul>
+          <li>Edit SVG paths point by point — drag endpoints and Bézier control points, or type coordinates</li>
+          <li>Visual editing for rects, circles, ellipses, lines, polylines, polygons, text, groups and use elements</li>
+          <li>Multi-select with shift-click or rubber-band, resize and rotate handles, snapping to other elements</li>
+          <li>Live synchronized source panel — edit the markup or the canvas, both stay in sync</li>
+          <li>Convert basic shapes into editable path commands</li>
+          <li>Undo/redo history, keyboard nudging, and autosave</li>
+          <li>Export clean SVG markup or render PNG at 1×–8× resolution</li>
+          <li>Free, open source (MIT), no signup, works offline</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Frequently asked questions</h2>
+        <details>
+          <summary>Is SVG Vector Lab free to use?</summary>
+          <p>Yes. SVG Vector Lab is completely free and open source under the MIT license. There is no signup, no account, and no paid tier.</p>
+        </details>
+        <details>
+          <summary>Are my SVG files uploaded to a server?</summary>
+          <p>No. The editor runs entirely in your browser. Files you open, edit, and export never leave your device, and your work-in-progress is autosaved to your browser's local storage.</p>
+        </details>
+        <details>
+          <summary>Which SVG elements can I edit?</summary>
+          <p>Paths, rectangles, circles, ellipses, lines, polylines, polygons, text, groups, and use references — including their attributes, transforms, fill and stroke, and for paths every individual command and point.</p>
+        </details>
+        <details>
+          <summary>Can I convert shapes into paths?</summary>
+          <p>Yes. The Convert to path tool turns rects, circles, ellipses, lines, polygons, and polylines into equivalent SVG path commands you can then edit point by point.</p>
+        </details>
+        <details>
+          <summary>Can I export my SVG as a PNG image?</summary>
+          <p>Yes. You can download the current drawing as a clean SVG file, or render it to PNG at 1x, 2x, 4x, or 8x resolution with an optional background color.</p>
+        </details>
+        <details>
+          <summary>Does SVG Vector Lab work offline?</summary>
+          <p>Yes. It is a static page with no server dependency — once loaded it keeps working offline, and you can also download the project and open index.html directly from your disk.</p>
+        </details>
+      </section>
+
+      <p class="footer-note">
+        SVG Vector Lab — free online SVG editor. Open source under the MIT license. Your artwork never leaves your device.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/path-data.js"></script>
+  <script src="js/svg-utils.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

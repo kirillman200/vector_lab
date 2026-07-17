@@ -1,0 +1,5 @@
+# Replace svg-vector-lab.example.com with your real domain before deploying
+User-agent: *
+Allow: /
+
+Sitemap: https://svg-vector-lab.example.com/sitemap.xml
