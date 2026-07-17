@@ -288,6 +288,9 @@ function loadSvg(markup, options = {}) {
       pushHistory(true);
     }
     setStatus("SVG loaded.");
+    if (options.fit !== false) {
+      requestAnimationFrame(() => fitToView({ announce: false }));
+    }
   } catch (error) {
     setStatus(error.message, true);
   }
@@ -1346,7 +1349,7 @@ function zoomAtCursor(multiplier, clientX, clientY) {
   els.stage.scrollTop += after.top + fy * after.height - clientY;
 }
 
-function fitToView() {
+function fitToView({ announce = true } = {}) {
   if (!state.svg) {
     setZoom(1);
     return;
@@ -1359,9 +1362,11 @@ function fitToView() {
     (els.stage.clientHeight - margin) / height
   );
   setZoom(zoom);
-  els.stage.scrollLeft = (els.stage.scrollWidth - els.stage.clientWidth) / 2;
-  els.stage.scrollTop = (els.stage.scrollHeight - els.stage.clientHeight) / 2;
-  setStatus(`Fit to view at ${Math.round(state.zoom * 100)}%.`);
+  requestAnimationFrame(() => {
+    els.stage.scrollLeft = Math.max(0, (els.stage.scrollWidth - els.stage.clientWidth) / 2);
+    els.stage.scrollTop = Math.max(0, (els.stage.scrollHeight - els.stage.clientHeight) / 2);
+  });
+  if (announce) setStatus(`Fit to view at ${Math.round(state.zoom * 100)}%.`);
 }
 
 /* -------------------------------------------------------- mutation, history */
@@ -1462,7 +1467,7 @@ function restoreHistory(index) {
     .filter((position) => position >= 0);
   state.restoring = true;
   state.historyIndex = index;
-  loadSvg(state.history[state.historyIndex], { recordHistory: false });
+  loadSvg(state.history[state.historyIndex], { recordHistory: false, fit: false });
   state.restoring = false;
   const vectors = getVectors();
   setSelection(selectedIndices.map((position) => vectors[position]).filter(Boolean));

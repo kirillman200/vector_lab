@@ -181,3 +181,11 @@ test("every editor tab contains the configured responsive AdSense unit", () => {
 
   assert.doesNotMatch(html, /adsbygoogle\s*=.*\.push/s, "ad initialization must remain in the external script");
 });
+
+test("newly loaded artwork is fitted and centered by default", () => {
+  const app = read("js/app.js");
+  assert.match(app, /requestAnimationFrame\(\(\) => fitToView\(\{ announce: false \}\)\)/);
+  assert.match(app, /scrollLeft = Math\.max\(0, \(els\.stage\.scrollWidth - els\.stage\.clientWidth\) \/ 2\)/);
+  assert.match(app, /scrollTop = Math\.max\(0, \(els\.stage\.scrollHeight - els\.stage\.clientHeight\) \/ 2\)/);
+  assert.match(app, /recordHistory: false, fit: false/, "undo and redo should preserve manual zoom");
+});
