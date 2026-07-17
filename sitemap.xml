@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Replace svg-vector-lab.example.com with your real domain before deploying -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://svg-vector-lab.example.com/</loc>
+    <loc>https://svgvectorlab.com/</loc>
     <lastmod>2026-07-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/about/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/edit-svg-paths/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/bezier-curves/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/convert-shapes-to-paths/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/optimize-svg/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/privacy/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/terms/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/contact/</loc>
+    <lastmod>2026-07-16</lastmod>
   </url>
 </urlset>

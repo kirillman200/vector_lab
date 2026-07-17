@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Optimize SVG Files for the Web</title>
+  <meta name="description" content="A practical checklist for reducing SVG file size, cleaning markup, preserving accessibility, and avoiding visual damage from excessive optimization.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/guides/optimize-svg/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="How to Optimize SVG Files for the Web">
+  <meta property="og:description" content="Reduce SVG size while preserving appearance, behavior, and accessibility.">
+  <meta property="og:url" content="https://svgvectorlab.com/guides/optimize-svg/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "How to Optimize SVG Files for the Web",
+    "datePublished": "2026-07-16",
+    "dateModified": "2026-07-16",
+    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "mainEntityOfPage": "https://svgvectorlab.com/guides/optimize-svg/"
+  }
+  </script>
+</head>
+<body class="content-page">
+  <header class="content-header"><div class="content-header-inner"><a class="site-brand" href="/">SVG Vector Lab</a><nav class="content-nav" aria-label="Primary navigation"><a href="/">Editor</a><a href="/guides/">Guides</a><a href="/about/">About</a><a href="/contact/">Contact</a></nav></div></header>
+
+  <main class="content-main">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / Optimize SVG</nav>
+    <article>
+      <header class="content-hero">
+        <p class="eyebrow">Web performance</p>
+        <h1>How to optimize SVG files for the web</h1>
+        <p class="lede">Good SVG optimization removes information the browser does not need while preserving the appearance, behavior, accessibility, and maintainability that your project does need.</p>
+        <p class="article-meta">Published July 16, 2026 · About 7 minutes</p>
+      </header>
+
+      <section>
+        <h2>Begin with the intended use</h2>
+        <p>An SVG used as a static <code>&lt;img&gt;</code> can often be simplified more aggressively than an inline SVG controlled by CSS and JavaScript. Before removing anything, identify what the asset depends on:</p>
+        <ul>
+          <li>Are classes or IDs used by CSS, scripts, fragment links, masks, gradients, or clip paths?</li>
+          <li>Does the SVG contain a title or description needed for accessibility?</li>
+          <li>Will the graphic be animated or recolored?</li>
+          <li>Must it scale to very small sizes without visible distortion?</li>
+        </ul>
+        <p>Optimization should follow these requirements, not erase them.</p>
+      </section>
+
+      <section>
+        <h2>Use a useful viewBox</h2>
+        <p>The <code>viewBox</code> establishes the SVG's internal coordinate system and makes responsive scaling straightforward:</p>
+        <pre><code>&lt;svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg"&gt;
+  ...
+&lt;/svg&gt;</code></pre>
+        <p>For a responsive inline graphic, fixed <code>width</code> and <code>height</code> attributes may be unnecessary if layout is controlled by CSS. For an image with an intrinsic aspect ratio, keeping dimensions can help the browser reserve space and reduce layout shift. Choose based on how the SVG is embedded.</p>
+      </section>
+
+      <section>
+        <h2>Remove editor-specific data carefully</h2>
+        <p>Vector applications may add metadata, named-view information, unused definitions, comments, and proprietary attributes. These can increase size without affecting browser rendering. Remove them only after confirming that the file does not need to return to the originating editor with all editing features intact.</p>
+        <p>Likewise, delete hidden objects and unused gradients, masks, patterns, and symbols, but verify that no <code>url(#id)</code> or <code>href="#id"</code> reference still points to them.</p>
+      </section>
+
+      <section>
+        <h2>Reduce number precision with visual tests</h2>
+        <p>Coordinates such as <code>42.638291</code> may not need six decimal places. Reducing precision can substantially shorten complex path data. The appropriate precision depends on the coordinate scale and final display size.</p>
+        <p>Small icons are especially sensitive. Rounding a point by half a unit inside a tiny viewBox can move an edge visibly. Compare the optimized result at its intended size and at high zoom before accepting the change.</p>
+      </section>
+
+      <section>
+        <h2>Simplify without obscuring intent</h2>
+        <ul>
+          <li>Remove attributes that merely repeat an inherited or default value.</li>
+          <li>Combine compatible transforms when doing so does not make future editing harder.</li>
+          <li>Reuse repeated geometry with <code>symbol</code> and <code>use</code> when the reuse is meaningful.</li>
+          <li>Keep a <code>rect</code> or <code>circle</code> instead of converting it to a longer path when no path-specific editing is required.</li>
+          <li>Avoid embedding raster images or fonts unless the asset truly needs them.</li>
+        </ul>
+        <p>The smallest possible markup is not always the best source. A few extra characters can be worthwhile when they preserve clear structure and predictable styling.</p>
+      </section>
+
+      <section>
+        <h2>Preserve accessibility</h2>
+        <p>When an SVG communicates information, provide an accessible name appropriate to how it is embedded. Inline SVG can use a meaningful <code>&lt;title&gt;</code> connected with ARIA. An SVG loaded through <code>&lt;img&gt;</code> uses the image element's <code>alt</code> text.</p>
+        <p>Purely decorative graphics should be hidden from assistive technology so they do not create noise. Optimization tools should not make that decision without knowing the page context.</p>
+      </section>
+
+      <section>
+        <h2>A reliable optimization checklist</h2>
+        <ol class="step-list">
+          <li><strong>Keep an editable original.</strong> Optimize a copy intended for delivery.</li>
+          <li><strong>Record dependencies.</strong> Identify IDs, classes, accessibility text, scripts, and animation hooks that must survive.</li>
+          <li><strong>Remove unused content.</strong> Delete unnecessary metadata, hidden objects, and unreferenced definitions.</li>
+          <li><strong>Reduce precision gradually.</strong> Compare the file at its actual display sizes after each change.</li>
+          <li><strong>Clean presentation attributes.</strong> Remove only values that are genuinely redundant in the embedding context.</li>
+          <li><strong>Validate references.</strong> Test gradients, masks, clip paths, symbols, and fragment links.</li>
+          <li><strong>Test accessibly.</strong> Confirm that informative graphics retain an accessible name and decorative graphics remain ignorable.</li>
+          <li><strong>Serve with compression.</strong> Modern hosting platforms normally compress text assets such as SVG over the network.</li>
+        </ol>
+      </section>
+
+      <div class="callout">
+        <p><strong>Use the editor as a visual check:</strong> open both the original and optimized versions in <a href="/">SVG Vector Lab</a>. Compare their viewBox, layers, attributes, transforms, and path points—not only their file sizes.</p>
+      </div>
+
+      <p>For structural edits before optimization, see <a href="/guides/convert-shapes-to-paths/">when to convert shapes to paths</a> and <a href="/guides/edit-svg-paths/">how to edit path points safely</a>.</p>
+    </article>
+  </main>
+
+  <footer class="page-footer"><div class="page-footer-inner"><p>© 2026 SVG Vector Lab.</p><nav class="content-nav" aria-label="Footer navigation"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></nav></div></footer>
+</body>
+</html>

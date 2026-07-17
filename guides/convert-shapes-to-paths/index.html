@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How and When to Convert SVG Shapes to Paths</title>
+  <meta name="description" content="Learn when converting SVG rects, circles, ellipses, lines, polygons, and polylines to paths is useful, and what tradeoffs the conversion creates.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/guides/convert-shapes-to-paths/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="How and When to Convert SVG Shapes to Paths">
+  <meta property="og:description" content="Understand shape-to-path conversion, its benefits, and its tradeoffs.">
+  <meta property="og:url" content="https://svgvectorlab.com/guides/convert-shapes-to-paths/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "How and When to Convert SVG Shapes to Paths",
+    "datePublished": "2026-07-16",
+    "dateModified": "2026-07-16",
+    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "mainEntityOfPage": "https://svgvectorlab.com/guides/convert-shapes-to-paths/"
+  }
+  </script>
+</head>
+<body class="content-page">
+  <header class="content-header"><div class="content-header-inner"><a class="site-brand" href="/">SVG Vector Lab</a><nav class="content-nav" aria-label="Primary navigation"><a href="/">Editor</a><a href="/guides/">Guides</a><a href="/about/">About</a><a href="/contact/">Contact</a></nav></div></header>
+
+  <main class="content-main">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / Convert shapes to paths</nav>
+    <article>
+      <header class="content-hero">
+        <p class="eyebrow">SVG geometry</p>
+        <h1>How and when to convert SVG shapes to paths</h1>
+        <p class="lede">SVG provides readable elements such as <code>rect</code> and <code>circle</code>. Converting them to <code>path</code> unlocks point-level editing, but it also gives up some useful semantics.</p>
+        <p class="article-meta">Published July 16, 2026 · About 6 minutes</p>
+      </header>
+
+      <section>
+        <h2>Basic shapes are already vector geometry</h2>
+        <p>A rectangle does not need to be a path to scale cleanly. Neither does a circle, line, ellipse, polygon, or polyline. SVG has dedicated elements for these forms because their markup is easy to read and their geometry is easy to change.</p>
+        <pre><code>&lt;rect x="20" y="20" width="120" height="80" rx="12" /&gt;
+&lt;circle cx="80" cy="80" r="48" /&gt;</code></pre>
+        <p>If you only need to change a rectangle's width or a circle's radius, keeping the original element is usually the clearest option.</p>
+      </section>
+
+      <section>
+        <h2>What conversion changes</h2>
+        <p>After conversion, the element's outline is represented by commands in a <code>d</code> attribute. A rectangle becomes a sequence of moves, lines, and possibly curves or arcs for rounded corners. A circle or ellipse is commonly represented by multiple arc segments.</p>
+        <p>The rendered outline should remain the same, and presentation attributes such as fill, stroke, opacity, class, transform, and identifier should be preserved. The important difference is that you can now move individual anchors and reshape segments independently.</p>
+      </section>
+
+      <section>
+        <h2>Good reasons to convert</h2>
+        <ul>
+          <li>Create an irregular corner or side that the original shape element cannot describe.</li>
+          <li>Merge the shape into a larger path-editing workflow.</li>
+          <li>Animate or morph between outlines that need compatible path data.</li>
+          <li>Fine-tune points after importing artwork from another vector application.</li>
+          <li>Use a single geometry representation in a tool that only handles paths.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Reasons to keep the original shape</h2>
+        <ul>
+          <li><strong>Readable markup:</strong> <code>r="48"</code> communicates a circle more clearly than a sequence of arc commands.</li>
+          <li><strong>Simpler updates:</strong> changing <code>width</code>, <code>height</code>, or <code>rx</code> is straightforward.</li>
+          <li><strong>Potentially smaller source:</strong> a basic element can require fewer characters than an equivalent path.</li>
+          <li><strong>Clearer intent:</strong> semantic geometry helps future editors understand the asset.</li>
+        </ul>
+        <p>Conversion is generally one-way in editing tools. A path that happens to look circular may not be recognized and restored as a <code>circle</code> later.</p>
+      </section>
+
+      <section>
+        <h2>Convert a shape in SVG Vector Lab</h2>
+        <ol class="step-list">
+          <li><strong>Load or paste the SVG.</strong> Verify that the shape renders correctly before changing its structure.</li>
+          <li><strong>Select one supported shape.</strong> Choose a rectangle, circle, ellipse, line, polygon, or polyline.</li>
+          <li><strong>Duplicate it if needed.</strong> Keeping a copy makes it easy to compare the original attributes with the resulting path.</li>
+          <li><strong>Choose Convert to path.</strong> The selected element is replaced by a path that follows the same outline.</li>
+          <li><strong>Inspect the source.</strong> Confirm that important attributes, transforms, classes, and identifiers remain appropriate.</li>
+          <li><strong>Edit individual points.</strong> Drag anchors or adjust the path command table to create the new outline.</li>
+          <li><strong>Test downstream use.</strong> Check CSS selectors, scripts, animations, and references that may have depended on the original element type.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Watch for transforms and references</h2>
+        <p>A shape can be positioned by its own geometry, by a <code>transform</code>, or by transforms on ancestor groups. Conversion should preserve its visual position without unnecessarily baking every transform into its coordinates.</p>
+        <p>Also inspect code that targets the original element. A CSS selector such as <code>svg rect.logo-part</code> will no longer match after the element becomes a path. References, scripts, and automated tests may need to use a stable class or ID instead of the tag name.</p>
+      </section>
+
+      <div class="callout">
+        <p><strong>Rule of thumb:</strong> keep basic shapes while their geometry is still basic. Convert only when you need point-level freedom or a path-specific workflow.</p>
+      </div>
+
+      <p>Open the <a href="/">editor</a> to try a conversion, then use the <a href="/guides/edit-svg-paths/">path-editing guide</a> to reshape the result safely.</p>
+    </article>
+  </main>
+
+  <footer class="page-footer"><div class="page-footer-inner"><p>© 2026 SVG Vector Lab.</p><nav class="content-nav" aria-label="Footer navigation"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></nav></div></footer>
+</body>
+</html>

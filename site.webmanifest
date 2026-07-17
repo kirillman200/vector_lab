@@ -1,8 +1,10 @@
 {
   "name": "SVG Vector Lab",
-  "short_name": "Vector Lab",
+  "short_name": "SVG Vector Lab",
   "description": "Free in-browser SVG editor for paths, points, shapes, attributes, and transforms.",
-  "start_url": ".",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f3f5f8",
   "theme_color": "#2f6fed",

@@ -36,17 +36,21 @@ Your work is autosaved to the browser's `localStorage` and restored on the next 
 | Ctrl/Cmd+wheel | Zoom toward the cursor |
 | Shift+click / Shift+drag | Add to selection / additive rubber-band |
 
+## Site content
+
+Alongside the editor, the project includes About, Privacy, Terms, Contact, and SVG guide pages. Every indexable route has a unique title, description, canonical URL, Open Graph metadata, internal navigation, and appropriate structured data. The sitemap contains all public routes.
+
 ## Deploying / SEO
 
-The page ships with full SEO metadata: title/description, canonical URL, Open Graph and Twitter cards, JSON-LD structured data (`WebApplication` + `FAQPage`), a crawlable about/features/FAQ footer, `favicon.svg`, `site.webmanifest`, `robots.txt`, and `sitemap.xml`.
+The production origin is `https://svgvectorlab.com`. Canonical URLs, social metadata, structured data, `robots.txt`, and `sitemap.xml` all use that origin.
 
-Before deploying, replace the placeholder domain `svg-vector-lab.example.com` with your real domain in:
+The repository includes `_headers` for Cloudflare Pages. It configures conservative security headers without changing editor behavior.
 
-- `index.html` (canonical link, `og:url`, `og:image`, `twitter:image`, both JSON-LD blocks)
-- `robots.txt` (sitemap URL)
-- `sitemap.xml` (page URL)
+For Cloudflare Pages, connect the GitHub repository once and use Git-integrated deployments. Set `main` as production, use `exit 0` as the dashboard build command, and select the repository root as the output directory. Future pushes deploy automatically.
 
-A single search-and-replace across the repo covers it.
+Cloudflare Web Analytics can be enabled from the Pages project's Metrics screen. Pages injects the analytics beacon on the next deployment, so no analytics token or script needs to be committed. The Privacy Policy already includes the corresponding disclosure.
+
+After AdSense approval, copy `ads.txt.example` to `ads.txt`, replace the sample publisher ID with the exact value supplied by AdSense, and confirm the file is available at `https://svgvectorlab.com/ads.txt`. Do not publish the sample publisher ID.
 
 ## Project structure
 
@@ -61,7 +65,17 @@ tests/                Node test suite for the path-data module
 favicon.svg           App icon (also used by the web manifest)
 site.webmanifest      PWA/installability manifest
 robots.txt            Crawler policy + sitemap pointer
-sitemap.xml           Single-page sitemap
+sitemap.xml           Sitemap for every public route
+about/                Project background and product principles
+guides/               SVG tutorial hub and in-depth guides
+privacy/              Advertising-ready privacy disclosure
+terms/                Terms of use
+contact/              Public support and contact channels
+404.html              Custom not-found page
+_headers              Static-host security headers
+ads.txt.example       AdSense ads.txt template (not active)
+docs/og-card.png       Social-sharing image
+LAUNCH_CHECKLIST.md    Domain, hosting, search, policy, and AdSense handoff
 ```
 
 The scripts are plain (non-module) files loaded in order so the app keeps working when opened via `file://`, where ES modules are blocked.

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Understanding Cubic Bézier Curves in SVG</title>
+  <meta name="description" content="Understand SVG cubic Bézier curves, control handles, C and S path commands, smooth joins, and practical curve-editing techniques.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/guides/bezier-curves/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="Understanding Cubic Bézier Curves in SVG">
+  <meta property="og:description" content="A visual and practical guide to control points, smooth joins, and SVG C and S commands.">
+  <meta property="og:url" content="https://svgvectorlab.com/guides/bezier-curves/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Understanding Cubic Bézier Curves in SVG",
+    "datePublished": "2026-07-16",
+    "dateModified": "2026-07-16",
+    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "mainEntityOfPage": "https://svgvectorlab.com/guides/bezier-curves/"
+  }
+  </script>
+</head>
+<body class="content-page">
+  <header class="content-header">
+    <div class="content-header-inner">
+      <a class="site-brand" href="/">SVG Vector Lab</a>
+      <nav class="content-nav" aria-label="Primary navigation"><a href="/">Editor</a><a href="/guides/">Guides</a><a href="/about/">About</a><a href="/contact/">Contact</a></nav>
+    </div>
+  </header>
+
+  <main class="content-main">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / Bézier curves</nav>
+    <article>
+      <header class="content-hero">
+        <p class="eyebrow">Curve geometry</p>
+        <h1>Understanding cubic Bézier curves in SVG</h1>
+        <p class="lede">A cubic Bézier curve is controlled by two endpoints and two handles. The handles pull the curve's direction and tension without becoming points on the visible outline.</p>
+        <p class="article-meta">Published July 16, 2026 · About 6 minutes</p>
+      </header>
+
+      <section>
+        <h2>The four points behind every cubic curve</h2>
+        <p>A cubic segment starts at the path's current point. Its <code>C</code> command then supplies a first control point, a second control point, and an endpoint:</p>
+        <pre><code>M 20 100
+C 50 20, 130 20, 160 100</code></pre>
+        <p>The start point is <code>20,100</code>. The first handle at <code>50,20</code> controls the direction leaving the start. The second handle at <code>130,20</code> controls the direction approaching the endpoint. The segment finishes at <code>160,100</code>.</p>
+        <p>The curve generally does not pass through its control points. Imagine the handles as magnets that influence the outline: moving one changes the tangent near its associated endpoint, and making it longer usually creates a broader, stronger bend.</p>
+      </section>
+
+      <section>
+        <h2>Direction and handle length</h2>
+        <p>The line from an endpoint to its control point determines the curve's tangent at that end. Rotate the handle and the curve leaves or arrives at a different angle. Move the control point farther away and its influence extends farther through the segment.</p>
+        <p>This gives you two useful editing rules:</p>
+        <ul>
+          <li>Change a handle's angle to change direction.</li>
+          <li>Change a handle's length to change how gradually the curve turns.</li>
+        </ul>
+        <p>For a symmetrical arch, place the handles at the same height and at comparable distances from their endpoints. For an asymmetric curve, vary their angles or lengths intentionally rather than nudging the endpoint repeatedly.</p>
+      </section>
+
+      <section>
+        <h2>Making two segments meet smoothly</h2>
+        <p>Two curve segments form a smooth-looking join when the outgoing and incoming handles align through their shared anchor. The handles can have different lengths, but keeping them collinear prevents a visible corner.</p>
+        <p>The <code>S</code> command helps create this relationship. After a <code>C</code> or another <code>S</code>, it reflects the previous segment's second control point across the current anchor and uses that reflection as the next segment's first control point.</p>
+        <pre><code>M 20 100
+C 50 20, 100 20, 130 100
+S 210 180, 240 100</code></pre>
+        <p>The <code>S</code> command only contains the second handle and endpoint. Its missing first handle is calculated automatically. This keeps smooth sequences compact, although explicit <code>C</code> commands can be clearer when you need independent control over every handle.</p>
+      </section>
+
+      <section>
+        <h2>How to edit a curve deliberately</h2>
+        <ol class="step-list">
+          <li><strong>Select the curve segment.</strong> Identify its start, two control points, and endpoint before dragging anything.</li>
+          <li><strong>Fix the anchors first.</strong> Put the visible endpoints where the shape must begin and end.</li>
+          <li><strong>Set the tangent angles.</strong> Point each handle in the direction the outline should travel near its endpoint.</li>
+          <li><strong>Tune handle lengths.</strong> Shorten a handle for a tighter change near the anchor; lengthen it for a broader transition.</li>
+          <li><strong>Check neighboring joins.</strong> If the anchor should be smooth, align the handles on either side. If it should be a corner, let the handles use different directions.</li>
+          <li><strong>Inspect at several scales.</strong> Small icons reveal bumps and flat spots that can be difficult to see while zoomed in.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Cubic versus quadratic curves</h2>
+        <p>A quadratic <code>Q</code> segment uses one control point for both its departure and arrival behavior. It is compact and useful for simpler bends. A cubic <code>C</code> segment uses two independent control points, so it can represent a wider range of shapes and gives you more control at each end.</p>
+        <p>You do not need to convert every quadratic curve into a cubic one. Choose the representation that makes the shape understandable and easy to maintain.</p>
+      </section>
+
+      <section>
+        <h2>Frequent curve problems</h2>
+        <ul>
+          <li><strong>A bump at a join:</strong> the two handles are not aligned across the anchor.</li>
+          <li><strong>A flat-looking curve:</strong> one or both handles may be too short.</li>
+          <li><strong>An unexpected loop:</strong> handles may cross too far past each other or point away from the intended path.</li>
+          <li><strong>A change affects the wrong area:</strong> the control point belongs to the neighboring endpoint, not the one you intended.</li>
+        </ul>
+      </section>
+
+      <div class="callout">
+        <p><strong>Practice:</strong> paste the two-segment example into <a href="/">SVG Vector Lab</a>. Drag each handle separately, then replace <code>S</code> with an explicit <code>C</code> command and compare the available controls.</p>
+      </div>
+
+      <p>Return to the <a href="/guides/edit-svg-paths/">path-editing guide</a> or learn how to <a href="/guides/convert-shapes-to-paths/">convert basic SVG shapes into paths</a>.</p>
+    </article>
+  </main>
+
+  <footer class="page-footer"><div class="page-footer-inner"><p>© 2026 SVG Vector Lab.</p><nav class="content-nav" aria-label="Footer navigation"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></nav></div></footer>
+</body>
+</html>

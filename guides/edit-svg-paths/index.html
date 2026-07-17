@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Edit SVG Paths Point by Point</title>
+  <meta name="description" content="Learn SVG path commands and a reliable workflow for moving anchors, adjusting control points, and editing path data without breaking the shape.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/guides/edit-svg-paths/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="How to Edit SVG Paths Point by Point">
+  <meta property="og:description" content="A practical guide to SVG path commands, anchors, control points, and safe path editing.">
+  <meta property="og:url" content="https://svgvectorlab.com/guides/edit-svg-paths/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "How to Edit SVG Paths Point by Point",
+    "description": "A practical guide to SVG path commands, anchors, control points, and safe path editing.",
+    "datePublished": "2026-07-16",
+    "dateModified": "2026-07-16",
+    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "mainEntityOfPage": "https://svgvectorlab.com/guides/edit-svg-paths/"
+  }
+  </script>
+</head>
+<body class="content-page">
+  <header class="content-header">
+    <div class="content-header-inner">
+      <a class="site-brand" href="/">SVG Vector Lab</a>
+      <nav class="content-nav" aria-label="Primary navigation">
+        <a href="/">Editor</a>
+        <a href="/guides/">Guides</a>
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content-main">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / Editing SVG paths</nav>
+    <article>
+      <header class="content-hero">
+        <p class="eyebrow">SVG paths</p>
+        <h1>How to edit SVG paths point by point</h1>
+        <p class="lede">A path looks compact in markup because one <code>d</code> attribute can describe an entire outline. Once you recognize its commands, editing it becomes a sequence of small, predictable changes.</p>
+        <p class="article-meta">Published July 16, 2026 · About 7 minutes</p>
+      </header>
+
+      <section>
+        <h2>Start with the path data</h2>
+        <p>The geometry of an SVG <code>&lt;path&gt;</code> lives in its <code>d</code> attribute. Letters identify commands and numbers provide coordinates or other parameters. This example moves to one point, draws two straight lines, and closes the outline:</p>
+        <pre><code>&lt;path d="M 20 20 L 120 20 L 70 100 Z" fill="#2f6fed" /&gt;</code></pre>
+        <p>Uppercase commands use absolute coordinates measured from the SVG coordinate system's origin. Lowercase commands use coordinates relative to the current point. Both are valid, but absolute coordinates are often easier to inspect manually.</p>
+      </section>
+
+      <section>
+        <h2>The path commands you will see most often</h2>
+        <ul>
+          <li><code>M x y</code> moves the current point without drawing.</li>
+          <li><code>L x y</code> draws a straight line to a point.</li>
+          <li><code>H x</code> and <code>V y</code> draw horizontal and vertical lines.</li>
+          <li><code>C x1 y1 x2 y2 x y</code> draws a cubic Bézier curve using two control points and one endpoint.</li>
+          <li><code>S x2 y2 x y</code> continues a cubic curve with a reflected first control point.</li>
+          <li><code>Q x1 y1 x y</code> draws a quadratic Bézier curve with one control point.</li>
+          <li><code>A rx ry rotation large-arc sweep x y</code> draws an elliptical arc.</li>
+          <li><code>Z</code> closes the current subpath.</li>
+        </ul>
+        <p>A single path can contain several subpaths. Every new <code>M</code> begins another subpath, while <code>Z</code> connects the current point back to that subpath's starting point.</p>
+      </section>
+
+      <section>
+        <h2>A safe point-editing workflow</h2>
+        <ol class="step-list">
+          <li><strong>Preserve the original.</strong> Duplicate the element or copy its markup before making a structural change.</li>
+          <li><strong>Select one path.</strong> In SVG Vector Lab, choose it on the canvas or in the vector list. The path commands and their coordinates appear in the inspector.</li>
+          <li><strong>Identify the endpoint.</strong> For line and curve commands, the final coordinate pair is usually the anchor you see on the outline.</li>
+          <li><strong>Move a small distance.</strong> Drag the point or change one coordinate. Watch both the canvas and the <code>d</code> attribute to confirm you moved the intended anchor.</li>
+          <li><strong>Adjust curve handles separately.</strong> A cubic curve has two control points. They affect direction and tension but are not points through which the curve must pass.</li>
+          <li><strong>Inspect neighboring segments.</strong> Moving a shared anchor affects the end of one segment and the start of the next, so check both sides of the point.</li>
+          <li><strong>Export and test.</strong> Open the saved SVG in a browser at small and large sizes before replacing a production asset.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Absolute and relative coordinates</h2>
+        <p>Suppose a path is currently at <code>20,20</code>. The commands <code>L 80 50</code> and <code>l 60 30</code> reach the same endpoint. The first describes the destination; the second describes the offset.</p>
+        <p>Relative commands can make repeated geometry compact and easier to move as a group. Absolute commands make individual points easier to locate. Converting between them should not change the rendered shape, though number rounding may create tiny differences.</p>
+      </section>
+
+      <section>
+        <h2>Common path-editing mistakes</h2>
+        <ul>
+          <li><strong>Changing the wrong pair:</strong> a <code>C</code> command contains three coordinate pairs, and only the last pair is its endpoint.</li>
+          <li><strong>Breaking an arc:</strong> the two arc flags must be either <code>0</code> or <code>1</code>; they are not coordinates.</li>
+          <li><strong>Forgetting the viewBox:</strong> coordinates are interpreted inside the SVG's own coordinate system, not directly as screen pixels.</li>
+          <li><strong>Removing a close command:</strong> deleting <code>Z</code> can change the final edge and how the fill is computed.</li>
+          <li><strong>Over-rounding:</strong> reducing coordinate precision too aggressively can distort small icons.</li>
+        </ul>
+      </section>
+
+      <div class="callout">
+        <p><strong>Try it now:</strong> paste the triangle example into <a href="/">SVG Vector Lab</a>, select the path, and drag its three anchors. Then replace one <code>L</code> with a <code>C</code> command to see how control points change the edge.</p>
+      </div>
+
+      <section>
+        <h2>Continue learning</h2>
+        <p>Next, learn <a href="/guides/bezier-curves/">how cubic Bézier curves work</a>, or review <a href="/guides/optimize-svg/">how to optimize an edited SVG for the web</a>.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="page-footer">
+    <div class="page-footer-inner">
+      <p>© 2026 SVG Vector Lab.</p>
+      <nav class="content-nav" aria-label="Footer navigation"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

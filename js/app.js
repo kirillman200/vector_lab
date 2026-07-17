@@ -17,7 +17,7 @@ const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420
   <polygon points="122,328 204,214 288,328" fill="#10b981" stroke="#0f766e" stroke-width="6"/>
   <rect x="330" y="210" width="130" height="88" rx="16" fill="#ffffff" stroke="#334155" stroke-width="7"/>
   <path d="M 366 255 L 399 285 L 436 228" fill="none" stroke="#dc2626" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="72" y="76" font-size="42" font-family="Arial, sans-serif" font-weight="700" fill="#17202a">Vector Lab</text>
+  <text x="72" y="76" font-size="38" font-family="Arial, sans-serif" font-weight="700" fill="#17202a">SVG Vector Lab</text>
 </svg>`;
 
 const els = {
