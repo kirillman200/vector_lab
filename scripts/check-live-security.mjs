@@ -1,6 +1,6 @@
 const origin = new URL(process.argv[2] || "https://svgvectorlab.com");
 
-const publicPaths = ["/", "/robots.txt", "/sitemap.xml", "/ads.txt"];
+const publicPaths = ["/", "/free-svg-editor/", "/robots.txt", "/sitemap.xml", "/llms.txt", "/ads.txt"];
 const privatePaths = [
   "/.git/config",
   "/.git/HEAD",

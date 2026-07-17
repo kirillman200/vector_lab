@@ -62,6 +62,7 @@ public/                 Only files published to the web
   styles.css            All styling
   js/                   Editor, sanitizer, icons, path data, ad initialization
   about/                Project background and product principles
+  free-svg-editor/      Free online SVG editor landing page
   guides/               SVG tutorial hub and in-depth guides
   privacy/              Privacy and advertising disclosure
   terms/                Terms of use
@@ -72,6 +73,7 @@ public/                 Only files published to the web
   ads.txt               AdSense publisher authorization
   robots.txt            Crawler policy + sitemap pointer
   sitemap.xml           Sitemap for every public route
+  llms.txt               Concise machine-readable site and content map
   .assetsignore         Defense-in-depth exclusions for accidental secrets
 src/worker.mjs          CSP nonce injection and static asset delivery
 tests/                  Node unit, content, ad, and deployment-boundary tests

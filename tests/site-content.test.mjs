@@ -9,6 +9,7 @@ const siteRoot = join(root, "public");
 const origin = "https://svgvectorlab.com";
 const routes = new Map([
   ["/", "index.html"],
+  ["/free-svg-editor/", "free-svg-editor/index.html"],
   ["/about/", "about/index.html"],
   ["/guides/", "guides/index.html"],
   ["/guides/edit-svg-paths/", "guides/edit-svg-paths/index.html"],
@@ -82,11 +83,29 @@ test("root-relative internal links resolve to files", () => {
   }
 });
 
+test("every HTML page links to the free editor landing page", () => {
+  for (const file of [...routes.values(), "404.html"]) {
+    assert.match(read(file), /href="\/free-svg-editor\/"/, `${file} is missing the free editor link`);
+  }
+});
+
 test("sitemap and robots expose every indexable route", () => {
   const sitemap = read("sitemap.xml");
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   assert.deepEqual(locations, [...routes.keys()].map((route) => `${origin}${route}`));
   assert.match(read("robots.txt"), new RegExp(`Sitemap: ${origin.replaceAll(".", "\\.")}\/sitemap\\.xml`));
+});
+
+test("llms.txt provides a structured map of the public site", () => {
+  const llms = read("llms.txt");
+  assert.match(llms, /^# SVG Vector Lab$/m);
+  assert.match(llms, /^> SVG Vector Lab is a free, open-source SVG editor/m);
+  assert.match(llms, /^## Product$/m);
+  assert.match(llms, /^## SVG Guides$/m);
+  assert.match(llms, /^## Site Information$/m);
+  for (const route of routes.keys()) {
+    assert.match(llms, new RegExp(`https://svgvectorlab\\.com${route.replaceAll("/", "\\/")}`), `llms.txt is missing ${route}`);
+  }
 });
 
 test("hosting and advertising files are safe", () => {

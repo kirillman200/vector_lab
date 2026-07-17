@@ -1,0 +1,30 @@
+# SVG Vector Lab
+
+> SVG Vector Lab is a free, open-source SVG editor that runs in the browser. It provides visual path and shape editing alongside live SVG source, keeps artwork on the user's device, and exports standard SVG or PNG files.
+
+SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup or installation. The hosted editor is free to use, and the source code is licensed under the MIT License.
+
+## Product
+
+- [Free Online SVG Editor](https://svgvectorlab.com/free-svg-editor/): Overview of the free editor, privacy model, supported editing tools, exports, and common questions.
+- [SVG Vector Lab Editor](https://svgvectorlab.com/): Open the visual SVG editor and edit SVG paths, points, shapes, attributes, transforms, fill, and stroke.
+- [About SVG Vector Lab](https://svgvectorlab.com/about/): Project purpose, principles, local processing, supported SVG elements, and open-source licensing.
+
+## SVG Guides
+
+- [SVG Guide Library](https://svgvectorlab.com/guides/): Index of practical SVG tutorials.
+- [Edit SVG Paths](https://svgvectorlab.com/guides/edit-svg-paths/): Path commands, anchors, control points, subpaths, and editing workflow.
+- [Understand Bezier Curves](https://svgvectorlab.com/guides/bezier-curves/): Cubic curves, C and S commands, handles, and smooth curve construction.
+- [Convert Shapes to Paths](https://svgvectorlab.com/guides/convert-shapes-to-paths/): When and how to convert SVG shapes into editable path data.
+- [Optimize SVG](https://svgvectorlab.com/guides/optimize-svg/): Reduce unnecessary SVG markup while preserving appearance and accessibility.
+
+## Site Information
+
+- [Privacy Policy](https://svgvectorlab.com/privacy/): Local browser storage, hosting, analytics, advertising, cookies, and privacy choices.
+- [Terms of Use](https://svgvectorlab.com/terms/): Hosted-service terms, acceptable use, ownership, licensing, and third-party services.
+- [Contact](https://svgvectorlab.com/contact/): Support, feedback, privacy, legal, and partnership contact information.
+
+## Optional
+
+- [Sitemap](https://svgvectorlab.com/sitemap.xml): XML index of all public, indexable pages.
+- [robots.txt](https://svgvectorlab.com/robots.txt): Crawler access policy.
