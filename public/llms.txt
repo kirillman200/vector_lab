@@ -8,11 +8,16 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 
 - [Free Online SVG Editor](https://svgvectorlab.com/free-svg-editor/): Overview of the free editor, privacy model, supported editing tools, exports, and common questions.
 - [SVG Vector Lab Editor](https://svgvectorlab.com/): Open the visual SVG editor and edit SVG paths, points, shapes, attributes, transforms, fill, and stroke.
+- [Edit SVG Online](https://svgvectorlab.com/edit-svg-online/): Start with a blank SVG and edit visually or through synchronized source.
+- [SVG Path Editor](https://svgvectorlab.com/svg-path-editor/): Edit anchors, Bézier handles, path commands, and coordinates.
+- [Convert SVG Shapes to Paths](https://svgvectorlab.com/convert-shapes-to-paths/): Convert basic SVG elements into editable path data.
+- [Convert SVG to PNG](https://svgvectorlab.com/svg-to-png/): Preview and export SVG as PNG at multiple resolutions.
 - [About SVG Vector Lab](https://svgvectorlab.com/about/): Project purpose, principles, local processing, supported SVG elements, and open-source licensing.
 
 ## SVG Guides
 
 - [SVG Guide Library](https://svgvectorlab.com/guides/): Index of practical SVG tutorials.
+- [SVG viewBox Explained](https://svgvectorlab.com/guides/svg-viewbox/): Coordinate systems, responsive scaling, aspect ratio, zoom, whitespace, and cropping.
 - [Edit SVG Paths](https://svgvectorlab.com/guides/edit-svg-paths/): Path commands, anchors, control points, subpaths, and editing workflow.
 - [Understand Bezier Curves](https://svgvectorlab.com/guides/bezier-curves/): Cubic curves, C and S commands, handles, and smooth curve construction.
 - [Convert Shapes to Paths](https://svgvectorlab.com/guides/convert-shapes-to-paths/): When and how to convert SVG shapes into editable path data.

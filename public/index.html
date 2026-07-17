@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>SVG Vector Lab — Free Online SVG Editor for Paths, Points &amp; Attributes</title>
-  <meta name="description" content="Free in-browser SVG editor. Edit SVG paths, points, shapes, attributes and transforms visually with a live source view, layers, undo history, and SVG/PNG export. No signup, no upload — everything stays on your device.">
+  <title>Free Online SVG Editor — SVG Vector Lab</title>
+  <meta name="description" content="Edit SVG paths, points, shapes and attributes online with live source, undo, and SVG/PNG export. Free, no signup, and no file uploads.">
   <meta name="robots" content="index, follow">
   <meta name="author" content="SVG Vector Lab">
   <meta name="application-name" content="SVG Vector Lab">
@@ -13,8 +13,10 @@
 
   <link rel="canonical" href="https://svgvectorlab.com/">
 
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
   <link rel="stylesheet" href="styles.css">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
@@ -22,20 +24,20 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SVG Vector Lab">
-  <meta property="og:title" content="SVG Vector Lab — Free Online SVG Editor for Paths, Points &amp; Attributes">
-  <meta property="og:description" content="Edit SVG paths, points, shapes, attributes and transforms visually in your browser. Live source view, layers, undo history, SVG/PNG export. Free, open source, nothing uploaded.">
+  <meta property="og:title" content="Free Online SVG Editor — SVG Vector Lab">
+  <meta property="og:description" content="Edit SVG paths, points, shapes and attributes with live source, undo, and SVG/PNG export. Free, with no signup or file uploads.">
   <meta property="og:url" content="https://svgvectorlab.com/">
-  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card.png">
-  <meta property="og:image:width" content="1732">
-  <meta property="og:image:height" content="909">
-  <meta property="og:image:alt" content="SVG Vector Lab with SVG source, a Bézier curve canvas, and path inspector">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="SVG Vector Lab social preview with SVG source, a Bézier curve canvas, and path inspector">
   <meta property="og:locale" content="en_US">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SVG Vector Lab — Free Online SVG Editor">
   <meta name="twitter:description" content="Edit SVG paths, points, shapes, attributes and transforms visually in your browser. Free, open source, nothing uploaded.">
-  <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card.png">
+  <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
 
   <script type="application/ld+json">
   {
@@ -104,8 +106,9 @@
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <h1><span class="brand-mark">SVG</span> Vector Lab</h1>
+    <div class="topbar-title">
+      <span class="brand-mark">SVG Vector Lab</span>
+      <h1>Free Online SVG Editor for Paths, Points &amp; Attributes</h1>
     </div>
     <div class="top-actions">
       <details class="action-menu page-menu">
@@ -115,6 +118,7 @@
           <a href="/free-svg-editor/">Free editor</a>
           <a href="/guides/">Guides</a>
           <a href="/about/">About</a>
+          <a href="https://github.com/kirillman200/vector_lab">GitHub</a>
           <a href="/privacy/">Privacy</a>
           <a href="/terms/">Terms</a>
           <a href="/contact/">Contact</a>
@@ -169,13 +173,12 @@
       <div class="tab-panel source-tab-panel" id="left-source-panel" role="tabpanel" aria-labelledby="left-source-tab">
         <section class="panel-block source-block">
           <div class="section-head">
-            <h2>SVG source</h2>
+            <div class="panel-heading">SVG source</div>
             <button id="loadInputBtn" class="button-icon-pending">Apply</button>
           </div>
           <textarea id="svgInput" spellcheck="false" aria-label="SVG source code"></textarea>
           <div id="statusLine" class="status-line">Ready.</div>
           <aside class="ad-slot ad-slot-compact" aria-label="Advertisement">
-            <span>Advertisement</span>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-7469113252837951"
@@ -189,12 +192,11 @@
       <div class="tab-panel" id="left-layers-panel" role="tabpanel" aria-labelledby="left-layers-tab" hidden>
         <section class="panel-block layers-block">
           <div class="section-head">
-            <h2>Drawing layers</h2>
+            <div class="panel-heading">Drawing layers</div>
             <button id="refreshLayersBtn" class="button-icon-pending icon-only" title="Refresh layer list">Refresh</button>
           </div>
           <div id="layerList" class="layer-list"></div>
           <aside class="ad-slot" aria-label="Advertisement">
-            <span>Advertisement</span>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-7469113252837951"
@@ -267,7 +269,7 @@
       <div class="tab-panel" id="right-design-panel" role="tabpanel" aria-labelledby="right-design-tab">
         <section class="panel-block">
           <div class="section-head">
-            <h2>Style</h2>
+            <div class="panel-heading">Style</div>
             <span id="selectedName" class="selected-name">None</span>
           </div>
           <div class="control-grid">
@@ -289,12 +291,12 @@
         </section>
 
         <section class="panel-block">
-          <h2>Geometry</h2>
+          <div class="panel-heading">Geometry</div>
           <div id="geometryControls" class="control-grid"><div class="learn-panel geometry-placeholder">Select a vector to edit its geometry.</div></div>
         </section>
 
         <section class="panel-block">
-          <h2>Transform</h2>
+          <div class="panel-heading">Transform</div>
           <div class="control-grid">
             <label>Move X <input id="translateXInput" type="number" step="1" value="0"></label>
             <label>Move Y <input id="translateYInput" type="number" step="1" value="0"></label>
@@ -304,7 +306,6 @@
           <button id="applyTransformBtn" class="wide-button button-icon-pending">Apply transform</button>
         </section>
         <aside class="ad-slot tab-ad-slot" aria-label="Advertisement">
-          <span>Advertisement</span>
           <ins class="adsbygoogle"
                style="display:block"
                data-ad-client="ca-pub-7469113252837951"
@@ -317,7 +318,7 @@
       <div class="tab-panel" id="right-path-panel" role="tabpanel" aria-labelledby="right-path-tab" hidden>
         <section class="panel-block path-block">
           <div class="section-head">
-            <h2>Path data</h2>
+            <div class="panel-heading">Path data</div>
             <button id="normalizePathBtn" class="button-icon-pending">Normalize</button>
           </div>
           <textarea id="pathInput" spellcheck="false" aria-label="Selected path data"></textarea>
@@ -325,7 +326,7 @@
         </section>
 
         <section class="panel-block">
-          <h2>Attributes</h2>
+          <div class="panel-heading">Attributes</div>
           <div id="attrList" class="attr-list"></div>
           <div class="attr-editor">
             <input id="attrNameInput" placeholder="attribute" aria-label="Attribute name">
@@ -334,7 +335,6 @@
           </div>
         </section>
         <aside class="ad-slot tab-ad-slot" aria-label="Advertisement">
-          <span>Advertisement</span>
           <ins class="adsbygoogle"
                style="display:block"
                data-ad-client="ca-pub-7469113252837951"
@@ -346,10 +346,9 @@
 
       <div class="tab-panel" id="right-notes-panel" role="tabpanel" aria-labelledby="right-notes-tab" hidden>
         <section class="panel-block learn-block">
-          <h2>Vector notes</h2>
+          <div class="panel-heading">Vector notes</div>
           <div id="learnPanel" class="learn-panel">Select a vector to inspect how its coordinates and drawing commands work.</div>
           <aside class="ad-slot" aria-label="Advertisement">
-            <span>Advertisement</span>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-7469113252837951"
@@ -374,15 +373,24 @@
       <div class="footer-bar">
         <p>© 2026 SVG Vector Lab.</p>
         <nav class="footer-nav" aria-label="Site navigation">
-          <a href="/">Editor</a>
-          <a href="/free-svg-editor/">Free editor</a>
-          <a href="/guides/">Guides</a>
-          <a href="/about/">About</a>
-          <a href="/privacy/">Privacy</a>
-          <a href="/terms/">Terms</a>
-          <a href="/contact/">Contact</a>
+          <a href="/">Open SVG editor</a>
+          <a href="/free-svg-editor/">Free editor overview</a>
+          <a href="/guides/">SVG learning guides</a>
+          <a href="/about/">About the project</a>
+          <a href="https://github.com/kirillman200/vector_lab">GitHub source code</a>
+          <a href="/privacy/">Privacy policy</a>
+          <a href="/terms/">Terms of use</a>
+          <a href="/contact/">Contact the maintainer</a>
         </nav>
       </div>
+      <nav class="share-links" aria-label="Share SVG Vector Lab">
+        <span>Share:</span>
+        <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsvgvectorlab.com%2F&amp;text=Free%20Online%20SVG%20Editor%20%E2%80%94%20SVG%20Vector%20Lab" target="_blank" rel="noopener noreferrer">X</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsvgvectorlab.com%2F" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://www.reddit.com/submit?url=https%3A%2F%2Fsvgvectorlab.com%2F&amp;title=Free%20Online%20SVG%20Editor%20%E2%80%94%20SVG%20Vector%20Lab" target="_blank" rel="noopener noreferrer">Reddit</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsvgvectorlab.com%2F" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="mailto:?subject=Free%20Online%20SVG%20Editor&amp;body=Try%20SVG%20Vector%20Lab%3A%20https%3A%2F%2Fsvgvectorlab.com%2F">Email</a>
+      </nav>
       <details class="footer-disclosure">
         <summary>About this editor</summary>
         <div class="footer-expanded">
@@ -414,6 +422,16 @@
           <li>Export clean SVG markup or render PNG at 1×–8× resolution</li>
           <li>Free, open source (MIT), no signup, works offline</li>
         </ul>
+      </section>
+
+      <section>
+        <h2>Focused SVG tools</h2>
+        <p>
+          Start with the workflow you need: <a href="/edit-svg-online/">edit SVG online</a>,
+          use the <a href="/svg-path-editor/">SVG path editor</a>,
+          <a href="/convert-shapes-to-paths/">convert SVG shapes to paths</a>, or
+          <a href="/svg-to-png/">convert SVG to PNG</a>.
+        </p>
       </section>
 
       <section>

@@ -10,6 +10,24 @@ const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420
   <path id="curve" d="M 72 278 C 148 104 246 104 322 278 S 502 410 568 188" fill="none" stroke="#276ef1" stroke-width="12" stroke-linecap="round"/>
 </svg>`;
 
+const STARTER_SVGS = {
+  path: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420">
+  <path id="editable-path" d="M 72 300 C 128 92 256 92 320 244 S 486 406 568 142" fill="none" stroke="#276ef1" stroke-width="14" stroke-linecap="round"/>
+</svg>`,
+  shapes: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420">
+  <rect id="rounded-rectangle" x="72" y="82" width="212" height="148" rx="28" fill="#276ef1"/>
+  <circle id="circle" cx="436" cy="156" r="76" fill="#0aaaa6"/>
+  <polygon id="polygon" points="172,278 244,374 100,374" fill="#f0a233"/>
+</svg>`,
+  png: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420">
+  <rect width="640" height="420" rx="32" fill="#edf4ff"/>
+  <circle cx="210" cy="210" r="112" fill="#276ef1"/>
+  <path d="M 326 296 L 430 116 L 534 296 Z" fill="#0aaaa6"/>
+  <text x="320" y="374" text-anchor="middle" font-size="22" font-family="Arial, sans-serif" fill="#071d3d">Ready to export as PNG</text>
+</svg>`,
+  blank: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420"></svg>`
+};
+
 const els = {
   appShell: document.querySelector(".app-shell"),
   svgInput: document.querySelector("#svgInput"),
@@ -2019,13 +2037,18 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
+const starterName = new URLSearchParams(window.location.search).get("starter");
+const starterSvg = Object.hasOwn(STARTER_SVGS, starterName) ? STARTER_SVGS[starterName] : null;
 let autosaved = null;
 try {
   autosaved = localStorage.getItem(AUTOSAVE_KEY);
 } catch {
   autosaved = null;
 }
-if (autosaved && /<svg[\s>]/i.test(autosaved)) {
+if (starterSvg) {
+  loadSvg(starterSvg);
+  setStatus(`Loaded the ${starterName} starter. It is now your current autosaved canvas.`);
+} else if (autosaved && /<svg[\s>]/i.test(autosaved)) {
   loadSvg(autosaved);
   setStatus("Restored your last session from autosave — load Sample to start fresh.");
 } else {

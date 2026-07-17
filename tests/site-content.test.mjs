@@ -11,8 +11,13 @@ const origin = "https://svgvectorlab.com";
 const routes = new Map([
   ["/", "index.html"],
   ["/free-svg-editor/", "free-svg-editor/index.html"],
+  ["/edit-svg-online/", "edit-svg-online/index.html"],
+  ["/svg-path-editor/", "svg-path-editor/index.html"],
+  ["/convert-shapes-to-paths/", "convert-shapes-to-paths/index.html"],
+  ["/svg-to-png/", "svg-to-png/index.html"],
   ["/about/", "about/index.html"],
   ["/guides/", "guides/index.html"],
+  ["/guides/svg-viewbox/", "guides/svg-viewbox/index.html"],
   ["/guides/edit-svg-paths/", "guides/edit-svg-paths/index.html"],
   ["/guides/bezier-curves/", "guides/bezier-curves/index.html"],
   ["/guides/convert-shapes-to-paths/", "guides/convert-shapes-to-paths/index.html"],
@@ -87,6 +92,86 @@ test("root-relative internal links resolve to files", () => {
 test("every HTML page links to the free editor landing page", () => {
   for (const file of [...routes.values(), "404.html"]) {
     assert.match(read(file), /href="\/free-svg-editor\/"/, `${file} is missing the free editor link`);
+  }
+});
+
+test("every HTML page exposes raster favicon fallbacks", () => {
+  for (const asset of [
+    "favicon.ico",
+    "favicon-32.png",
+    "apple-touch-icon.png",
+    "favicon-192.png",
+    "favicon-512.png",
+  ]) {
+    assert.ok(existsSync(join(siteRoot, asset)), `missing favicon asset ${asset}`);
+  }
+
+  for (const file of [...routes.values(), "404.html"]) {
+    const html = read(file);
+    assert.match(html, /rel="icon"[^>]+href="\/?favicon\.ico"/, `${file} is missing the ICO fallback`);
+    assert.match(html, /type="image\/png"[^>]+href="\/?favicon-32\.png"/, `${file} is missing the PNG fallback`);
+    assert.match(html, /rel="apple-touch-icon"[^>]+href="\/?apple-touch-icon\.png"/, `${file} is missing the Apple touch icon`);
+  }
+
+  const manifest = JSON.parse(read("site.webmanifest"));
+  assert.ok(manifest.icons.some((icon) => icon.src === "favicon-192.png" && icon.type === "image/png"));
+  assert.ok(manifest.icons.some((icon) => icon.src === "favicon-512.png" && icon.type === "image/png"));
+});
+
+test("homepage exposes a clean document outline", () => {
+  const html = read("index.html");
+  const appMarkup = html.slice(html.indexOf('<main class="app-shell">'), html.indexOf("</main>"));
+  assert.equal((html.match(/<h1\b/g) || []).length, 1);
+  assert.match(html, /<h1>Free Online SVG Editor for Paths, Points &amp; Attributes<\/h1>/);
+  const heading = matchOne(html, /<h1>([^<]+)<\/h1>/i, "a direct H1", "index.html");
+  assert.ok(heading.length >= 20, `homepage H1 is too short: ${heading.length} characters`);
+  assert.doesNotMatch(appMarkup, /<h[1-6]\b/, "editor panel labels must not alter the page heading outline");
+});
+
+test("homepage search metadata stays within snippet-safe lengths", () => {
+  const html = read("index.html");
+  const title = matchOne(html, /<title>([^<]+)<\/title>/i, "a title", "index.html");
+  const description = matchOne(
+    html,
+    /<meta\s+name="description"\s+content="([^"]+)"/i,
+    "a meta description",
+    "index.html",
+  );
+  assert.ok(title.length <= 60, `homepage title is too long: ${title.length} characters`);
+  assert.ok(description.length <= 155, `homepage description is too long: ${description.length} characters`);
+});
+
+test("homepage provides lightweight social sharing links", () => {
+  const html = read("index.html");
+  assert.match(html, /aria-label="Share SVG Vector Lab"/);
+  for (const host of ["twitter.com", "linkedin.com", "reddit.com", "facebook.com"]) {
+    assert.match(html, new RegExp(host.replace(".", "\\.")), `missing share option for ${host}`);
+  }
+  assert.match(html, /href="mailto:/);
+});
+
+test("homepage anchor text is unique and descriptive", () => {
+  const html = read("index.html");
+  const labels = [...html.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)]
+    .map((match) => match[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  const duplicates = labels.filter((label, index) => labels.indexOf(label) !== index);
+  assert.deepEqual(duplicates, [], `duplicate homepage anchor text: ${[...new Set(duplicates)].join(", ")}`);
+});
+
+test("guides expose article dates, social metadata, and breadcrumb JSON-LD", () => {
+  const guideFiles = [...routes.entries()]
+    .filter(([route]) => route.startsWith("/guides/") && route !== "/guides/")
+    .map(([, file]) => file);
+
+  for (const file of guideFiles) {
+    const html = read(file);
+    assert.match(html, /property="article:published_time"/);
+    assert.match(html, /property="article:modified_time"/);
+    assert.match(html, /name="twitter:title"/);
+    assert.match(html, /name="twitter:description"/);
+    assert.match(html, /"@type": "BreadcrumbList"/);
+    assert.match(html, /"dateModified": "2026-07-17"/);
   }
 });
 
@@ -167,6 +252,7 @@ test("hosting and advertising files are safe", () => {
   assert.match(worker, /X-Robots-Tag/);
   assert.match(worker, /headers\.set\("Link", HOMEPAGE_DISCOVERY_LINKS\)/);
   assert.match(worker, /headers\.set\("Content-Signal", CONTENT_SIGNAL\)/);
+  assert.match(worker, /headers\.set\("Content-Type", "text\/html; charset=utf-8"\)/);
   assert.match(worker, /text\/markdown; charset=utf-8/);
   assert.match(worker, /x-markdown-tokens/);
   assert.ok((worker.match(/appendVary\(headers, "Accept"\)/g) || []).length >= 2);

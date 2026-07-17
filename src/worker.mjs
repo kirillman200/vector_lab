@@ -162,6 +162,7 @@ export default {
       });
     }
 
+    headers.set("Content-Type", "text/html; charset=utf-8");
     appendVary(headers, "Accept");
     if (acceptsMarkdown(request.headers.get("Accept") || "")) {
       return markdownResponse(response, headers, await response.text(), request.method);

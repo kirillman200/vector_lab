@@ -34,10 +34,26 @@
 - Verify `robots.txt` and `sitemap.xml` are publicly reachable.
 - Add the domain property to Google Search Console.
 - Submit `/sitemap.xml` in Search Console.
+- Add the site to Bing Webmaster Tools and submit `/sitemap.xml` there.
 - Request indexing for the home page and guide hub.
-- Test `docs/og-card.png` with the social-sharing debuggers used by the platforms you care about.
+- Run the home page and each new use-case page through PageSpeed Insights; record mobile LCP, CLS, and INP.
+- Test `docs/og-card-1200x630.png` with the social-sharing debuggers used by the platforms you care about.
 
-## 5. Policy review
+## 5. Open-source launch and backlinks
+
+- Link the public GitHub repository from the site and complete the repository description, topics, social preview, and homepage URL.
+- Prepare a Show HN post and a Product Hunt launch after the production domain is stable.
+- Share useful, non-promotional demonstrations with relevant SVG and web-development communities.
+- Submit the tool to AlternativeTo and reputable free-tool directories with accurate descriptions.
+- Prefer links earned from guides, demos, and open-source adoption over bulk directory submissions.
+
+### Editorial queue
+
+- Publish one useful guide at a sustainable interval rather than releasing the whole queue at once.
+- Next topics: SVG transforms; arc commands; stroke versus fill behavior; `currentColor` and CSS; accessible SVG with title, description, and ARIA; SVG sprite sheets.
+- When a guide is materially refreshed, update its visible modified date, JSON-LD `dateModified`, Open Graph article time, and sitemap `lastmod` together.
+
+## 6. Policy review
 
 - Review `public/privacy/index.html` and `public/terms/index.html` for the actual hosting, analytics, advertising, business identity, and jurisdiction used at launch.
 - Configure Cloudflare Email Routing (or another mailbox provider) so `contact@svgvectorlab.com` receives mail.
@@ -46,7 +62,7 @@
 
 The included policy pages are a practical starting point, not legal advice.
 
-## 6. AdSense
+## 7. AdSense
 
 - Apply only after the custom domain is live, useful, and receiving genuine visitors.
 - Add the site in AdSense and use the supplied verification method.
@@ -57,7 +73,7 @@ The included policy pages are a practical starting point, not legal advice.
 - The editor includes one responsive unit per tab, with only the two currently visible tabs eligible to request ads at once. Keep them away from controls and monitor AdSense policy feedback.
 - Never click your own ads, request clicks, or purchase low-quality traffic.
 
-## 7. Final quality check
+## 8. Final quality check
 
 - Verify the homepage sends `Link` discovery headers and `Content-Signal`.
 - Request the homepage with `Accept: text/markdown`; confirm `Content-Type: text/markdown`, `Vary: Accept`, and `x-markdown-tokens`.

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SVG viewBox Explained — Coordinates, Scaling & Aspect Ratio</title>
+  <meta name="description" content="Learn how the SVG viewBox controls coordinates, responsive scaling, zoom, cropping, and aspect ratio, with practical examples and debugging tips.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/guides/svg-viewbox/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="SVG viewBox Explained — Coordinates, Scaling & Aspect Ratio">
+  <meta property="og:description" content="Understand the four viewBox values and how they control SVG coordinates, scaling, alignment, and cropping.">
+  <meta property="og:url" content="https://svgvectorlab.com/guides/svg-viewbox/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta property="article:published_time" content="2026-07-17">
+  <meta property="article:modified_time" content="2026-07-17">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SVG viewBox Explained">
+  <meta name="twitter:description" content="Learn SVG coordinates, responsive scaling, aspect ratio, zoom, and cropping with practical examples.">
+  <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["Article", "TechArticle"],
+    "headline": "SVG viewBox Explained — Coordinates, Scaling & Aspect Ratio",
+    "description": "A practical guide to SVG viewBox coordinates, responsive scaling, alignment, zoom, and cropping.",
+    "datePublished": "2026-07-17",
+    "dateModified": "2026-07-17",
+    "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
+    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "mainEntityOfPage": "https://svgvectorlab.com/guides/svg-viewbox/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "SVG Vector Lab", "item": "https://svgvectorlab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "SVG Guides", "item": "https://svgvectorlab.com/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "SVG viewBox", "item": "https://svgvectorlab.com/guides/svg-viewbox/" }
+    ]
+  }
+  </script>
+</head>
+<body class="content-page">
+  <header class="content-header"><div class="content-header-inner"><a class="site-brand" href="/">SVG Vector Lab</a><nav class="content-nav" aria-label="Primary navigation"><a href="/">Editor</a><a href="/free-svg-editor/">Free editor</a><a href="/guides/">Guides</a><a href="/about/">About</a><a href="/contact/">Contact</a></nav></div></header>
+
+  <main class="content-main">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / SVG viewBox</nav>
+    <article>
+      <header class="content-hero">
+        <p class="eyebrow">SVG coordinate systems</p>
+        <h1>SVG viewBox explained: coordinates, scaling, and aspect ratio</h1>
+        <p class="lede">The <code>viewBox</code> defines the part of an SVG coordinate system that appears inside its viewport. Once its four values make sense, responsive scaling, whitespace, cropping, and alignment become much easier to predict.</p>
+        <p class="article-meta">Published July 17, 2026 · About 8 minutes</p>
+      </header>
+
+      <section>
+        <h2>The four viewBox values</h2>
+        <p>A <code>viewBox</code> contains four numbers: minimum x, minimum y, width, and height.</p>
+        <pre><code>&lt;svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg"&gt;
+  ...
+&lt;/svg&gt;</code></pre>
+        <p>This example exposes a rectangle of the internal coordinate system that begins at <code>0,0</code>, extends 240 units horizontally, and extends 160 units vertically. Those units are abstract: the browser maps them into the rendered width and height.</p>
+        <p>The third and fourth values must be positive. The first two can be negative, which is useful when artwork extends left of or above the coordinate origin.</p>
+      </section>
+
+      <section>
+        <h2>Viewport size and viewBox are different</h2>
+        <p>The viewport is the physical space assigned to the SVG by attributes or CSS. The <code>viewBox</code> is the internal region shown inside that space.</p>
+        <pre><code>&lt;svg width="480" height="320" viewBox="0 0 240 160"&gt;
+  ...
+&lt;/svg&gt;</code></pre>
+        <p>Here, each internal unit initially maps to two CSS pixels because both viewport dimensions are twice their matching <code>viewBox</code> dimensions. If CSS later renders the same SVG at 240 by 160 pixels, each unit maps to one pixel. The artwork keeps the same proportions because its geometry still uses the same internal coordinates.</p>
+        <p>For responsive graphics, a common pattern is to keep the <code>viewBox</code>, set the displayed width with CSS, and allow the height to follow the intrinsic aspect ratio.</p>
+      </section>
+
+      <section>
+        <h2>Why unexpected whitespace appears</h2>
+        <p>If the visible artwork occupies only a small part of the declared <code>viewBox</code>, the unused coordinate area appears as whitespace. For example, artwork from x 80 to 160 inside a 0-to-240 viewBox leaves substantial room on both sides.</p>
+        <p>To tighten the frame, calculate the artwork bounds and use those values as the new minimum x, minimum y, width, and height. Leave deliberate padding when strokes, shadows, filters, or animation may extend outside the geometric bounds. Cropping exactly to a path can clip half of a thick stroke.</p>
+      </section>
+
+      <section>
+        <h2>Zoom and pan by changing the viewBox</h2>
+        <p>A smaller <code>viewBox</code> displayed in the same viewport looks zoomed in because fewer internal units fill the same physical space:</p>
+        <pre><code>&lt;!-- Full scene --&gt;
+viewBox="0 0 240 160"
+
+&lt;!-- Zoom into the center --&gt;
+viewBox="60 40 120 80"</code></pre>
+        <p>Changing the first two values pans the visible region. Changing the last two zooms it. This technique can create diagrams with focused views, animated camera moves, or icon sprites that expose one symbol region at a time.</p>
+      </section>
+
+      <section>
+        <h2>How preserveAspectRatio controls the fit</h2>
+        <p>When the viewport and <code>viewBox</code> have different aspect ratios, the browser needs a fitting rule. The default is <code>xMidYMid meet</code>: keep the artwork's proportions, show the entire <code>viewBox</code>, and center any leftover space.</p>
+        <ul>
+          <li><code>meet</code> shows the whole viewBox and may add empty space, similar to letterboxing.</li>
+          <li><code>slice</code> fills the viewport and may crop part of the viewBox.</li>
+          <li><code>none</code> stretches each axis independently and can distort the artwork.</li>
+          <li><code>xMin</code>, <code>xMid</code>, and <code>xMax</code> choose horizontal alignment; <code>YMin</code>, <code>YMid</code>, and <code>YMax</code> choose vertical alignment.</li>
+        </ul>
+        <pre><code>&lt;svg viewBox="0 0 240 160" preserveAspectRatio="xMidYMid meet"&gt;
+  ...
+&lt;/svg&gt;</code></pre>
+        <p>Use <code>slice</code> when filling the frame matters more than showing every edge. Use <code>meet</code> for logos, diagrams, and icons that must remain fully visible.</p>
+      </section>
+
+      <section>
+        <h2>A practical viewBox debugging checklist</h2>
+        <ol>
+          <li>Confirm the <code>viewBox</code> contains exactly four finite numbers.</li>
+          <li>Check that its width and height are positive.</li>
+          <li>Compare the viewBox aspect ratio with the rendered viewport ratio.</li>
+          <li>Inspect whether artwork, strokes, or filters extend outside the visible region.</li>
+          <li>Look for transforms that move content away from the coordinates you expected.</li>
+          <li>Choose <code>meet</code> or <code>slice</code> intentionally when the ratios differ.</li>
+        </ol>
+        <p>Paste the SVG into the <a href="/">free online SVG editor</a> to inspect its source and canvas together. If the file still has excess markup after its framing is correct, continue with the guide to <a href="/guides/optimize-svg/">optimizing SVG for the web</a>.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="page-footer"><div class="page-footer-inner"><p>© 2026 SVG Vector Lab.</p><nav class="content-nav" aria-label="Footer navigation"><a href="/">Editor</a><a href="/free-svg-editor/">Free editor</a><a href="/svg-path-editor/">Path editor</a><a href="/guides/">Guides</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></nav></div></footer>
+</body>
+</html>

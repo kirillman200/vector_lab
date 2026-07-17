@@ -63,7 +63,11 @@ public/                 Only files published to the web
   js/                   Editor, sanitizer, icons, path data, ad initialization
   about/                Project background and product principles
   free-svg-editor/      Free online SVG editor landing page
-  guides/               SVG tutorial hub and in-depth guides
+  edit-svg-online/      General online SVG editing landing page
+  svg-path-editor/      Point and Bézier path editing landing page
+  convert-shapes-to-paths/  Shape-to-path conversion landing page
+  svg-to-png/           SVG-to-PNG export landing page
+  guides/               SVG tutorial hub and in-depth guides, including viewBox, paths, curves, conversion, and optimization
   privacy/              Privacy and advertising disclosure
   terms/                Terms of use
   contact/              Public support and contact channels
