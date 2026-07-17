@@ -50,7 +50,7 @@ For Cloudflare Pages, connect the GitHub repository once and use Git-integrated 
 
 Cloudflare Web Analytics can be enabled from the Pages project's Metrics screen. Pages injects the analytics beacon on the next deployment, so no analytics token or script needs to be committed. The Privacy Policy already includes the corresponding disclosure.
 
-After AdSense approval, copy `ads.txt.example` to `ads.txt`, replace the sample publisher ID with the exact value supplied by AdSense, and confirm the file is available at `https://svgvectorlab.com/ads.txt`. Do not publish the sample publisher ID.
+The production `ads.txt` contains the authorized AdSense publisher record. Keep it synchronized with the value supplied by AdSense and confirm it remains available at `https://svgvectorlab.com/ads.txt`.
 
 ## Project structure
 
@@ -73,7 +73,7 @@ terms/                Terms of use
 contact/              Public support and contact channels
 404.html              Custom not-found page
 _headers              Static-host security headers
-ads.txt.example       AdSense ads.txt template (not active)
+ads.txt               AdSense publisher authorization
 docs/og-card.png       Social-sharing image
 LAUNCH_CHECKLIST.md    Domain, hosting, search, policy, and AdSense handoff
 ```

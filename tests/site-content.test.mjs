@@ -84,7 +84,7 @@ test("sitemap and robots expose every indexable route", () => {
   assert.match(read("robots.txt"), new RegExp(`Sitemap: ${origin.replaceAll(".", "\\.")}\/sitemap\\.xml`));
 });
 
-test("hosting and advertising templates are safe", () => {
+test("hosting and advertising files are safe", () => {
   assert.ok(existsSync(join(root, "_headers")));
   const manifest = JSON.parse(read("site.webmanifest"));
   assert.equal(manifest.name, "SVG Vector Lab");
@@ -92,6 +92,7 @@ test("hosting and advertising templates are safe", () => {
   assert.equal(manifest.id, "/");
   assert.equal(manifest.start_url, "/");
   assert.equal(manifest.scope, "/");
-  assert.ok(existsSync(join(root, "ads.txt.example")));
-  assert.equal(existsSync(join(root, "ads.txt")), false, "sample AdSense ID must not be published");
+  const ads = read("ads.txt").trim();
+  assert.match(ads, /^google\.com, pub-\d+, DIRECT, f08c47fec0942fa0$/);
+  assert.doesNotMatch(ads, /pub-0{8,}/, "placeholder publisher IDs must not be published");
 });

@@ -5,19 +5,9 @@ const AUTOSAVE_KEY = "svg-vector-lab:autosave";
 const GEOMETRY_ATTRS = ["x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "width", "height", "points"];
 
 const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420">
-  <defs>
-    <linearGradient id="sunset" x1="0" x2="1">
-      <stop offset="0" stop-color="#f59e0b"/>
-      <stop offset="1" stop-color="#ef4444"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="640" height="420" fill="#f8fafc"/>
-  <circle cx="485" cy="98" r="54" fill="url(#sunset)" opacity="0.95"/>
-  <path d="M 78 318 C 148 178 220 188 282 292 S 418 384 562 190" fill="none" stroke="#2563eb" stroke-width="18" stroke-linecap="round"/>
-  <polygon points="122,328 204,214 288,328" fill="#10b981" stroke="#0f766e" stroke-width="6"/>
-  <rect x="330" y="210" width="130" height="88" rx="16" fill="#ffffff" stroke="#334155" stroke-width="7"/>
-  <path d="M 366 255 L 399 285 L 436 228" fill="none" stroke="#dc2626" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="72" y="76" font-size="38" font-family="Arial, sans-serif" font-weight="700" fill="#17202a">SVG Vector Lab</text>
+  <text x="64" y="72" font-size="34" font-family="Arial, sans-serif" font-weight="700" fill="#071d3d">SVG Vector Lab</text>
+  <text x="64" y="102" font-size="16" font-family="Arial, sans-serif" fill="#586a82">Edit paths. See the source. Keep files local.</text>
+  <path id="curve" d="M 72 278 C 148 104 246 104 322 278 S 502 410 568 188" fill="none" stroke="#276ef1" stroke-width="12" stroke-linecap="round"/>
 </svg>`;
 
 const els = {
@@ -31,6 +21,7 @@ const els = {
   downloadPngBtn: document.querySelector("#downloadPngBtn"),
   pngScaleInput: document.querySelector("#pngScaleInput"),
   backgroundInput: document.querySelector("#backgroundInput"),
+  backgroundHexInput: document.querySelector("#backgroundHexInput"),
   backgroundAlphaInput: document.querySelector("#backgroundAlphaInput"),
   backgroundAlphaOutput: document.querySelector("#backgroundAlphaOutput"),
   statusLine: document.querySelector("#statusLine"),
@@ -51,9 +42,11 @@ const els = {
   duplicateBtn: document.querySelector("#duplicateBtn"),
   selectedName: document.querySelector("#selectedName"),
   fillInput: document.querySelector("#fillInput"),
+  fillHexInput: document.querySelector("#fillHexInput"),
   fillAlphaInput: document.querySelector("#fillAlphaInput"),
   fillAlphaOutput: document.querySelector("#fillAlphaOutput"),
   strokeInput: document.querySelector("#strokeInput"),
+  strokeHexInput: document.querySelector("#strokeHexInput"),
   strokeAlphaInput: document.querySelector("#strokeAlphaInput"),
   strokeAlphaOutput: document.querySelector("#strokeAlphaOutput"),
   strokeWidthInput: document.querySelector("#strokeWidthInput"),
@@ -77,6 +70,66 @@ const els = {
   setAttrBtn: document.querySelector("#setAttrBtn"),
   learnPanel: document.querySelector("#learnPanel")
 };
+
+function initializePanelTabs(tabList) {
+  const tabs = [...tabList.querySelectorAll('[role="tab"]')];
+  const panels = tabs.map((tab) => document.getElementById(tab.dataset.tabTarget));
+
+  function activateTab(nextTab, moveFocus = false) {
+    tabs.forEach((tab, index) => {
+      const active = tab === nextTab;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+      tab.tabIndex = active ? 0 : -1;
+      if (panels[index]) panels[index].hidden = !active;
+    });
+    if (moveFocus) nextTab.focus();
+  }
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activateTab(tab));
+    tab.addEventListener("keydown", (event) => {
+      let nextIndex = index;
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+      else if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      activateTab(tabs[nextIndex], true);
+    });
+  });
+
+  activateTab(tabs.find((tab) => tab.getAttribute("aria-selected") === "true") || tabs[0]);
+}
+
+document.querySelectorAll('[role="tablist"]').forEach(initializePanelTabs);
+
+const compactMenus = [...document.querySelectorAll(".action-menu, .toolbar-menu")];
+compactMenus.forEach((menu) => {
+  menu.addEventListener("toggle", () => {
+    if (!menu.open) return;
+    compactMenus.forEach((other) => {
+      if (other !== menu) other.open = false;
+    });
+  });
+});
+document.addEventListener("pointerdown", (event) => {
+  compactMenus.forEach((menu) => {
+    if (menu.open && !menu.contains(event.target)) menu.open = false;
+  });
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  const hadOpenMenu = compactMenus.some((menu) => menu.open);
+  compactMenus.forEach((menu) => {
+    menu.open = false;
+  });
+  if (hadOpenMenu) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+});
 
 const state = {
   svg: null,
@@ -355,8 +408,10 @@ function refreshInspector() {
   const disabled = !node;
   [
     els.fillInput,
+    els.fillHexInput,
     els.fillAlphaInput,
     els.strokeInput,
+    els.strokeHexInput,
     els.strokeAlphaInput,
     els.strokeWidthInput,
     els.opacityInput,
@@ -371,9 +426,11 @@ function refreshInspector() {
   }
 
   els.fillInput.value = paintToColor(node, "fill", "#4e7cff");
+  els.fillHexInput.value = els.fillInput.value;
   els.fillAlphaInput.value = String(Math.round(paintToAlpha(node, "fill") * 100));
   els.fillAlphaOutput.textContent = `${els.fillAlphaInput.value}%`;
   els.strokeInput.value = paintToColor(node, "stroke", "#1d2733");
+  els.strokeHexInput.value = els.strokeInput.value;
   els.strokeAlphaInput.value = String(Math.round(paintToAlpha(node, "stroke") * 100));
   els.strokeAlphaOutput.textContent = `${els.strokeAlphaInput.value}%`;
   els.strokeWidthInput.value = node.getAttribute("stroke-width") || "";
@@ -1690,8 +1747,35 @@ els.pngScaleInput.addEventListener("change", () => {
   state.pngScale = Number(els.pngScaleInput.value || 1);
   setStatus(`PNG export scale set to ${state.pngScale}x.`);
 });
-els.backgroundInput.addEventListener("input", () => {
-  state.backgroundColor = els.backgroundInput.value;
+
+function normalizeHexColor(value) {
+  const raw = String(value || "").trim().replace(/^#/, "");
+  if (/^[0-9a-f]{3}$/i.test(raw)) {
+    return `#${raw.split("").map((character) => character.repeat(2)).join("")}`.toLowerCase();
+  }
+  if (/^[0-9a-f]{6}$/i.test(raw)) return `#${raw.toLowerCase()}`;
+  return null;
+}
+
+function bindColorPicker(colorInput, hexInput, applyColor) {
+  colorInput.addEventListener("input", () => {
+    hexInput.value = colorInput.value.toLowerCase();
+    applyColor(colorInput.value);
+  });
+  hexInput.addEventListener("input", () => {
+    const normalized = normalizeHexColor(hexInput.value);
+    if (!normalized) return;
+    colorInput.value = normalized;
+    applyColor(normalized);
+  });
+  hexInput.addEventListener("blur", () => {
+    const normalized = normalizeHexColor(hexInput.value);
+    hexInput.value = normalized || colorInput.value.toLowerCase();
+  });
+}
+
+bindColorPicker(els.backgroundInput, els.backgroundHexInput, (color) => {
+  state.backgroundColor = color;
   applyBackgroundColor();
   syncSource();
 });
@@ -1775,9 +1859,9 @@ els.stage.addEventListener("drop", async (event) => {
 els.deleteBtn.addEventListener("click", deleteSelected);
 els.duplicateBtn.addEventListener("click", duplicateSelected);
 els.convertPathBtn.addEventListener("click", convertSelectedToPath);
-els.fillInput.addEventListener("input", () => applyColorPaint("fill"));
+bindColorPicker(els.fillInput, els.fillHexInput, () => applyColorPaint("fill"));
 els.fillAlphaInput.addEventListener("input", () => applyColorPaint("fill"));
-els.strokeInput.addEventListener("input", () => applyColorPaint("stroke"));
+bindColorPicker(els.strokeInput, els.strokeHexInput, () => applyColorPaint("stroke"));
 els.strokeAlphaInput.addEventListener("input", () => applyColorPaint("stroke"));
 els.strokeWidthInput.addEventListener("input", () => applyPaint("stroke-width", els.strokeWidthInput.value));
 els.opacityInput.addEventListener("input", () => applyPaint("opacity", els.opacityInput.value));

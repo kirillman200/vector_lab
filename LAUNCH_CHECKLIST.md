@@ -51,7 +51,7 @@ The included policy pages are a practical starting point, not legal advice.
 - Add the site in AdSense and use the supplied verification method.
 - Configure Google's Privacy & messaging consent flow or another Google-certified CMP before serving ads where required.
 - Wait for site approval before adding live ad units.
-- Copy `ads.txt.example` to `ads.txt` and replace the sample publisher ID with the exact AdSense value.
+- Keep the publisher record in `ads.txt` synchronized with the exact value supplied by AdSense.
 - Verify `https://svgvectorlab.com/ads.txt` and the AdSense ads.txt status.
 - Start with one or two responsive ad units away from editor controls.
 - Never click your own ads, request clicks, or purchase low-quality traffic.

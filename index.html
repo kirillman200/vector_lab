@@ -104,85 +104,140 @@
 <body>
   <header class="topbar">
     <div>
-      <h1>SVG Vector Lab</h1>
-      <p>Edit real SVG elements, paths, attributes, transforms, and points.</p>
+      <h1><span class="brand-mark">SVG</span> Vector Lab</h1>
     </div>
     <div class="top-actions">
-      <a class="top-link" href="/guides/">Guides</a>
-      <a class="top-link" href="/about/">About</a>
+      <details class="action-menu page-menu">
+        <summary>Pages</summary>
+        <nav class="menu-popover menu-links" aria-label="Site navigation">
+          <a href="/" aria-current="page">Editor</a>
+          <a href="/guides/">Guides</a>
+          <a href="/about/">About</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="/contact/">Contact</a>
+        </nav>
+      </details>
       <button id="loadSampleBtn" title="Load sample SVG">Sample</button>
-      <label class="file-button" title="Open an SVG file">
+      <label class="file-button primary-action" title="Open an SVG file">
         Open
         <input id="fileInput" type="file" accept=".svg,image/svg+xml">
       </label>
-      <button id="copySvgBtn" title="Copy current SVG markup">Copy</button>
-      <label class="background-control" title="SVG background color and opacity">
-        <span>Background</span>
-        <input id="backgroundInput" type="color" value="#ffffff">
-        <input id="backgroundAlphaInput" type="range" min="0" max="100" step="1" value="100">
-        <output id="backgroundAlphaOutput">100%</output>
-      </label>
-      <label class="export-scale-control" title="PNG export resolution multiplier">
-        <span>PNG</span>
-        <select id="pngScaleInput">
-          <option value="1">1x</option>
-          <option value="2" selected>2x</option>
-          <option value="4">4x</option>
-          <option value="8">8x</option>
-        </select>
-      </label>
-      <button id="downloadSvgBtn" title="Download current SVG">SVG</button>
-      <button id="downloadPngBtn" title="Download current image as PNG">PNG</button>
+      <details class="action-menu">
+        <summary>Export</summary>
+        <div class="menu-popover export-menu">
+          <button id="copySvgBtn" title="Copy current SVG markup">Copy SVG</button>
+          <button id="downloadSvgBtn" title="Download current SVG">Download SVG</button>
+          <label class="export-scale-control" title="PNG export resolution multiplier">
+            <span>PNG size</span>
+            <select id="pngScaleInput">
+              <option value="1">1x</option>
+              <option value="2" selected>2x</option>
+              <option value="4">4x</option>
+              <option value="8">8x</option>
+            </select>
+          </label>
+          <button id="downloadPngBtn" title="Download current image as PNG">Download PNG</button>
+        </div>
+      </details>
+      <details class="action-menu">
+        <summary>Options</summary>
+        <div class="menu-popover options-menu">
+          <label class="background-control" title="SVG background color and opacity">
+            <span>Canvas background</span>
+            <span class="color-picker">
+              <input id="backgroundInput" type="color" value="#ffffff" aria-label="Canvas background color">
+              <input id="backgroundHexInput" class="color-hex-input" type="text" value="#ffffff" maxlength="7" spellcheck="false" aria-label="Canvas background hex color">
+            </span>
+            <input id="backgroundAlphaInput" type="range" min="0" max="100" step="1" value="100">
+            <output id="backgroundAlphaOutput">100%</output>
+          </label>
+        </div>
+      </details>
     </div>
   </header>
 
   <main class="app-shell">
     <aside class="panel source-panel">
-      <section class="panel-block source-block">
-        <div class="section-head">
-          <h2>Source</h2>
-          <button id="loadInputBtn">Load</button>
-        </div>
-        <textarea id="svgInput" spellcheck="false"></textarea>
-        <div id="statusLine" class="status-line">Ready.</div>
-      </section>
+      <div class="panel-tabs" role="tablist" aria-label="Source panel views">
+        <button class="panel-tab active" id="left-source-tab" role="tab" aria-selected="true" aria-controls="left-source-panel" data-tab-target="left-source-panel">Source</button>
+        <button class="panel-tab" id="left-layers-tab" role="tab" aria-selected="false" aria-controls="left-layers-panel" data-tab-target="left-layers-panel" tabindex="-1">Layers</button>
+      </div>
 
-      <section class="panel-block layers-block">
-        <div class="section-head">
-          <h2>Vectors</h2>
-          <button id="refreshLayersBtn" title="Refresh vector list">Refresh</button>
-        </div>
-        <div id="layerList" class="layer-list"></div>
-      </section>
+      <div class="tab-panel source-tab-panel" id="left-source-panel" role="tabpanel" aria-labelledby="left-source-tab">
+        <section class="panel-block source-block">
+          <div class="section-head">
+            <h2>SVG source</h2>
+            <button id="loadInputBtn">Apply</button>
+          </div>
+          <textarea id="svgInput" spellcheck="false" aria-label="SVG source code"></textarea>
+          <div id="statusLine" class="status-line">Ready.</div>
+          <aside class="ad-slot ad-slot-compact" aria-label="Advertisement placeholder">
+            <span>Advertisement</span>
+            <p>Reserved for a future responsive ad</p>
+          </aside>
+        </section>
+      </div>
+
+      <div class="tab-panel" id="left-layers-panel" role="tabpanel" aria-labelledby="left-layers-tab" hidden>
+        <section class="panel-block layers-block">
+          <div class="section-head">
+            <h2>Drawing layers</h2>
+            <button id="refreshLayersBtn" title="Refresh layer list">Refresh</button>
+          </div>
+          <div id="layerList" class="layer-list"></div>
+          <aside class="ad-slot" aria-label="Advertisement placeholder">
+            <span>Advertisement</span>
+            <p>Reserved for a future responsive ad</p>
+          </aside>
+        </section>
+      </div>
+
+      <div class="local-status"><span class="status-dot" aria-hidden="true"></span>All changes stay local</div>
     </aside>
 
     <section class="work-area">
       <div class="canvas-toolbar">
-        <div class="segmented">
-          <button data-zoom="0.5">50%</button>
-          <button data-zoom="1" class="active">100%</button>
-          <button data-zoom="1.5">150%</button>
-          <button data-zoom="2">200%</button>
-          <button data-zoom="3">300%</button>
-          <button data-zoom="4">400%</button>
-        </div>
-        <label class="zoom-control" title="Custom zoom percent">
-          <span>Zoom</span>
-          <input id="zoomInput" type="number" min="10" max="1200" step="5" value="100">
-          <span>%</span>
-        </label>
-        <label class="snap-control" title="Snap dragged path points to other elements">
-          <input id="snapToggle" type="checkbox">
-          <span>Snap</span>
-        </label>
-        <button id="fitBtn" title="Fit SVG to view (Space-drag pans, Ctrl+wheel zooms)">Fit</button>
-        <button id="toggleSourceBtn" title="Hide or show source and vector panels">Left panel</button>
-        <button id="toggleInspectorBtn" title="Hide or show inspector panel">Right panel</button>
         <button id="undoBtn" title="Undo last SVG edit">Undo</button>
         <button id="redoBtn" title="Redo last undone SVG edit">Redo</button>
-        <button id="convertPathBtn" title="Convert selected basic shape into editable SVG path commands">Convert to path</button>
-        <button id="deleteBtn" title="Delete selected vector">Delete</button>
-        <button id="duplicateBtn" title="Duplicate selected vector">Duplicate</button>
+        <button id="fitBtn" title="Fit SVG to view (Space-drag pans, Ctrl+wheel zooms)">Fit</button>
+        <details class="toolbar-menu">
+          <summary>Zoom</summary>
+          <div class="menu-popover canvas-popover">
+            <div class="segmented">
+              <button data-zoom="0.5">50%</button>
+              <button data-zoom="1" class="active">100%</button>
+              <button data-zoom="1.5">150%</button>
+              <button data-zoom="2">200%</button>
+              <button data-zoom="3">300%</button>
+              <button data-zoom="4">400%</button>
+            </div>
+            <label class="zoom-control" title="Custom zoom percent">
+              <span>Custom</span>
+              <input id="zoomInput" type="number" min="10" max="1200" step="5" value="100">
+              <span>%</span>
+            </label>
+          </div>
+        </details>
+        <details class="toolbar-menu">
+          <summary>Edit</summary>
+          <div class="menu-popover canvas-popover menu-button-stack">
+            <button id="convertPathBtn" title="Convert selected basic shape into editable SVG path commands">Convert to path</button>
+            <button id="duplicateBtn" title="Duplicate selected vector">Duplicate</button>
+            <button id="deleteBtn" title="Delete selected vector">Delete</button>
+          </div>
+        </details>
+        <details class="toolbar-menu">
+          <summary>View</summary>
+          <div class="menu-popover canvas-popover menu-button-stack">
+            <label class="snap-control" title="Snap dragged path points to other elements">
+              <input id="snapToggle" type="checkbox">
+              <span>Snap points</span>
+            </label>
+            <button id="toggleSourceBtn" title="Hide or show source and layer panels">Source panel</button>
+            <button id="toggleInspectorBtn" title="Hide or show inspector panel">Inspector panel</button>
+          </div>
+        </details>
       </div>
       <div id="stage" class="stage">
         <div id="precisionHud" class="precision-hud">x: -, y: -</div>
@@ -191,64 +246,92 @@
     </section>
 
     <aside class="panel inspector-panel">
-      <section class="panel-block">
-        <div class="section-head">
-          <h2>Inspector</h2>
-          <span id="selectedName" class="selected-name">None</span>
-        </div>
-        <div class="control-grid">
-          <label class="color-field">Fill <span class="alpha-color"><input id="fillInput" type="color" value="#4e7cff"><input id="fillAlphaInput" type="range" min="0" max="100" step="1" value="100"><output id="fillAlphaOutput">100%</output></span></label>
-          <label class="color-field">Stroke <span class="alpha-color"><input id="strokeInput" type="color" value="#1d2733"><input id="strokeAlphaInput" type="range" min="0" max="100" step="1" value="100"><output id="strokeAlphaOutput">100%</output></span></label>
-          <label>Stroke width <input id="strokeWidthInput" type="number" step="0.25"></label>
-          <label>Opacity <input id="opacityInput" type="number" min="0" max="1" step="0.05"></label>
-        </div>
-        <div class="inline-actions">
-          <button id="fillNoneBtn">No fill</button>
-          <button id="strokeNoneBtn">No stroke</button>
-          <button id="bringForwardBtn">Forward</button>
-          <button id="sendBackwardBtn">Backward</button>
-        </div>
-      </section>
+      <div class="panel-tabs" role="tablist" aria-label="Inspector views">
+        <button class="panel-tab active" id="right-design-tab" role="tab" aria-selected="true" aria-controls="right-design-panel" data-tab-target="right-design-panel">Design</button>
+        <button class="panel-tab" id="right-path-tab" role="tab" aria-selected="false" aria-controls="right-path-panel" data-tab-target="right-path-panel" tabindex="-1">Path</button>
+        <button class="panel-tab" id="right-notes-tab" role="tab" aria-selected="false" aria-controls="right-notes-panel" data-tab-target="right-notes-panel" tabindex="-1">Notes</button>
+      </div>
 
-      <section class="panel-block">
-        <h2>Geometry</h2>
-        <div id="geometryControls" class="control-grid"></div>
-      </section>
+      <div class="tab-panel" id="right-design-panel" role="tabpanel" aria-labelledby="right-design-tab">
+        <section class="panel-block">
+          <div class="section-head">
+            <h2>Style</h2>
+            <span id="selectedName" class="selected-name">None</span>
+          </div>
+          <div class="control-grid">
+            <label class="color-field">Fill <span class="alpha-color"><span class="color-picker"><input id="fillInput" type="color" value="#4e7cff" aria-label="Fill color"><input id="fillHexInput" class="color-hex-input" type="text" value="#4e7cff" maxlength="7" spellcheck="false" aria-label="Fill hex color"></span><input id="fillAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Fill opacity"><output id="fillAlphaOutput">100%</output></span></label>
+            <label class="color-field">Stroke <span class="alpha-color"><span class="color-picker"><input id="strokeInput" type="color" value="#1d2733" aria-label="Stroke color"><input id="strokeHexInput" class="color-hex-input" type="text" value="#1d2733" maxlength="7" spellcheck="false" aria-label="Stroke hex color"></span><input id="strokeAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Stroke opacity"><output id="strokeAlphaOutput">100%</output></span></label>
+            <label>Stroke width <input id="strokeWidthInput" type="number" step="0.25"></label>
+            <label>Opacity <input id="opacityInput" type="number" min="0" max="1" step="0.05"></label>
+          </div>
+          <div class="inspector-actions">
+            <div class="action-group" role="group" aria-label="Remove paint">
+              <button id="fillNoneBtn">Remove fill</button>
+              <button id="strokeNoneBtn">Remove stroke</button>
+            </div>
+            <div class="action-group" role="group" aria-label="Layer order">
+              <button id="sendBackwardBtn">Send backward</button>
+              <button id="bringForwardBtn">Bring forward</button>
+            </div>
+          </div>
+        </section>
 
-      <section class="panel-block">
-        <h2>Transform</h2>
-        <div class="control-grid">
-          <label>Move X <input id="translateXInput" type="number" step="1" value="0"></label>
-          <label>Move Y <input id="translateYInput" type="number" step="1" value="0"></label>
-          <label>Scale <input id="scaleInput" type="number" step="0.05" value="1"></label>
-          <label>Rotate <input id="rotateInput" type="number" step="1" value="0"></label>
-        </div>
-        <button id="applyTransformBtn" class="wide-button">Apply transform</button>
-      </section>
+        <section class="panel-block">
+          <h2>Geometry</h2>
+          <div id="geometryControls" class="control-grid"></div>
+        </section>
 
-      <section class="panel-block path-block">
-        <div class="section-head">
-          <h2>Path Data</h2>
-          <button id="normalizePathBtn">Normalize</button>
-        </div>
-        <textarea id="pathInput" spellcheck="false"></textarea>
-        <div id="pathTable" class="path-table"></div>
-      </section>
+        <section class="panel-block">
+          <h2>Transform</h2>
+          <div class="control-grid">
+            <label>Move X <input id="translateXInput" type="number" step="1" value="0"></label>
+            <label>Move Y <input id="translateYInput" type="number" step="1" value="0"></label>
+            <label>Scale <input id="scaleInput" type="number" step="0.05" value="1"></label>
+            <label>Rotate <input id="rotateInput" type="number" step="1" value="0"></label>
+          </div>
+          <button id="applyTransformBtn" class="wide-button">Apply transform</button>
+        </section>
+        <aside class="ad-slot tab-ad-slot" aria-label="Advertisement placeholder">
+          <span>Advertisement</span>
+          <p>Reserved for a future responsive ad</p>
+        </aside>
+      </div>
 
-      <section class="panel-block">
-        <h2>Attributes</h2>
-        <div id="attrList" class="attr-list"></div>
-        <div class="attr-editor">
-          <input id="attrNameInput" placeholder="attribute">
-          <input id="attrValueInput" placeholder="value">
-          <button id="setAttrBtn">Set</button>
-        </div>
-      </section>
+      <div class="tab-panel" id="right-path-panel" role="tabpanel" aria-labelledby="right-path-tab" hidden>
+        <section class="panel-block path-block">
+          <div class="section-head">
+            <h2>Path data</h2>
+            <button id="normalizePathBtn">Normalize</button>
+          </div>
+          <textarea id="pathInput" spellcheck="false" aria-label="Selected path data"></textarea>
+          <div id="pathTable" class="path-table"></div>
+        </section>
 
-      <section class="panel-block learn-block">
-        <h2>Vector Notes</h2>
-        <div id="learnPanel" class="learn-panel">Select a vector to inspect how its coordinates and drawing commands work.</div>
-      </section>
+        <section class="panel-block">
+          <h2>Attributes</h2>
+          <div id="attrList" class="attr-list"></div>
+          <div class="attr-editor">
+            <input id="attrNameInput" placeholder="attribute" aria-label="Attribute name">
+            <input id="attrValueInput" placeholder="value" aria-label="Attribute value">
+            <button id="setAttrBtn">Set</button>
+          </div>
+        </section>
+        <aside class="ad-slot tab-ad-slot" aria-label="Advertisement placeholder">
+          <span>Advertisement</span>
+          <p>Reserved for a future responsive ad</p>
+        </aside>
+      </div>
+
+      <div class="tab-panel" id="right-notes-panel" role="tabpanel" aria-labelledby="right-notes-tab" hidden>
+        <section class="panel-block learn-block">
+          <h2>Vector notes</h2>
+          <div id="learnPanel" class="learn-panel">Select a vector to inspect how its coordinates and drawing commands work.</div>
+          <aside class="ad-slot" aria-label="Advertisement placeholder">
+            <span>Advertisement</span>
+            <p>Reserved for a future responsive ad</p>
+          </aside>
+        </section>
+      </div>
     </aside>
   </main>
 
@@ -261,14 +344,20 @@
 
   <footer class="site-footer" id="about">
     <div class="footer-inner">
-      <nav class="footer-nav" aria-label="Site navigation">
-        <a href="/">Editor</a>
-        <a href="/guides/">Guides</a>
-        <a href="/about/">About</a>
-        <a href="/privacy/">Privacy</a>
-        <a href="/terms/">Terms</a>
-        <a href="/contact/">Contact</a>
-      </nav>
+      <div class="footer-bar">
+        <p>© 2026 SVG Vector Lab.</p>
+        <nav class="footer-nav" aria-label="Site navigation">
+          <a href="/">Editor</a>
+          <a href="/guides/">Guides</a>
+          <a href="/about/">About</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="/contact/">Contact</a>
+        </nav>
+      </div>
+      <details class="footer-disclosure">
+        <summary>About this editor</summary>
+        <div class="footer-expanded">
       <section>
         <h2>About SVG Vector Lab</h2>
         <p>
@@ -330,6 +419,8 @@
       <p class="footer-note">
         SVG Vector Lab — free online SVG editor. Open source under the MIT license. Your artwork never leaves your device.
       </p>
+        </div>
+      </details>
     </div>
   </footer>
 
