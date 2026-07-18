@@ -106,6 +106,22 @@ test("every HTML page links to the free editor landing page", () => {
   assert.match(read("partials/site-footer.html"), /href="\/free-svg-editor\/">Features<\/a>/);
 });
 
+test("the mobile header uses a native burger menu with working navigation", () => {
+  const header = read("partials/site-header.html");
+  const contentCss = read("content.css");
+  assert.match(header, /<details class="site-menu">/);
+  assert.match(header, /<summary class="site-menu-label">/);
+  assert.equal((header.match(/<span><\/span>/g) || []).length, 3);
+  assert.match(header, /site-menu-open-text">Menu<\/span>/);
+  assert.match(header, /site-menu-close-text">Close<\/span>/);
+  assert.doesNotMatch(header, /site-menu-toggle|type="checkbox"/);
+  assert.match(contentCss, /\.site-menu-label \{[\s\S]*?display: none;/);
+  assert.match(contentCss, /\.site-menu\[open\] \.site-menu-icon > span:nth-child\(1\)[\s\S]*?rotate\(45deg\)/);
+  assert.match(contentCss, /\.site-menu\[open\] \.site-menu-icon > span:nth-child\(3\)[\s\S]*?rotate\(-45deg\)/);
+  assert.match(contentCss, /\.site-menu:not\(\[open\]\) > \.content-nav \{[\s\S]*?display: none;/);
+  assert.match(contentCss, /\.content-header \{[\s\S]*?z-index: 100;/);
+});
+
 test("shared layout placeholders have a static-host fallback", () => {
   for (const file of [...routes.values(), "404.html"]) {
     const html = read(file);
@@ -130,7 +146,7 @@ test("content pages avoid loading editor-only dependencies", () => {
 
   for (const file of [...routes.values()].filter((file) => file !== "index.html").concat("404.html")) {
     const html = read(file);
-    assert.match(html, /href="\/content\.css"/, `${file} is missing the content stylesheet`);
+    assert.match(html, /href="\/content\.css(?:\?[^\"]+)?"/, `${file} is missing the content stylesheet`);
     assert.doesNotMatch(html, /href="\/?styles\.css"/, `${file} loads the editor stylesheet`);
     const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
     assert.deepEqual(scripts, ["/js/layout.js"], `${file} loads an unexpected script`);

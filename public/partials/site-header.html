@@ -4,9 +4,12 @@
       <img src="/favicon.svg" width="26" height="26" alt="">
       <span><span class="brand-svg">SVG</span> <span class="brand-name">Vector Lab</span></span>
     </a>
-    <div class="site-menu">
-      <input class="site-menu-toggle" id="site-menu-toggle" type="checkbox" aria-label="Toggle site navigation">
-      <label class="site-menu-label" for="site-menu-toggle"><span>Menu</span></label>
+    <details class="site-menu">
+      <summary class="site-menu-label">
+        <span class="site-menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="site-menu-open-text">Menu</span>
+        <span class="site-menu-close-text">Close</span>
+      </summary>
       <nav class="content-nav" aria-label="Primary navigation">
         <a href="/">Open editor</a>
         <a href="/free-svg-editor/">Features</a>
@@ -14,6 +17,6 @@
         <a href="/about/">About</a>
         <a href="/contact/">Contact</a>
       </nav>
-    </div>
+    </details>
   </div>
 </header>

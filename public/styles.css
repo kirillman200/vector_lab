@@ -1371,6 +1371,8 @@ h2,
 }
 
 .content-header {
+  position: relative;
+  z-index: 100;
   background: rgba(250, 253, 255, 0.88);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 8px 28px rgba(34, 72, 126, 0.06);
@@ -1399,7 +1401,6 @@ h2,
   white-space: nowrap;
 }
 
-.site-menu-toggle,
 .site-menu-label {
   display: none;
 }
@@ -1861,15 +1862,6 @@ site-footer {
     position: relative;
   }
 
-  .site-menu-toggle {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
   .site-menu-label {
     min-width: 44px;
     min-height: 40px;
@@ -1885,18 +1877,63 @@ site-footer {
     font-size: 13px;
     font-weight: 700;
     padding: 0 11px;
+    list-style: none;
+    user-select: none;
   }
 
-  .site-menu-label::before {
-    content: "";
-    width: 16px;
-    height: 12px;
-    border-top: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
-    box-shadow: inset 0 5px transparent, inset 0 7px currentColor;
+  .site-menu-label::-webkit-details-marker {
+    display: none;
   }
 
-  .site-menu-toggle:not(:checked) ~ .content-nav {
+  .site-menu-icon {
+    position: relative;
+    width: 20px;
+    height: 16px;
+    flex: 0 0 20px;
+  }
+
+  .site-menu-icon > span {
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: top 160ms ease, transform 160ms ease, opacity 120ms ease;
+  }
+
+  .site-menu-icon > span:nth-child(1) { top: 1px; }
+  .site-menu-icon > span:nth-child(2) { top: 7px; }
+  .site-menu-icon > span:nth-child(3) { top: 13px; }
+
+  .site-menu[open] .site-menu-icon > span:nth-child(1) {
+    top: 7px;
+    transform: rotate(45deg);
+  }
+
+  .site-menu[open] .site-menu-icon > span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+
+  .site-menu[open] .site-menu-icon > span:nth-child(3) {
+    top: 7px;
+    transform: rotate(-45deg);
+  }
+
+  .site-menu-close-text {
+    display: none;
+  }
+
+  .site-menu[open] .site-menu-open-text {
+    display: none;
+  }
+
+  .site-menu[open] .site-menu-close-text {
+    display: inline;
+  }
+
+  .site-menu:not([open]) > .content-nav {
     display: none;
   }
 
