@@ -711,6 +711,7 @@ h2,
 }
 
 .ad-slot {
+  position: relative;
   min-height: 286px;
   display: block;
   gap: 5px;
@@ -729,7 +730,23 @@ h2,
   min-height: 250px;
 }
 
-.ad-slot-unfilled {
+.ad-slot:not(.ad-slot-active)::before,
+.ad-slot-unfilled::before {
+  content: "Reserved ad space";
+  position: absolute;
+  inset: 8px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #c8d5e5;
+  border-radius: 7px;
+  color: #7a8da6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ad-slot-unfilled .adsbygoogle {
   visibility: hidden;
 }
 

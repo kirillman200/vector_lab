@@ -345,6 +345,8 @@ test("the editor reserves space for startup UI and responsive ads", () => {
   assert.match(html, /id="geometryControls"[^>]*>[\s\S]*?geometry-placeholder/);
   assert.match(css, /\.button-icon-pending:not\(\.button-icon-ready\)::before/);
   assert.match(css, /\.ad-slot \.adsbygoogle \{[\s\S]*?min-height: 250px;/);
+  assert.match(css, /content: "Reserved ad space"/);
+  assert.doesNotMatch(css, /\.ad-slot-unfilled\s*\{[\s\S]*?visibility:\s*hidden/);
   assert.match(css, /height: calc\(100svh - 70px\);/);
   assert.match(icons, /classList\.add\("button-icon-ready"\)/);
   assert.match(app, /geometryPlaceholder\.className = "learn-panel geometry-placeholder"/);
