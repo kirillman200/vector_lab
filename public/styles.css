@@ -1399,12 +1399,34 @@ h2,
   white-space: nowrap;
 }
 
-.site-menu > summary {
+.site-menu-toggle,
+.site-menu-label {
   display: none;
 }
 
-.site-menu:not([open]) > .content-nav {
+site-header,
+site-footer {
+  display: block;
+}
+
+site-header {
+  min-height: 70px;
+}
+
+site-footer {
+  min-height: 230px;
+}
+
+.layout-fallback-link {
+  min-height: 70px;
   display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  color: var(--blue);
+  padding: 0 20px;
+  font-weight: 750;
+  text-decoration: none;
 }
 
 .content-nav a[aria-current="page"] {
@@ -1839,7 +1861,16 @@ h2,
     position: relative;
   }
 
-  .site-menu > summary {
+  .site-menu-toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .site-menu-label {
     min-width: 44px;
     min-height: 40px;
     display: inline-flex;
@@ -1853,15 +1884,10 @@ h2,
     cursor: pointer;
     font-size: 13px;
     font-weight: 700;
-    list-style: none;
     padding: 0 11px;
   }
 
-  .site-menu > summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .site-menu > summary::before {
+  .site-menu-label::before {
     content: "";
     width: 16px;
     height: 12px;
@@ -1870,7 +1896,7 @@ h2,
     box-shadow: inset 0 5px transparent, inset 0 7px currentColor;
   }
 
-  .site-menu:not([open]) > .content-nav {
+  .site-menu-toggle:not(:checked) ~ .content-nav {
     display: none;
   }
 
@@ -1900,6 +1926,14 @@ h2,
   .site-menu > .content-nav a[aria-current="page"] {
     background: var(--blue-soft);
     text-decoration: none;
+  }
+
+  site-header {
+    min-height: 58px;
+  }
+
+  site-footer {
+    min-height: 520px;
   }
 
   .content-main,
@@ -2091,8 +2125,10 @@ h2,
     min-height: calc(100vh - 120px);
     min-height: calc(100svh - 120px);
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(58vh, 1fr) auto auto;
-    grid-template-rows: minmax(58svh, 1fr) auto auto;
+    /* Keep canvas zoom inside the scrollable stage. A fractional track in an
+       auto-height mobile grid grows to the scaled SVG's max-content height. */
+    grid-template-rows: 58vh auto auto;
+    grid-template-rows: 58svh auto auto;
     grid-template-areas:
       "work"
       "source"
@@ -2106,8 +2142,8 @@ h2,
     grid-template-areas:
       "work"
       "inspector";
-    grid-template-rows: minmax(72vh, 1fr) auto;
-    grid-template-rows: minmax(72svh, 1fr) auto;
+    grid-template-rows: 72vh auto;
+    grid-template-rows: 72svh auto;
   }
 
   .app-shell.hide-inspector {
@@ -2115,15 +2151,15 @@ h2,
     grid-template-areas:
       "work"
       "source";
-    grid-template-rows: minmax(72vh, 1fr) auto;
-    grid-template-rows: minmax(72svh, 1fr) auto;
+    grid-template-rows: 72vh auto;
+    grid-template-rows: 72svh auto;
   }
 
   .app-shell.hide-source.hide-inspector {
     grid-template-columns: 1fr;
     grid-template-areas: "work";
-    grid-template-rows: minmax(72vh, 1fr);
-    grid-template-rows: minmax(72svh, 1fr);
+    grid-template-rows: 72vh;
+    grid-template-rows: 72svh;
   }
 
   .work-area {

@@ -4,7 +4,7 @@ A zero-dependency, in-browser SVG editor. Load real SVG markup and edit the actu
 
 **Live site:** [svgvectorlab.com](https://svgvectorlab.com/)
 
-![SVG Vector Lab](public/docs/screenshot.png)
+![SVG Vector Lab](public/docs/screenshot.webp)
 
 ## Getting started
 
@@ -42,6 +42,8 @@ Your work is autosaved to the browser's `localStorage` and restored on the next 
 
 Alongside the editor, the project includes About, Privacy, Terms, Contact, and SVG guide pages. Every indexable route has a unique title, description, canonical URL, Open Graph metadata, internal navigation, and appropriate structured data. The sitemap contains all public routes.
 
+Content routes use the small `content.css` bundle and no production page JavaScript. A tiny shared-layout script remains in the HTML only as a direct-file/static-host fallback; the Cloudflare Worker removes it after composing the header and footer.
+
 ## Deploying / SEO
 
 The production origin is `https://svgvectorlab.com`. Canonical URLs, social metadata, structured data, `robots.txt`, and `sitemap.xml` all use that origin.
@@ -61,8 +63,9 @@ GitHub Actions runs the complete Node test suite and checks the Worker syntax on
 ```
 public/                 Only files published to the web
   index.html            App shell, panels, metadata, and ads
-  partials/             Shared header and footer composed by the Worker
-  styles.css            All styling
+  partials/             Shared header/footer, with Worker composition and a static-host fallback
+  styles.css            Editor and shared layout styling
+  content.css           Lightweight styling for articles and landing pages
   js/                   Editor, sanitizer, icons, path data, ad initialization
   about/                Project background and product principles
   free-svg-editor/      Editor features and overview page
@@ -86,7 +89,7 @@ public/                 Only files published to the web
   .assetsignore         Defense-in-depth exclusions for accidental secrets
 src/worker.mjs          Security/discovery headers, Markdown negotiation, and static assets
 tests/                  Node unit, content, ad, and deployment-boundary tests
-scripts/                Post-deployment security audit
+scripts/                Optional maintenance tools for favicons, IndexNow, and live security checks
 .github/workflows/      Push and pull-request test automation
 wrangler.jsonc          Cloudflare Worker and asset configuration
 SECURITY.md             Private reporting and deployment-boundary policy

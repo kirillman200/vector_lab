@@ -6,3 +6,27 @@
   X-XSS-Protection: 0
   Strict-Transport-Security: max-age=31536000
   Cross-Origin-Resource-Policy: same-origin
+
+/styles.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/content.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/js/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/partials/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/docs/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.svg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.ico
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

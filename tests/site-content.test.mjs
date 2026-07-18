@@ -106,6 +106,40 @@ test("every HTML page links to the free editor landing page", () => {
   assert.match(read("partials/site-footer.html"), /href="\/free-svg-editor\/">Features<\/a>/);
 });
 
+test("shared layout placeholders have a static-host fallback", () => {
+  for (const file of [...routes.values(), "404.html"]) {
+    const html = read(file);
+    if (/<site-(?:header|footer)>/.test(html)) {
+      assert.match(html, /<script src="\/js\/layout\.js" defer><\/script>/, `${file} is missing the layout fallback`);
+    }
+  }
+
+  const layout = read("js/layout.js");
+  const css = read("content.css");
+  assert.match(layout, /hydrate\("site-header", "\/partials\/site-header\.html"\)/);
+  assert.match(layout, /hydrate\("site-footer", "\/partials\/site-footer\.html"\)/);
+  assert.match(layout, /host\.replaceWith\(template\.content\)/);
+  assert.match(css, /site-header \{[\s\S]*?min-height: 70px;/);
+  assert.match(css, /site-footer \{[\s\S]*?min-height: 230px;/);
+});
+
+test("content pages avoid loading editor-only dependencies", () => {
+  const contentCss = read("content.css");
+  const editorCss = read("styles.css");
+  assert.ok(contentCss.length < editorCss.length * 0.5, "content CSS should stay less than half the editor bundle");
+
+  for (const file of [...routes.values()].filter((file) => file !== "index.html").concat("404.html")) {
+    const html = read(file);
+    assert.match(html, /href="\/content\.css"/, `${file} is missing the content stylesheet`);
+    assert.doesNotMatch(html, /href="\/?styles\.css"/, `${file} loads the editor stylesheet`);
+    const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
+    assert.deepEqual(scripts, ["/js/layout.js"], `${file} loads an unexpected script`);
+  }
+
+  assert.match(read("index.html"), /href="styles\.css(?:\?[^\"]+)?"/);
+  assert.doesNotMatch(read("index.html"), /href="\/content\.css"/);
+});
+
 test("every HTML page exposes raster favicon fallbacks", () => {
   for (const asset of [
     "favicon.ico",
@@ -253,6 +287,8 @@ test("hosting and advertising files are safe", () => {
   const headers = read("_headers");
   assert.match(headers, /Strict-Transport-Security:/);
   assert.match(headers, /X-Frame-Options: DENY/);
+  assert.match(headers, /\/content\.css[\s\S]*?Cache-Control: public, max-age=3600/);
+  assert.match(headers, /\/docs\/\*[\s\S]*?Cache-Control: public, max-age=86400/);
 
   const worker = readRoot("src/worker.mjs");
   assert.match(worker, /Content-Security-Policy/);
@@ -370,12 +406,18 @@ test("the editor reserves space for startup UI and responsive ads", () => {
 
 test("canvas zoom is isolated from serialized SVG source", () => {
   const app = read("js/app.js");
+  const ads = read("js/ads.js");
   const css = read("styles.css");
   assert.match(app, /surface\.style\.setProperty\("--canvas-zoom", String\(state\.zoom\)\)/);
   assert.match(app, /zoomSurface\.className = "svg-zoom-surface"/);
   assert.doesNotMatch(app, /svg\.style\.width = .*state\.zoom/);
   assert.doesNotMatch(app, /svg\.style\.height = .*state\.zoom/);
   assert.match(css, /\.svg-zoom-surface > svg \{[\s\S]*?transform: scale\(var\(--canvas-zoom, 1\)\);/);
+  assert.match(css, /grid-template-rows: 58svh auto auto;/);
+  assert.doesNotMatch(css, /grid-template-rows: minmax\(58svh, 1fr\) auto auto;/);
+  assert.match(ads, /function protectEditorLayoutSizing\(\)/);
+  assert.match(ads, /element\.style\.removeProperty\(property\)/);
+  assert.match(ads, /observer\.observe\(shell, \{ attributes: true, attributeFilter: \["style"\], subtree: true \}\)/);
 });
 
 test("path command fields update the current command after overlay rerenders", () => {

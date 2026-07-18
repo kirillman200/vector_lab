@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import worker, { acceptsMarkdown, htmlToMarkdown } from "../src/worker.mjs";
+import worker, { acceptsMarkdown, composeLayout, htmlToMarkdown } from "../src/worker.mjs";
 
 const homepage = `<!doctype html>
 <html>
@@ -81,4 +81,23 @@ test("shared layout partials are composed before markdown conversion", async () 
   assert.match(markdown, /\[Open editor\]\(\/\)/);
   assert.match(markdown, /\[Contact\]\(\/contact\/\)/);
   assert.doesNotMatch(markdown, /site-header|site-footer/);
+});
+
+test("Worker composition removes the static-host layout dependency", async () => {
+  const page = `<!doctype html><body><site-header></site-header><site-footer></site-footer><script src="/js/layout.js" defer></script></body>`;
+  const env = {
+    ASSETS: {
+      fetch: async (request) => {
+        const pathname = new URL(request.url).pathname;
+        if (pathname === "/partials/site-header.html") return new Response("<header>Header</header>");
+        if (pathname === "/partials/site-footer.html") return new Response("<footer>Footer</footer>");
+        return new Response("Not found", { status: 404 });
+      },
+    },
+  };
+
+  const html = await composeLayout(page, new Request("https://svgvectorlab.com/about/"), env);
+  assert.match(html, /<header>Header<\/header>/);
+  assert.match(html, /<footer>Footer<\/footer>/);
+  assert.doesNotMatch(html, /layout\.js|site-header|site-footer/);
 });

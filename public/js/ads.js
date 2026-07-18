@@ -1,6 +1,43 @@
 // Initialize responsive AdSense units only when their tab is visible.
 // Hidden panels have no measurable width, so requesting them early can fail.
 (function initializeAds() {
+  function protectEditorLayoutSizing() {
+    const shell = document.querySelector(".app-shell");
+    if (!shell) return;
+
+    // AdSense may add inline !important sizing to every ancestor of an ad.
+    // Those overrides make the grid follow the zoomed canvas height, which in
+    // turn stretches the SVG source textarea. Keep sizing on the ad itself,
+    // but let the editor's CSS continue to control its layout ancestors.
+    const protectedElements = new Set([shell]);
+    document.querySelectorAll(".ad-slot").forEach((slot) => {
+      let element = slot;
+      while (element && shell.contains(element)) {
+        protectedElements.add(element);
+        element = element.parentElement;
+      }
+    });
+
+    function clearInjectedSizing(element) {
+      if (!protectedElements.has(element)) return;
+      let changed = false;
+      for (const property of ["height", "min-height"]) {
+        if (!element.style.getPropertyValue(property)) continue;
+        element.style.removeProperty(property);
+        changed = true;
+      }
+      if (changed && !element.getAttribute("style")) element.removeAttribute("style");
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => clearInjectedSizing(mutation.target));
+    });
+    observer.observe(shell, { attributes: true, attributeFilter: ["style"], subtree: true });
+    protectedElements.forEach(clearInjectedSizing);
+  }
+
+  protectEditorLayoutSizing();
+
   function syncAdStatus(unit) {
     const slot = unit.closest(".ad-slot");
     if (!slot) return;

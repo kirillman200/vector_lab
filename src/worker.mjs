@@ -133,21 +133,27 @@ function markCurrentNavigation(fragment, pathname) {
   );
 }
 
-async function composeLayout(html, request, env) {
+export async function composeLayout(html, request, env) {
   const entries = Object.entries(LAYOUT_PARTIALS).filter(([placeholder]) => html.includes(placeholder));
   if (!entries.length) return html;
 
   const fragments = await Promise.all(entries.map(async ([placeholder, path]) => {
     const response = await env.ASSETS.fetch(new Request(new URL(path, request.url)));
-    if (!response.ok) return [placeholder, ""];
+    if (!response.ok) return [placeholder, placeholder];
     const fragment = markCurrentNavigation(await response.text(), new URL(request.url).pathname);
     return [placeholder, fragment];
   }));
 
-  return fragments.reduce(
+  const document = fragments.reduce(
     (document, [placeholder, fragment]) => document.replaceAll(placeholder, fragment),
     html,
   );
+
+  if (fragments.some(([placeholder, fragment]) => placeholder === fragment)) return document;
+
+  // Static hosting still gets the client fallback. The Worker already composed
+  // the layout, so it can omit that request and its two partial fetches.
+  return document.replace(/\s*<script\s+src=["']\/js\/layout\.js["']\s+defer><\/script>/i, "");
 }
 
 function markdownResponse(response, headers, html, method) {
