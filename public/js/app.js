@@ -258,8 +258,13 @@ function applyBackgroundColor(svg = state.svg) {
 function applySvgZoom(svg) {
   const width = Number(svg.dataset.baseWidth || parseFloat(svg.getAttribute("width")) || 640);
   const height = Number(svg.dataset.baseHeight || parseFloat(svg.getAttribute("height")) || 420);
-  svg.style.width = `${Math.max(1, width * state.zoom)}px`;
-  svg.style.height = `${Math.max(1, height * state.zoom)}px`;
+  const surface = svg.closest(".svg-zoom-surface");
+  if (!surface) return;
+  surface.style.width = `${Math.max(1, width * state.zoom)}px`;
+  surface.style.height = `${Math.max(1, height * state.zoom)}px`;
+  surface.style.setProperty("--canvas-base-width", `${width}px`);
+  surface.style.setProperty("--canvas-base-height", `${height}px`);
+  surface.style.setProperty("--canvas-zoom", String(state.zoom));
 }
 
 function loadSvg(markup, options = {}) {
@@ -287,12 +292,15 @@ function loadSvg(markup, options = {}) {
     const baseSize = getSvgBaseSize(imported);
     imported.dataset.baseWidth = String(baseSize.width);
     imported.dataset.baseHeight = String(baseSize.height);
-    applySvgZoom(imported);
     applyBackgroundColor(imported);
     imported.addEventListener("click", handleSvgClick);
     imported.addEventListener("pointerdown", handlePointerDown);
 
-    els.svgMount.replaceChildren(imported);
+    const zoomSurface = document.createElement("div");
+    zoomSurface.className = "svg-zoom-surface";
+    zoomSurface.append(imported);
+    els.svgMount.replaceChildren(zoomSurface);
+    applySvgZoom(imported);
     state.svg = imported;
     state.selection = [];
     state.selected = null;

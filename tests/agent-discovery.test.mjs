@@ -55,3 +55,30 @@ test("homepage markdown responses include discovery and variant headers", async 
   assert.match(response.headers.get("x-markdown-tokens"), /^\d+$/);
   assert.match(await response.text(), /^# Example & Test$/m);
 });
+
+test("shared layout partials are composed before markdown conversion", async () => {
+  const page = `<!doctype html><html><head><title>Layout test</title></head><body><site-header></site-header><main><h1>Page</h1></main><site-footer></site-footer></body></html>`;
+  const env = {
+    ASSETS: {
+      fetch: async (request) => {
+        const pathname = new URL(request.url).pathname;
+        if (pathname === "/partials/site-header.html") {
+          return new Response('<header><a href="/">Open editor</a></header>', { headers: { "Content-Type": "text/html" } });
+        }
+        if (pathname === "/partials/site-footer.html") {
+          return new Response('<footer><a href="/contact/">Contact</a></footer>', { headers: { "Content-Type": "text/html" } });
+        }
+        return new Response(page, { headers: { "Content-Type": "text/html" } });
+      },
+    },
+  };
+
+  const response = await worker.fetch(
+    new Request("https://svgvectorlab.com/about/", { headers: { Accept: "text/markdown" } }),
+    env,
+  );
+  const markdown = await response.text();
+  assert.match(markdown, /\[Open editor\]\(\/\)/);
+  assert.match(markdown, /\[Contact\]\(\/contact\/\)/);
+  assert.doesNotMatch(markdown, /site-header|site-footer/);
+});

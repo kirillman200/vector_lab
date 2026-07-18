@@ -107,15 +107,15 @@
 <body>
   <header class="topbar">
     <div class="topbar-title">
-      <span class="brand-mark">SVG Vector Lab</span>
+      <a class="brand-mark" href="/" aria-label="SVG Vector Lab home"><img src="/favicon.svg" width="24" height="24" alt=""><span><span class="brand-svg">SVG</span> <span class="brand-name">Vector Lab</span></span></a>
       <h1>Free Online SVG Editor for Paths, Points &amp; Attributes</h1>
     </div>
     <div class="top-actions">
       <details class="action-menu page-menu">
-        <summary>Pages</summary>
+        <summary>Menu</summary>
         <nav class="menu-popover menu-links" aria-label="Site navigation">
-          <a href="/" aria-current="page">Editor</a>
-          <a href="/free-svg-editor/">Free editor</a>
+          <a href="/" aria-current="page">Open editor</a>
+          <a href="/free-svg-editor/">Features</a>
           <a href="/guides/">Guides</a>
           <a href="/about/">About</a>
           <a href="https://github.com/kirillman200/vector_lab">GitHub</a>
@@ -368,107 +368,7 @@
     </div>
   </noscript>
 
-  <footer class="site-footer" id="about">
-    <div class="footer-inner">
-      <div class="footer-bar">
-        <p>© 2026 SVG Vector Lab.</p>
-        <nav class="footer-nav" aria-label="Site navigation">
-          <a href="/">Open SVG editor</a>
-          <a href="/free-svg-editor/">Free editor overview</a>
-          <a href="/guides/">SVG learning guides</a>
-          <a href="/about/">About the project</a>
-          <a href="https://github.com/kirillman200/vector_lab">GitHub source code</a>
-          <a href="/privacy/">Privacy policy</a>
-          <a href="/terms/">Terms of use</a>
-          <a href="/contact/">Contact the maintainer</a>
-        </nav>
-      </div>
-      <nav class="share-links" aria-label="Share SVG Vector Lab">
-        <span>Share:</span>
-        <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsvgvectorlab.com%2F&amp;text=Free%20Online%20SVG%20Editor%20%E2%80%94%20SVG%20Vector%20Lab" target="_blank" rel="noopener noreferrer">X</a>
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsvgvectorlab.com%2F" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://www.reddit.com/submit?url=https%3A%2F%2Fsvgvectorlab.com%2F&amp;title=Free%20Online%20SVG%20Editor%20%E2%80%94%20SVG%20Vector%20Lab" target="_blank" rel="noopener noreferrer">Reddit</a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsvgvectorlab.com%2F" target="_blank" rel="noopener noreferrer">Facebook</a>
-        <a href="mailto:?subject=Free%20Online%20SVG%20Editor&amp;body=Try%20SVG%20Vector%20Lab%3A%20https%3A%2F%2Fsvgvectorlab.com%2F">Email</a>
-      </nav>
-      <details class="footer-disclosure">
-        <summary>About this editor</summary>
-        <div class="footer-expanded">
-      <section>
-        <h2>About SVG Vector Lab</h2>
-        <p>
-          SVG Vector Lab is a <strong>free online SVG editor</strong> that runs entirely in your browser.
-          Open an SVG file (or paste its markup), then edit the real elements: drag shapes and path points on the
-          canvas, tune fills, strokes, opacity and transforms in the inspector, and watch the SVG source code
-          update live as you work. When you're done, copy the cleaned markup or export it as an SVG or PNG file.
-        </p>
-        <p>
-          It's also built for learning how SVG works. Select any vector and the notes panel explains its coordinate
-          model — how <code>path</code> commands like <code>M</code>, <code>L</code>, <code>C</code> and <code>A</code>
-          draw lines, Bézier curves and arcs, and how attributes map to visible geometry. Nothing is uploaded:
-          your artwork stays on your device, and work-in-progress is autosaved to your browser's local storage.
-        </p>
-      </section>
-
-      <section>
-        <h2>Features</h2>
-        <ul>
-          <li>Edit SVG paths point by point — drag endpoints and Bézier control points, or type coordinates</li>
-          <li>Visual editing for rects, circles, ellipses, lines, polylines, polygons, text, groups and use elements</li>
-          <li>Multi-select with shift-click or rubber-band, resize and rotate handles, snapping to other elements</li>
-          <li>Live synchronized source panel — edit the markup or the canvas, both stay in sync</li>
-          <li>Convert basic shapes into editable path commands</li>
-          <li>Undo/redo history, keyboard nudging, and autosave</li>
-          <li>Export clean SVG markup or render PNG at 1×–8× resolution</li>
-          <li>Free, open source (MIT), no signup, works offline</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>Focused SVG tools</h2>
-        <p>
-          Start with the workflow you need: <a href="/edit-svg-online/">edit SVG online</a>,
-          use the <a href="/svg-path-editor/">SVG path editor</a>,
-          <a href="/convert-shapes-to-paths/">convert SVG shapes to paths</a>, or
-          <a href="/svg-to-png/">convert SVG to PNG</a>.
-        </p>
-      </section>
-
-      <section>
-        <h2>Frequently asked questions</h2>
-        <details>
-          <summary>Is SVG Vector Lab free to use?</summary>
-          <p>Yes. SVG Vector Lab is completely free and open source under the MIT license. There is no signup, no account, and no paid tier.</p>
-        </details>
-        <details>
-          <summary>Are my SVG files uploaded to a server?</summary>
-          <p>No. The editor runs entirely in your browser. Files you open, edit, and export never leave your device, and your work-in-progress is autosaved to your browser's local storage.</p>
-        </details>
-        <details>
-          <summary>Which SVG elements can I edit?</summary>
-          <p>Paths, rectangles, circles, ellipses, lines, polylines, polygons, text, groups, and use references — including their attributes, transforms, fill and stroke, and for paths every individual command and point.</p>
-        </details>
-        <details>
-          <summary>Can I convert shapes into paths?</summary>
-          <p>Yes. The Convert to path tool turns rects, circles, ellipses, lines, polygons, and polylines into equivalent SVG path commands you can then edit point by point.</p>
-        </details>
-        <details>
-          <summary>Can I export my SVG as a PNG image?</summary>
-          <p>Yes. You can download the current drawing as a clean SVG file, or render it to PNG at 1x, 2x, 4x, or 8x resolution with an optional background color.</p>
-        </details>
-        <details>
-          <summary>Does SVG Vector Lab work offline?</summary>
-          <p>Yes. It is a static page with no server dependency — once loaded it keeps working offline, and you can also download the project and open index.html directly from your disk.</p>
-        </details>
-      </section>
-
-      <p class="footer-note">
-        SVG Vector Lab — free online SVG editor. Open source under the MIT license. Your artwork never leaves your device.
-      </p>
-        </div>
-      </details>
-    </div>
-  </footer>
+  <site-footer></site-footer>
 
   <script src="js/path-data.js"></script>
   <script src="js/svg-utils.js"></script>

@@ -2,6 +2,8 @@
 
 A zero-dependency, in-browser SVG editor. Load real SVG markup and edit the actual elements — paths, shapes, attributes, transforms, and individual path points — with the source, layer list, and inspector staying in sync the whole time.
 
+**Live site:** [svgvectorlab.com](https://svgvectorlab.com/)
+
 ![SVG Vector Lab](public/docs/screenshot.png)
 
 ## Getting started
@@ -58,11 +60,12 @@ GitHub Actions runs the complete Node test suite and checks the Worker syntax on
 
 ```
 public/                 Only files published to the web
-  index.html            App shell, panels, metadata, ads, crawlable footer
+  index.html            App shell, panels, metadata, and ads
+  partials/             Shared header and footer composed by the Worker
   styles.css            All styling
   js/                   Editor, sanitizer, icons, path data, ad initialization
   about/                Project background and product principles
-  free-svg-editor/      Free online SVG editor landing page
+  free-svg-editor/      Editor features and overview page
   edit-svg-online/      General online SVG editing landing page
   svg-path-editor/      Point and Bézier path editing landing page
   convert-shapes-to-paths/  Shape-to-path conversion landing page

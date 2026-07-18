@@ -6,8 +6,8 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 
 ## Product
 
-- [Free Online SVG Editor](https://svgvectorlab.com/free-svg-editor/): Overview of the free editor, privacy model, supported editing tools, exports, and common questions.
 - [SVG Vector Lab Editor](https://svgvectorlab.com/): Open the visual SVG editor and edit SVG paths, points, shapes, attributes, transforms, fill, and stroke.
+- [Editor Features](https://svgvectorlab.com/free-svg-editor/): Review the privacy model, supported editing tools, exports, and common questions before opening the editor.
 - [Edit SVG Online](https://svgvectorlab.com/edit-svg-online/): Start with a blank SVG and edit visually or through synchronized source.
 - [SVG Path Editor](https://svgvectorlab.com/svg-path-editor/): Edit anchors, Bézier handles, path commands, and coordinates.
 - [Convert SVG Shapes to Paths](https://svgvectorlab.com/convert-shapes-to-paths/): Convert basic SVG elements into editable path data.

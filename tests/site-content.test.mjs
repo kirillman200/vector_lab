@@ -74,7 +74,12 @@ test("every public route has unique metadata and valid JSON-LD", () => {
 });
 
 test("root-relative internal links resolve to files", () => {
-  const htmlFiles = [...routes.values(), "404.html"];
+  const htmlFiles = [
+    ...routes.values(),
+    "404.html",
+    "partials/site-header.html",
+    "partials/site-footer.html",
+  ];
   for (const file of htmlFiles) {
     const html = read(file);
     for (const match of html.matchAll(/(?:href|src)="(\/[^"#?]*)"/g)) {
@@ -91,8 +96,14 @@ test("root-relative internal links resolve to files", () => {
 
 test("every HTML page links to the free editor landing page", () => {
   for (const file of [...routes.values(), "404.html"]) {
-    assert.match(read(file), /href="\/free-svg-editor\/"/, `${file} is missing the free editor link`);
+    assert.match(
+      read(file),
+      /<site-header><\/site-header>|href="\/free-svg-editor\/"/,
+      `${file} is missing the shared header`,
+    );
   }
+  assert.match(read("partials/site-header.html"), /href="\/free-svg-editor\/">Features<\/a>/);
+  assert.match(read("partials/site-footer.html"), /href="\/free-svg-editor\/">Features<\/a>/);
 });
 
 test("every HTML page exposes raster favicon fallbacks", () => {
@@ -142,7 +153,7 @@ test("homepage search metadata stays within snippet-safe lengths", () => {
 });
 
 test("homepage provides lightweight social sharing links", () => {
-  const html = read("index.html");
+  const html = read("partials/site-footer.html");
   assert.match(html, /aria-label="Share SVG Vector Lab"/);
   for (const host of ["twitter.com", "linkedin.com", "reddit.com", "facebook.com"]) {
     assert.match(html, new RegExp(host.replace(".", "\\.")), `missing share option for ${host}`);
@@ -151,12 +162,13 @@ test("homepage provides lightweight social sharing links", () => {
 });
 
 test("homepage anchor text is unique and descriptive", () => {
-  const html = read("index.html");
-  const labels = [...html.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)]
-    .map((match) => match[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim())
-    .filter(Boolean);
-  const duplicates = labels.filter((label, index) => labels.indexOf(label) !== index);
-  assert.deepEqual(duplicates, [], `duplicate homepage anchor text: ${[...new Set(duplicates)].join(", ")}`);
+  for (const html of [read("index.html"), read("partials/site-footer.html")]) {
+    const labels = [...html.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)]
+      .map((match) => match[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    const duplicates = labels.filter((label, index) => labels.indexOf(label) !== index);
+    assert.deepEqual(duplicates, [], `duplicate homepage anchor text: ${[...new Set(duplicates)].join(", ")}`);
+  }
 });
 
 test("guides expose article dates, social metadata, and breadcrumb JSON-LD", () => {
@@ -244,6 +256,9 @@ test("hosting and advertising files are safe", () => {
 
   const worker = readRoot("src/worker.mjs");
   assert.match(worker, /Content-Security-Policy/);
+  assert.match(worker, /composeLayout/);
+  assert.match(worker, /\/partials\/site-header\.html/);
+  assert.match(worker, /\/partials\/site-footer\.html/);
   assert.match(worker, /'strict-dynamic'/);
   assert.match(worker, /element\.setAttribute\("nonce", nonce\)/);
   assert.match(worker, /headers\.set\("Strict-Transport-Security"/);
@@ -348,8 +363,19 @@ test("the editor reserves space for startup UI and responsive ads", () => {
   assert.match(css, /content: "Reserved ad space"/);
   assert.doesNotMatch(css, /\.ad-slot-unfilled\s*\{[\s\S]*?visibility:\s*hidden/);
   assert.match(css, /height: calc\(100svh - 70px\);/);
+  assert.match(css, /\.content-header-inner \{[\s\S]*?min-height: 70px;/);
   assert.match(icons, /classList\.add\("button-icon-ready"\)/);
   assert.match(app, /geometryPlaceholder\.className = "learn-panel geometry-placeholder"/);
+});
+
+test("canvas zoom is isolated from serialized SVG source", () => {
+  const app = read("js/app.js");
+  const css = read("styles.css");
+  assert.match(app, /surface\.style\.setProperty\("--canvas-zoom", String\(state\.zoom\)\)/);
+  assert.match(app, /zoomSurface\.className = "svg-zoom-surface"/);
+  assert.doesNotMatch(app, /svg\.style\.width = .*state\.zoom/);
+  assert.doesNotMatch(app, /svg\.style\.height = .*state\.zoom/);
+  assert.match(css, /\.svg-zoom-surface > svg \{[\s\S]*?transform: scale\(var\(--canvas-zoom, 1\)\);/);
 });
 
 test("path command fields update the current command after overlay rerenders", () => {

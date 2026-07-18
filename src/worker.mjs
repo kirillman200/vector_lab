@@ -25,6 +25,11 @@ function contentSecurityPolicy(nonce) {
 
 const CONTENT_SIGNAL = "ai-train=no, search=yes, ai-input=yes";
 
+const LAYOUT_PARTIALS = {
+  "<site-header></site-header>": "/partials/site-header.html",
+  "<site-footer></site-footer>": "/partials/site-footer.html",
+};
+
 const HOMEPAGE_DISCOVERY_LINKS = [
   '</llms.txt>; rel="describedby"; type="text/plain"',
   '</site.webmanifest>; rel="service-desc"; type="application/manifest+json"',
@@ -111,6 +116,40 @@ function appendVary(headers, value) {
   headers.set("Vary", values.join(", "));
 }
 
+function navigationRoute(pathname) {
+  if (pathname.startsWith("/guides/")) return "/guides/";
+  return pathname.endsWith("/index.html")
+    ? pathname.slice(0, -"index.html".length)
+    : pathname;
+}
+
+function markCurrentNavigation(fragment, pathname) {
+  const route = navigationRoute(pathname);
+  if (!route || route === "/404.html") return fragment;
+  const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return fragment.replace(
+    new RegExp(`<a href="${escapedRoute}"(?=[ >])`, "g"),
+    `<a href="${route}" aria-current="page"`,
+  );
+}
+
+async function composeLayout(html, request, env) {
+  const entries = Object.entries(LAYOUT_PARTIALS).filter(([placeholder]) => html.includes(placeholder));
+  if (!entries.length) return html;
+
+  const fragments = await Promise.all(entries.map(async ([placeholder, path]) => {
+    const response = await env.ASSETS.fetch(new Request(new URL(path, request.url)));
+    if (!response.ok) return [placeholder, ""];
+    const fragment = markCurrentNavigation(await response.text(), new URL(request.url).pathname);
+    return [placeholder, fragment];
+  }));
+
+  return fragments.reduce(
+    (document, [placeholder, fragment]) => document.replaceAll(placeholder, fragment),
+    html,
+  );
+}
+
 function markdownResponse(response, headers, html, method) {
   const markdown = htmlToMarkdown(html);
   headers.set("Content-Type", "text/markdown; charset=utf-8");
@@ -162,16 +201,20 @@ export default {
       });
     }
 
+    const html = await composeLayout(await response.text(), request, env);
     headers.set("Content-Type", "text/html; charset=utf-8");
+    for (const name of ["Content-Encoding", "Content-Length", "ETag", "Last-Modified", "Transfer-Encoding"]) {
+      headers.delete(name);
+    }
     appendVary(headers, "Accept");
     if (acceptsMarkdown(request.headers.get("Accept") || "")) {
-      return markdownResponse(response, headers, await response.text(), request.method);
+      return markdownResponse(response, headers, html, request.method);
     }
 
     const nonce = createNonce();
     headers.set("Content-Security-Policy", contentSecurityPolicy(nonce));
 
-    const securedResponse = new Response(response.body, {
+    const securedResponse = new Response(request.method === "HEAD" ? null : html, {
       status: response.status,
       statusText: response.statusText,
       headers,
