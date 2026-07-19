@@ -108,7 +108,9 @@ test("every HTML page links to the free editor landing page", () => {
 
 test("the mobile header uses a native burger menu with working navigation", () => {
   const header = read("partials/site-header.html");
+  const editor = read("index.html");
   const contentCss = read("content.css");
+  const editorCss = read("styles.css");
   assert.match(header, /<details class="site-menu">/);
   assert.match(header, /<summary class="site-menu-label">/);
   assert.equal((header.match(/<span><\/span>/g) || []).length, 3);
@@ -120,6 +122,16 @@ test("the mobile header uses a native burger menu with working navigation", () =
   assert.match(contentCss, /\.site-menu\[open\] \.site-menu-icon > span:nth-child\(3\)[\s\S]*?rotate\(-45deg\)/);
   assert.match(contentCss, /\.site-menu:not\(\[open\]\) > \.content-nav \{[\s\S]*?display: none;/);
   assert.match(contentCss, /\.content-header \{[\s\S]*?z-index: 100;/);
+
+  const sharedNav = matchOne(header, /<nav class="content-nav"[^>]*>([\s\S]*?)<\/nav>/, "shared primary navigation", "partials/site-header.html");
+  const editorNav = matchOne(editor, /<nav class="menu-popover menu-links content-nav"[^>]*>([\s\S]*?)<\/nav>/, "editor primary navigation", "index.html");
+  const links = (markup) => [...markup.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+  assert.deepEqual(links(editorNav), links(sharedNav), "editor and content headers must expose the same primary links");
+  assert.match(editor, /<details class="action-menu page-menu site-menu">[\s\S]*?site-menu-icon[\s\S]*?site-menu-close-text">Close<\/span>/);
+  assert.match(editorCss, /\.topbar \.site-menu\[open\] \.site-menu-icon > span:nth-child\(1\)[\s\S]*?rotate\(45deg\)/);
+  assert.match(editorCss, /\.topbar \.site-menu:not\(\[open\]\) > \.content-nav \{[\s\S]*?display: none;/);
+  assert.match(editorCss, /\.top-actions > \.page-menu > \.content-nav \{[\s\S]*?left: auto;[\s\S]*?100vw - 24px/);
+  assert.doesNotMatch(editorCss, /\.page-menu > summary::before/);
 });
 
 test("shared layout placeholders have a static-host fallback", () => {
