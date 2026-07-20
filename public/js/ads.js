@@ -3,16 +3,18 @@
 (function initializeAds() {
   function protectEditorLayoutSizing() {
     const shell = document.querySelector(".app-shell");
-    if (!shell) return;
 
     // AdSense may add inline !important sizing to every ancestor of an ad.
-    // Those overrides make the grid follow the zoomed canvas height, which in
-    // turn stretches the SVG source textarea. Keep sizing on the ad itself,
-    // but let the editor's CSS continue to control its layout ancestors.
-    const protectedElements = new Set([shell]);
+    // In the editor those overrides can make the grid follow the zoomed canvas
+    // height, stretching the SVG source textarea. Ad placements also reserve
+    // their own dimensions in CSS to avoid layout shift, so keep inline sizing
+    // off the slots and editor layout ancestors while leaving the ad unit itself
+    // available for AdSense to size.
+    const protectedElements = new Set(shell ? [shell] : []);
     document.querySelectorAll(".ad-slot").forEach((slot) => {
+      protectedElements.add(slot);
       let element = slot;
-      while (element && shell.contains(element)) {
+      while (shell && element && shell.contains(element)) {
         protectedElements.add(element);
         element = element.parentElement;
       }
@@ -32,7 +34,7 @@
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => clearInjectedSizing(mutation.target));
     });
-    observer.observe(shell, { attributes: true, attributeFilter: ["style"], subtree: true });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["style"], subtree: true });
     protectedElements.forEach(clearInjectedSizing);
   }
 

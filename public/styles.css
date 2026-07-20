@@ -11,10 +11,35 @@
   --red: #d92d3a;
   --shadow: 0 18px 48px rgba(34, 72, 126, 0.10);
   --shadow-soft: 0 8px 24px rgba(34, 72, 126, 0.08);
+  --editor-top-ad-height: 112px;
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #91a7c4 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #91a7c4;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #6f89aa;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 html,
@@ -530,14 +555,13 @@ textarea {
 }
 
 .app-shell {
-  height: calc(100vh - 70px);
-  height: calc(100svh - 70px);
-  min-height: 620px;
+  height: auto;
+  min-height: max(620px, calc(100svh - 70px - var(--editor-top-ad-height)));
   display: grid;
   grid-template-columns: clamp(270px, 21vw, 340px) minmax(0, 1fr) clamp(320px, 24vw, 420px);
   /* A definite row keeps tall panel content scrolling inside the shell
      instead of overflowing it (and colliding with the footer below). */
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: minmax(620px, auto);
   grid-template-areas: "source work inspector";
   gap: 14px;
   padding: 14px;
@@ -651,7 +675,11 @@ textarea {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
-  scrollbar-gutter: stable;
+}
+
+.inspector-panel > .tab-panel {
+  flex: 0 0 auto;
+  overflow: visible;
 }
 
 .tab-panel[hidden] {
@@ -839,6 +867,41 @@ h2,
   margin: 14px;
 }
 
+.editor-header-ad {
+  min-height: var(--editor-top-ad-height);
+  margin: 0;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: rgba(249, 251, 255, 0.96);
+  padding: 21px 0 0;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.editor-header-ad .ad-label {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  right: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.editor-header-ad .adsbygoogle {
+  width: 100%;
+  max-width: 100%;
+  height: 90px;
+  min-height: 90px;
+}
+
+.editor-header-ad:not(.ad-slot-active)::before,
+.editor-header-ad.ad-slot-unfilled::before {
+  inset: 21px 0 0;
+}
+
 .work-area {
   min-width: 0;
   display: flex;
@@ -941,7 +1004,6 @@ h2,
   flex: 1;
   min-height: 0;
   overflow: auto;
-  scrollbar-gutter: stable;
   contain: layout paint;
   background-color: #fbfdff;
   background-image:
@@ -1026,11 +1088,21 @@ h2,
   font-size: 12px;
 }
 
+.control-grid .color-field {
+  grid-column: 1 / -1;
+}
+
 .alpha-color {
   display: grid;
   grid-template-columns: minmax(98px, 0.9fr) minmax(74px, 1fr) 34px;
   gap: 6px;
   align-items: center;
+}
+
+.alpha-color output {
+  min-width: 38px;
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .alpha-color input[type="range"] {
@@ -2096,12 +2168,9 @@ site-footer {
 
 @media (max-width: 1120px) {
   .app-shell {
-    height: calc(100vh - 70px);
-    height: calc(100svh - 70px);
+    height: auto;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    /* Row minimums must sum below the shell's min-height (620px) or the
-       grid overflows its own box and spills under the footer. */
-    grid-template-rows: minmax(300px, 1fr) minmax(200px, 0.55fr);
+    grid-template-rows: minmax(360px, 60svh) auto;
     grid-template-areas:
       "work work"
       "source inspector";
@@ -2112,7 +2181,7 @@ site-footer {
     grid-template-areas:
       "work"
       "inspector";
-    grid-template-rows: minmax(300px, 1fr) minmax(200px, 0.5fr);
+    grid-template-rows: minmax(360px, 60svh) auto;
   }
 
   .app-shell.hide-inspector {
@@ -2120,7 +2189,7 @@ site-footer {
     grid-template-areas:
       "work"
       "source";
-    grid-template-rows: minmax(300px, 1fr) minmax(200px, 0.5fr);
+    grid-template-rows: minmax(360px, 60svh) auto;
   }
 
   .app-shell.hide-source.hide-inspector {
@@ -2131,6 +2200,11 @@ site-footer {
   .inspector-panel {
     display: flex;
     overflow: hidden;
+  }
+
+  .inspector-panel > .tab-panel {
+    flex: 0 0 auto;
+    overflow: visible;
   }
 
   .source-panel,
@@ -2144,7 +2218,7 @@ site-footer {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .topbar {
     position: relative;
     z-index: 20;
@@ -2216,10 +2290,14 @@ site-footer {
     width: min(270px, calc(100vw - 24px));
   }
 
+}
+
+@media (max-width: 760px) {
+
   .app-shell {
     height: auto;
-    min-height: calc(100vh - 120px);
-    min-height: calc(100svh - 120px);
+    min-height: calc(100vh - 120px - var(--editor-top-ad-height));
+    min-height: calc(100svh - 120px - var(--editor-top-ad-height));
     grid-template-columns: 1fr;
     /* Keep canvas zoom inside the scrollable stage. A fractional track in an
        auto-height mobile grid grows to the scaled SVG's max-content height. */
@@ -2297,10 +2375,6 @@ site-footer {
 
   .alpha-color {
     grid-template-columns: minmax(98px, 0.9fr) minmax(80px, 1fr) 34px;
-  }
-
-  .ad-slot {
-    min-height: 286px;
   }
 
   .svg-mount {

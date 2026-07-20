@@ -13,8 +13,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/content.css?v=20260718b">
+  <link rel="stylesheet" href="/content.css?v=20260719b">
   <script src="/js/layout.js" defer></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
+  <script src="/js/ads.js?v=20260718b" defer></script>
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SVG Vector Lab">
   <meta property="og:title" content="Understanding Cubic Bézier Curves in SVG">
@@ -74,6 +76,14 @@ C 50 20, 130 20, 160 100</code></pre>
         <p>The curve generally does not pass through its control points. Imagine the handles as magnets that influence the outline: moving one changes the tangent near its associated endpoint, and making it longer usually creates a broader, stronger bend.</p>
       </section>
 
+      <aside class="article-ad ad-slot" aria-label="Advertisement">
+        <span class="ad-label">Advertisements</span>
+        <ins class="adsbygoogle"
+             style="display:block;width:100%;height:250px"
+             data-ad-client="ca-pub-7469113252837951"
+             data-ad-slot="2173866609"></ins>
+      </aside>
+
       <section>
         <h2>Direction and handle length</h2>
         <p>The line from an endpoint to its control point determines the curve's tangent at that end. Rotate the handle and the curve leaves or arrives at a different angle. Move the control point farther away and its influence extends farther through the segment.</p>
@@ -112,6 +122,14 @@ S 210 180, 240 100</code></pre>
         <p>A quadratic <code>Q</code> segment uses one control point for both its departure and arrival behavior. It is compact and useful for simpler bends. A cubic <code>C</code> segment uses two independent control points, so it can represent a wider range of shapes and gives you more control at each end.</p>
         <p>You do not need to convert every quadratic curve into a cubic one. Choose the representation that makes the shape understandable and easy to maintain.</p>
       </section>
+
+      <aside class="article-ad ad-slot" aria-label="Advertisement">
+        <span class="ad-label">Advertisements</span>
+        <ins class="adsbygoogle"
+             style="display:block;width:100%;height:250px"
+             data-ad-client="ca-pub-7469113252837951"
+             data-ad-slot="2173866609"></ins>
+      </aside>
 
       <section>
         <h2>Frequent curve problems</h2>

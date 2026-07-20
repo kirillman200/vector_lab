@@ -16,7 +16,8 @@ const ICONS = {
   duplicate: '<rect x="8" y="8" width="11" height="11" rx="2"/><rect x="5" y="5" width="11" height="11" rx="2"/>',
   forward: '<path d="M12 5l7 7-7 7"/><path d="M5 12h14"/>',
   backward: '<path d="M12 19l-7-7 7-7"/><path d="M5 12h14"/>',
-  slash: '<path d="M4 20L20 4"/>',
+  fillOff: '<path d="M12 3s-6 6.2-6 11a6 6 0 0 0 10.8 3.6"/><path d="M4 20L20 4"/>',
+  strokeOff: '<path d="M4 12h16"/><path d="M4 20L20 4"/>',
   check: '<path d="M20 6L9 17l-5-5"/>'
 };
 

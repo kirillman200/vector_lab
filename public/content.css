@@ -154,6 +154,16 @@ body {
   display: none;
 }
 
+.site-navigation,
+.content-nav {
+  display: flex;
+  align-items: center;
+}
+
+.content-nav {
+  gap: 18px;
+}
+
 site-header,
 site-footer {
   display: block;
@@ -598,7 +608,57 @@ site-footer {
   padding-top: 14px;
 }
 
-@media (max-width: 720px) {
+.article-ad {
+  position: relative;
+  min-height: 282px;
+  display: block;
+  margin: 44px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 30px 0 0;
+  color: var(--muted);
+  text-align: center;
+  overflow: visible;
+}
+
+.article-ad .ad-label {
+  position: absolute;
+  top: 9px;
+  left: 0;
+  right: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.article-ad .adsbygoogle {
+  width: 100%;
+  height: 250px;
+}
+
+.article-ad:not(.ad-slot-active)::before,
+.article-ad.ad-slot-unfilled::before {
+  content: "Reserved ad space";
+  position: absolute;
+  inset: 30px 0 0;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #c8d5e5;
+  border-radius: 10px;
+  color: #7a8da6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.article-ad.ad-slot-unfilled .adsbygoogle {
+  visibility: hidden;
+}
+
+@media (max-width: 900px) {
   .content-header-inner {
     width: min(100% - 28px, 1080px);
     min-height: 58px;
@@ -607,7 +667,7 @@ site-footer {
     gap: 12px;
   }
 
-  .site-menu {
+  .site-navigation {
     position: relative;
   }
 
@@ -682,11 +742,11 @@ site-footer {
     display: inline;
   }
 
-  .site-menu:not([open]) > .content-nav {
+  .site-menu:not([open]) + .content-nav {
     display: none;
   }
 
-  .site-menu > .content-nav {
+  .site-menu + .content-nav {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
@@ -701,7 +761,7 @@ site-footer {
     padding: 8px;
   }
 
-  .site-menu > .content-nav a {
+  .site-menu + .content-nav a {
     min-height: 40px;
     display: flex;
     align-items: center;
@@ -709,7 +769,7 @@ site-footer {
     padding: 0 12px;
   }
 
-  .site-menu > .content-nav a[aria-current="page"] {
+  .site-menu + .content-nav a[aria-current="page"] {
     background: var(--blue-soft);
     text-decoration: none;
   }
@@ -717,6 +777,10 @@ site-footer {
   site-header {
     min-height: 58px;
   }
+
+}
+
+@media (max-width: 720px) {
 
   site-footer {
     min-height: 520px;
@@ -726,6 +790,10 @@ site-footer {
   .content-main.wide {
     width: min(100% - 28px, 900px);
     padding: 44px 0 60px;
+  }
+
+  .article-ad {
+    margin: 36px 0;
   }
 
   .card-grid {

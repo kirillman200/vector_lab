@@ -120,13 +120,24 @@ test("the mobile header uses a native burger menu with working navigation", () =
   assert.match(contentCss, /\.site-menu-label \{[\s\S]*?display: none;/);
   assert.match(contentCss, /\.site-menu\[open\] \.site-menu-icon > span:nth-child\(1\)[\s\S]*?rotate\(45deg\)/);
   assert.match(contentCss, /\.site-menu\[open\] \.site-menu-icon > span:nth-child\(3\)[\s\S]*?rotate\(-45deg\)/);
-  assert.match(contentCss, /\.site-menu:not\(\[open\]\) > \.content-nav \{[\s\S]*?display: none;/);
+  assert.match(contentCss, /\.site-menu:not\(\[open\]\) \+ \.content-nav \{[\s\S]*?display: none;/);
   assert.match(contentCss, /\.content-header \{[\s\S]*?z-index: 100;/);
+  assert.match(
+    contentCss,
+    /@media \(max-width: 900px\) \{[\s\S]*?\.site-menu-label \{[\s\S]*?display: inline-flex;/,
+    "content pages must switch to the same compact-header breakpoint as the editor",
+  );
+  assert.doesNotMatch(
+    contentCss.slice(contentCss.indexOf("@media (max-width: 720px)")),
+    /\.content-header-inner|\.site-menu-label|\.site-menu \+ \.content-nav/,
+    "article and footer mobile rules must not control the header breakpoint",
+  );
 
   const sharedNav = matchOne(header, /<nav class="content-nav"[^>]*>([\s\S]*?)<\/nav>/, "shared primary navigation", "partials/site-header.html");
   const editorNav = matchOne(editor, /<nav class="menu-popover menu-links content-nav"[^>]*>([\s\S]*?)<\/nav>/, "editor primary navigation", "index.html");
   const links = (markup) => [...markup.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(links(editorNav), links(sharedNav), "editor and content headers must expose the same primary links");
+  assert.match(header, /<\/details>\s*<nav class="content-nav"/, "desktop navigation must not be hidden inside a closed details element");
   assert.match(editor, /<details class="action-menu page-menu site-menu">[\s\S]*?site-menu-icon[\s\S]*?site-menu-close-text">Close<\/span>/);
   assert.match(editorCss, /\.topbar \.site-menu\[open\] \.site-menu-icon > span:nth-child\(1\)[\s\S]*?rotate\(45deg\)/);
   assert.match(editorCss, /\.topbar \.site-menu:not\(\[open\]\) > \.content-nav \{[\s\S]*?display: none;/);
@@ -154,15 +165,27 @@ test("shared layout placeholders have a static-host fallback", () => {
 test("content pages avoid loading editor-only dependencies", () => {
   const contentCss = read("content.css");
   const editorCss = read("styles.css");
+  const contentStylesheets = new Set();
   assert.ok(contentCss.length < editorCss.length * 0.5, "content CSS should stay less than half the editor bundle");
 
   for (const file of [...routes.values()].filter((file) => file !== "index.html").concat("404.html")) {
     const html = read(file);
     assert.match(html, /href="\/content\.css(?:\?[^\"]+)?"/, `${file} is missing the content stylesheet`);
+    contentStylesheets.add(matchOne(html, /href="(\/content\.css\?v=[^"]+)"/, "a cache-busted content stylesheet", file));
     assert.doesNotMatch(html, /href="\/?styles\.css"/, `${file} loads the editor stylesheet`);
     const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
-    assert.deepEqual(scripts, ["/js/layout.js"], `${file} loads an unexpected script`);
+    const isGuideArticle = file.startsWith("guides/") && file !== "guides/index.html";
+    const expectedScripts = isGuideArticle
+      ? [
+          "/js/layout.js",
+          "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951",
+          "/js/ads.js?v=20260718b",
+        ]
+      : ["/js/layout.js"];
+    assert.deepEqual(scripts, expectedScripts, `${file} loads an unexpected script`);
   }
+
+  assert.equal(contentStylesheets.size, 1, "every content route must use the same content stylesheet version");
 
   assert.match(read("index.html"), /href="styles\.css(?:\?[^\"]+)?"/);
   assert.doesNotMatch(read("index.html"), /href="\/content\.css"/);
@@ -373,16 +396,19 @@ test("Cloudflare publishes only the public allowlist", () => {
   assert.match(assetsIgnore, /^\*\.pem$/m);
 });
 
-test("every editor tab contains the configured responsive AdSense unit", () => {
+test("the editor banner and every editor tab contain configured AdSense units", () => {
   const html = read("index.html");
   const loaderMatches = html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-7469113252837951/g) || [];
   assert.equal(loaderMatches.length, 1, "the AdSense loader must appear exactly once");
 
   const units = [...html.matchAll(/<ins class="adsbygoogle"([\s\S]*?)<\/ins>/g)];
-  assert.equal(units.length, 5, "one ad unit is required in each editor tab");
+  assert.equal(units.length, 6, "the editor requires one banner and five original panel ads");
   for (const [, attributes] of units) {
     assert.match(attributes, /data-ad-client="ca-pub-7469113252837951"/);
     assert.match(attributes, /data-ad-slot="2173866609"/);
+  }
+  assert.match(units[0][1], /style="display:block;width:100%;height:90px"/);
+  for (const [, attributes] of units.slice(1)) {
     assert.match(attributes, /data-ad-format="auto"/);
     assert.match(attributes, /data-full-width-responsive="true"/);
   }
@@ -398,8 +424,15 @@ test("every editor tab contains the configured responsive AdSense unit", () => {
     assert.notEqual(panelStart, -1, `missing panel ${panelId}`);
     const nextPanel = html.indexOf('class="tab-panel"', panelStart + 1);
     const panelMarkup = html.slice(panelStart, nextPanel === -1 ? html.length : nextPanel);
-    assert.match(panelMarkup, /class="adsbygoogle"/, `${panelId} is missing its ad unit`);
+    assert.match(panelMarkup, /class="adsbygoogle"/, `${panelId} is missing its original ad unit`);
   }
+
+  const headerEnd = html.indexOf("</header>");
+  const shellStart = html.indexOf('<main class="app-shell">');
+  const headerBanner = html.slice(headerEnd, shellStart);
+  assert.match(headerBanner, /class="editor-header-ad ad-slot"/);
+  assert.match(headerBanner, /class="ad-label">Advertisements<\/span>/);
+  assert.match(headerBanner, /class="adsbygoogle"/);
 
   assert.doesNotMatch(html, /adsbygoogle\s*=.*\.push/s, "ad initialization must remain in the external script");
 });
@@ -424,12 +457,37 @@ test("the editor reserves space for startup UI and responsive ads", () => {
   assert.match(html, /id="geometryControls"[^>]*>[\s\S]*?geometry-placeholder/);
   assert.match(css, /\.button-icon-pending:not\(\.button-icon-ready\)::before/);
   assert.match(css, /\.ad-slot \.adsbygoogle \{[\s\S]*?min-height: 250px;/);
+  assert.match(css, /--editor-top-ad-height: 112px;/);
+  assert.match(css, /\.editor-header-ad \.adsbygoogle \{[\s\S]*?height: 90px;/);
+  const editorAdCss = matchOne(css, /\.editor-header-ad \.adsbygoogle \{([^}]*)\}/, "editor banner CSS", "styles.css");
+  assert.match(editorAdCss, /max-width: 100%;/);
+  assert.doesNotMatch(editorAdCss, /max-width: 970px;/);
   assert.match(css, /content: "Reserved ad space"/);
   assert.doesNotMatch(css, /\.ad-slot-unfilled\s*\{[\s\S]*?visibility:\s*hidden/);
-  assert.match(css, /height: calc\(100svh - 70px\);/);
+  assert.match(css, /min-height: max\(620px, calc\(100svh - 70px - var\(--editor-top-ad-height\)\)\);/);
   assert.match(css, /\.content-header-inner \{[\s\S]*?min-height: 70px;/);
   assert.match(icons, /classList\.add\("button-icon-ready"\)/);
   assert.match(app, /geometryPlaceholder\.className = "learn-panel geometry-placeholder"/);
+});
+
+test("editor panels expand to fit original ads and use slim overflow scrollbars", () => {
+  const css = read("styles.css");
+  const app = read("js/app.js");
+  const icons = read("js/icons.js");
+
+  assert.match(css, /\*::-webkit-scrollbar \{[\s\S]*?width: 7px;[\s\S]*?height: 7px;/);
+  assert.match(css, /\* \{[\s\S]*?scrollbar-width: thin;/);
+  assert.match(css, /\.inspector-panel > \.tab-panel \{[\s\S]*?flex: 0 0 auto;[\s\S]*?overflow: visible;/);
+  assert.match(css, /\.app-shell \{[\s\S]*?height: auto;[\s\S]*?grid-template-rows: minmax\(620px, auto\);/);
+  assert.match(css, /@media \(max-width: 1120px\)[\s\S]*?\.app-shell \{[\s\S]*?height: auto;[\s\S]*?grid-template-rows: minmax\(360px, 60svh\) auto;/);
+  assert.match(css, /@media \(max-width: 900px\)[\s\S]*?\.topbar \{[\s\S]*?min-height: 120px;/);
+  assert.match(css, /\.control-grid \.color-field \{[\s\S]*?grid-column: 1 \/ -1;/);
+  assert.match(css, /\.alpha-color output \{[\s\S]*?min-width: 38px;[\s\S]*?white-space: nowrap;/);
+  assert.doesNotMatch(css, /\.tab-panel \{[\s\S]*?scrollbar-gutter: stable;/);
+  assert.match(icons, /fillOff:/);
+  assert.match(icons, /strokeOff:/);
+  assert.match(app, /\[els\.fillNoneBtn, "fillOff"\]/);
+  assert.match(app, /\[els\.strokeNoneBtn, "strokeOff"\]/);
 });
 
 test("canvas zoom is isolated from serialized SVG source", () => {
@@ -445,7 +503,27 @@ test("canvas zoom is isolated from serialized SVG source", () => {
   assert.doesNotMatch(css, /grid-template-rows: minmax\(58svh, 1fr\) auto auto;/);
   assert.match(ads, /function protectEditorLayoutSizing\(\)/);
   assert.match(ads, /element\.style\.removeProperty\(property\)/);
-  assert.match(ads, /observer\.observe\(shell, \{ attributes: true, attributeFilter: \["style"\], subtree: true \}\)/);
+  assert.match(ads, /observer\.observe\(document\.body, \{ attributes: true, attributeFilter: \["style"\], subtree: true \}\)/);
+});
+
+test("guide articles include two stable, clearly labeled ad placements", () => {
+  const guideFiles = [...routes.entries()]
+    .filter(([route]) => route.startsWith("/guides/") && route !== "/guides/")
+    .map(([, file]) => file);
+
+  for (const file of guideFiles) {
+    const html = read(file);
+    assert.equal((html.match(/class="article-ad ad-slot"/g) || []).length, 2, `${file} must have two article ads`);
+    assert.equal((html.match(/class="ad-label">Advertisements<\/span>/g) || []).length, 2, `${file} must label both ads`);
+    assert.equal((html.match(/class="adsbygoogle"/g) || []).length, 2, `${file} must have two responsive ad units`);
+    assert.equal((html.match(/style="display:block;width:100%;height:250px"/g) || []).length, 2, `${file} must reserve both ad heights`);
+    assert.equal((html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/g) || []).length, 1, `${file} must load AdSense once`);
+  }
+
+  const css = read("content.css");
+  assert.match(css, /\.article-ad \{[\s\S]*?min-height: 282px;/);
+  assert.match(css, /\.article-ad \.adsbygoogle \{[\s\S]*?height: 250px;/);
+  assert.match(css, /\.article-ad:not\(\.ad-slot-active\)::before,[\s\S]*?content: "Reserved ad space";/);
 });
 
 test("path command fields update the current command after overlay rerenders", () => {
