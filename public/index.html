@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Free Online SVG Editor — SVG Vector Lab</title>
+  <title>Free Online SVG Editor | SVG Vector Lab</title>
   <meta name="description" content="Edit SVG paths, points, shapes and attributes online with live source, undo, and SVG/PNG export. Free, no signup, and no file uploads.">
   <meta name="robots" content="index, follow">
   <meta name="author" content="SVG Vector Lab">
@@ -18,14 +18,14 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="styles.css?v=20260719b">
+  <link rel="stylesheet" href="styles.css?v=20260721b">
   <script src="/js/layout.js" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SVG Vector Lab">
-  <meta property="og:title" content="Free Online SVG Editor — SVG Vector Lab">
+  <meta property="og:title" content="Free Online SVG Editor | SVG Vector Lab">
   <meta property="og:description" content="Edit SVG paths, points, shapes and attributes with live source, undo, and SVG/PNG export. Free, with no signup or file uploads.">
   <meta property="og:url" content="https://svgvectorlab.com/">
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
@@ -36,9 +36,10 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SVG Vector Lab — Free Online SVG Editor">
+  <meta name="twitter:title" content="SVG Vector Lab | Free Online SVG Editor">
   <meta name="twitter:description" content="Edit SVG paths, points, shapes, attributes and transforms visually in your browser. Free, open source, nothing uploaded.">
   <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta name="twitter:image:alt" content="SVG Vector Lab social preview with SVG source, a Bezier curve canvas, and path inspector">
 
   <script type="application/ld+json">
   {
@@ -84,7 +85,7 @@
       {
         "@type": "Question",
         "name": "Which SVG elements can I edit?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Paths, rectangles, circles, ellipses, lines, polylines, polygons, text, groups, and use references — including their attributes, transforms, fill and stroke, and for paths every individual command and point." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Paths, rectangles, circles, ellipses, lines, polylines, polygons, text, groups, and use references, including their attributes, transforms, fill and stroke, and for paths every individual command and point." }
       },
       {
         "@type": "Question",
@@ -99,7 +100,7 @@
       {
         "@type": "Question",
         "name": "Does SVG Vector Lab work offline?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is a static page with no server dependency — once loaded it keeps working offline, and you can also download the project and open index.html directly from your disk." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is a static page with no server dependency. Once loaded it keeps working offline, and you can also download the project and open index.html directly from your disk." }
       }
     ]
   }
@@ -108,29 +109,16 @@
 <body>
   <header class="topbar">
     <div class="topbar-title">
-      <a class="brand-mark site-brand" href="/" aria-label="SVG Vector Lab home"><img src="/favicon.svg" width="26" height="26" alt=""><span><span class="brand-svg">SVG</span> <span class="brand-name">Vector Lab</span></span></a>
+      <a class="brand-mark site-brand" href="/" aria-label="SVG Vector Lab home"><img src="/favicon.svg" width="26" height="26" alt="SVG Vector Lab logo"><span><span class="brand-svg">SVG</span> <span class="brand-name">Vector Lab</span></span></a>
       <h1>Free Online SVG Editor for Paths, Points &amp; Attributes</h1>
     </div>
     <div class="top-actions">
-      <details class="action-menu page-menu site-menu">
-        <summary class="site-menu-label">
-          <span class="site-menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
-          <span class="site-menu-open-text">Menu</span>
-          <span class="site-menu-close-text">Close</span>
-        </summary>
-        <nav class="menu-popover menu-links content-nav" aria-label="Primary navigation">
-          <a href="/" aria-current="page">Open editor</a>
-          <a href="/free-svg-editor/">Features</a>
-          <a href="/guides/">Guides</a>
-          <a href="/about/">About</a>
-          <a href="/contact/">Contact</a>
-        </nav>
-      </details>
       <button id="loadSampleBtn" class="button-icon-pending" title="Load sample SVG">Sample</button>
       <label class="file-button primary-action" title="Open an SVG file">
         Open
         <input id="fileInput" type="file" accept=".svg,image/svg+xml">
       </label>
+      <button id="saveLocalBtn" class="button-icon-pending" title="Create a named checkpoint in this browser. Your SVG never leaves this device.">Checkpoint</button>
       <details class="action-menu">
         <summary>Export</summary>
         <div class="menu-popover export-menu">
@@ -145,6 +133,10 @@
               <option value="8">8x</option>
             </select>
           </label>
+          <div class="export-dimensions" title="Optional custom PNG dimensions. Leave blank to use the scale above.">
+            <label>Width <input id="pngWidthInput" type="number" min="1" step="1" placeholder="auto"></label>
+            <label>Height <input id="pngHeightInput" type="number" min="1" step="1" placeholder="auto"></label>
+          </div>
           <button id="downloadPngBtn" class="button-icon-pending" title="Download current image as PNG">Download PNG</button>
         </div>
       </details>
@@ -155,12 +147,37 @@
             <span>Canvas background</span>
             <span class="color-picker">
               <input id="backgroundInput" type="color" value="#ffffff" aria-label="Canvas background color">
-              <input id="backgroundHexInput" class="color-hex-input" type="text" value="#ffffff" maxlength="7" spellcheck="false" aria-label="Canvas background hex color">
+              <input id="backgroundHexInput" class="color-hex-input" type="text" value="#ffffff" spellcheck="false" aria-label="Canvas background color in HEX, RGB, or HSL">
             </span>
-            <input id="backgroundAlphaInput" type="range" min="0" max="100" step="1" value="100">
+            <input id="backgroundAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Canvas background opacity">
             <output id="backgroundAlphaOutput">100%</output>
           </label>
+          <fieldset class="canvas-size-control">
+            <legend>Canvas size</legend>
+            <label>Width <input id="canvasWidthInput" type="number" min="1" step="1" value="640"></label>
+            <label>Height <input id="canvasHeightInput" type="number" min="1" step="1" value="420"></label>
+            <label class="check-control"><input id="canvasRatioToggle" type="checkbox" checked> Lock aspect ratio</label>
+            <button id="applyCanvasSizeBtn" type="button">Apply canvas size</button>
+          </fieldset>
+          <div class="checkpoint-control">
+            <span id="checkpointMeta">No saved checkpoint</span>
+            <button id="restoreLocalBtn" type="button">Restore checkpoint</button>
+          </div>
         </div>
+      </details>
+      <details class="action-menu page-menu site-menu">
+        <summary class="site-menu-label">
+          <span class="site-menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span class="site-menu-open-text">Menu</span>
+          <span class="site-menu-close-text">Close</span>
+        </summary>
+        <nav class="menu-popover menu-links content-nav" aria-label="Primary navigation">
+          <a href="/" aria-current="page">Open editor</a>
+          <a href="/free-svg-editor/">Features</a>
+          <a href="/guides/">Guides</a>
+          <a href="/about/">About</a>
+          <a href="/contact/">Contact</a>
+        </nav>
       </details>
     </div>
   </header>
@@ -178,6 +195,8 @@
       <div class="panel-tabs" role="tablist" aria-label="Source panel views">
         <button class="panel-tab active" id="left-source-tab" role="tab" aria-selected="true" aria-controls="left-source-panel" data-tab-target="left-source-panel">Source</button>
         <button class="panel-tab" id="left-layers-tab" role="tab" aria-selected="false" aria-controls="left-layers-panel" data-tab-target="left-layers-panel" tabindex="-1">Layers</button>
+        <button class="panel-tab" id="left-add-tab" role="tab" aria-selected="false" aria-controls="left-add-panel" data-tab-target="left-add-panel" tabindex="-1">Add</button>
+        <button class="panel-close" type="button" data-close-panel="source" aria-label="Close Source, Layers, and Add drawer">Close</button>
       </div>
 
       <div class="tab-panel source-tab-panel" id="left-source-panel" role="tabpanel" aria-labelledby="left-source-tab">
@@ -187,7 +206,6 @@
             <button id="loadInputBtn" class="button-icon-pending">Apply</button>
           </div>
           <textarea id="svgInput" spellcheck="false" aria-label="SVG source code"></textarea>
-          <div id="statusLine" class="status-line">Ready.</div>
           <aside class="ad-slot ad-slot-compact" aria-label="Advertisement">
             <ins class="adsbygoogle"
                  style="display:block"
@@ -196,6 +214,39 @@
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
           </aside>
+        </section>
+      </div>
+
+      <div class="tab-panel" id="left-add-panel" role="tabpanel" aria-labelledby="left-add-tab" hidden>
+        <section class="panel-block add-library">
+          <div class="panel-heading">Add to this design</div>
+          <p class="panel-intro">New elements use the current paint settings and are placed in the center of the canvas.</p>
+          <div class="add-section">
+            <div class="add-section-title">Shapes</div>
+            <div class="add-grid">
+              <button data-add-shape="rect">Rectangle</button>
+              <button data-add-shape="ellipse">Ellipse</button>
+              <button data-add-shape="line">Line</button>
+              <button data-add-shape="polygon">Polygon</button>
+              <button data-add-shape="text">Text</button>
+            </div>
+          </div>
+          <div class="add-section">
+            <div class="add-section-title">Icons</div>
+            <div class="add-grid">
+              <button data-add-shape="star">Star</button>
+              <button data-add-shape="heart">Heart</button>
+              <button data-add-shape="check">Check</button>
+            </div>
+          </div>
+          <div class="add-section">
+            <div class="add-section-title">Draw and import</div>
+            <div class="add-grid">
+              <button id="freehandToolBtn">Freehand</button>
+              <button id="penToolBtn">Pen / Bezier</button>
+              <label class="file-button image-file-button">Insert image<input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+            </div>
+          </div>
         </section>
       </div>
 
@@ -221,10 +272,14 @@
     </aside>
 
     <section class="work-area">
+      <div id="statusLine" class="status-line" role="status" aria-live="polite" aria-atomic="true">Ready.</div>
       <div class="canvas-toolbar">
         <button id="undoBtn" class="button-icon-pending icon-only" title="Undo last SVG edit">Undo</button>
         <button id="redoBtn" class="button-icon-pending icon-only" title="Redo last undone SVG edit">Redo</button>
+        <button id="handToolBtn" class="button-icon-pending icon-only" title="Hand tool: drag the canvas to pan (H or hold Space)" aria-pressed="false">Hand tool</button>
         <button id="fitBtn" class="button-icon-pending" title="Fit SVG to view (Space-drag pans, Ctrl+wheel zooms)">Fit</button>
+        <button id="mobileSourceBtn" class="mobile-panel-toggle" type="button" aria-pressed="false">Source</button>
+        <button id="mobileInspectorBtn" class="mobile-panel-toggle" type="button" aria-pressed="false">Inspector</button>
         <details class="toolbar-menu">
           <summary>Zoom</summary>
           <div class="menu-popover canvas-popover">
@@ -247,19 +302,57 @@
           <summary>Edit</summary>
           <div class="menu-popover canvas-popover menu-button-stack">
             <button id="convertPathBtn" class="button-icon-pending" title="Convert selected basic shape into editable SVG path commands">Convert to path</button>
+            <button id="groupBtn" title="Group selected objects (Ctrl+G)">Group selection</button>
+            <button id="ungroupBtn" title="Ungroup the selected group (Ctrl+Shift+G)">Ungroup</button>
             <button id="duplicateBtn" class="button-icon-pending icon-only" title="Duplicate selected vector">Duplicate</button>
             <button id="deleteBtn" class="button-icon-pending icon-only" title="Delete selected vector">Delete</button>
           </div>
         </details>
         <details class="toolbar-menu">
+          <summary>Arrange</summary>
+          <div class="menu-popover canvas-popover arrange-menu-grid">
+            <button data-align="left">Align left</button>
+            <button data-align="center">Align center</button>
+            <button data-align="right">Align right</button>
+            <button data-align="top">Align top</button>
+            <button data-align="middle">Align middle</button>
+            <button data-align="bottom">Align bottom</button>
+            <button data-distribute="horizontal">Distribute horizontally</button>
+            <button data-distribute="vertical">Distribute vertically</button>
+          </div>
+        </details>
+        <details class="toolbar-menu">
           <summary>View</summary>
           <div class="menu-popover canvas-popover menu-button-stack">
-            <label class="snap-control" title="Snap dragged path points to other elements">
-              <input id="snapToggle" type="checkbox">
-              <span>Snap points</span>
+            <label class="snap-control" title="Show or hide the canvas grid">
+              <input id="gridToggle" type="checkbox" checked>
+              <span>Show grid</span>
             </label>
-            <button id="toggleSourceBtn" class="button-icon-pending icon-only" title="Hide or show source and layer panels">Source panel</button>
-            <button id="toggleInspectorBtn" class="button-icon-pending icon-only" title="Hide or show inspector panel">Inspector panel</button>
+            <label class="grid-size-control">Grid size <input id="gridSizeInput" type="number" min="2" max="256" step="1" value="16"></label>
+            <label class="snap-control" title="Snap dragged objects and path points to the grid and other elements">
+              <input id="snapToggle" type="checkbox">
+              <span>Snap to grid and objects</span>
+            </label>
+            <button id="toggleSourceBtn" class="button-icon-pending icon-only" title="Hide or show source, layer, and add panels" aria-pressed="true">Source panel</button>
+            <button id="toggleInspectorBtn" class="button-icon-pending icon-only" title="Hide or show inspector panel" aria-pressed="true">Inspector panel</button>
+          </div>
+        </details>
+        <details class="toolbar-menu shortcut-menu">
+          <summary>Shortcuts</summary>
+          <div class="menu-popover canvas-popover shortcut-grid" aria-label="Keyboard shortcut guide">
+            <kbd>Ctrl+Z</kbd><span>Undo</span>
+            <kbd>Ctrl+Shift+Z</kbd><span>Redo</span>
+            <kbd>Ctrl+C / Ctrl+V</kbd><span>Copy / paste objects</span>
+            <kbd>Ctrl+D</kbd><span>Duplicate</span>
+            <kbd>Ctrl+G</kbd><span>Group selection</span>
+            <kbd>Delete</kbd><span>Delete selection</span>
+            <kbd>Arrow keys</kbd><span>Nudge selection</span>
+            <kbd>Shift+Arrow</kbd><span>Nudge 10 units</span>
+            <kbd>H</kbd><span>Toggle hand tool</span>
+            <kbd>Space+drag</kbd><span>Temporarily pan</span>
+            <kbd>Ctrl+wheel</kbd><span>Zoom at pointer</span>
+            <kbd>Shift+click</kbd><span>Multi-select</span>
+            <kbd>Enter / Esc</kbd><span>Finish / cancel drawing</span>
           </div>
         </details>
       </div>
@@ -274,6 +367,7 @@
         <button class="panel-tab active" id="right-design-tab" role="tab" aria-selected="true" aria-controls="right-design-panel" data-tab-target="right-design-panel">Design</button>
         <button class="panel-tab" id="right-path-tab" role="tab" aria-selected="false" aria-controls="right-path-panel" data-tab-target="right-path-panel" tabindex="-1">Path</button>
         <button class="panel-tab" id="right-notes-tab" role="tab" aria-selected="false" aria-controls="right-notes-panel" data-tab-target="right-notes-panel" tabindex="-1">Notes</button>
+        <button class="panel-close" type="button" data-close-panel="inspector" aria-label="Close Inspector drawer">Close</button>
       </div>
 
       <div class="tab-panel" id="right-design-panel" role="tabpanel" aria-labelledby="right-design-tab">
@@ -283,15 +377,19 @@
             <span id="selectedName" class="selected-name">None</span>
           </div>
           <div class="control-grid">
-            <label class="color-field">Fill <span class="alpha-color"><span class="color-picker"><input id="fillInput" type="color" value="#4e7cff" aria-label="Fill color"><input id="fillHexInput" class="color-hex-input" type="text" value="#4e7cff" maxlength="7" spellcheck="false" aria-label="Fill hex color"></span><input id="fillAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Fill opacity"><output id="fillAlphaOutput">100%</output></span></label>
-            <label class="color-field">Stroke <span class="alpha-color"><span class="color-picker"><input id="strokeInput" type="color" value="#1d2733" aria-label="Stroke color"><input id="strokeHexInput" class="color-hex-input" type="text" value="#1d2733" maxlength="7" spellcheck="false" aria-label="Stroke hex color"></span><input id="strokeAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Stroke opacity"><output id="strokeAlphaOutput">100%</output></span></label>
+            <label class="color-field">Fill <span class="alpha-color"><span class="color-picker"><input id="fillInput" type="color" value="#4e7cff" aria-label="Fill color"><input id="fillHexInput" class="color-hex-input" type="text" value="#4e7cff" spellcheck="false" aria-label="Fill color in HEX, RGB, or HSL"></span><input id="fillAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Fill opacity"><output id="fillAlphaOutput">100%</output></span></label>
+            <label class="color-field">Stroke <span class="alpha-color"><span class="color-picker"><input id="strokeInput" type="color" value="#1d2733" aria-label="Stroke color"><input id="strokeHexInput" class="color-hex-input" type="text" value="#1d2733" spellcheck="false" aria-label="Stroke color in HEX, RGB, or HSL"></span><input id="strokeAlphaInput" type="range" min="0" max="100" step="1" value="100" aria-label="Stroke opacity"><output id="strokeAlphaOutput">100%</output></span></label>
             <label>Stroke width <input id="strokeWidthInput" type="number" step="0.25"></label>
             <label>Opacity <input id="opacityInput" type="number" min="0" max="1" step="0.05"></label>
+            <label>Stroke ends <select id="strokeLinecapInput"><option value="">Default</option><option value="butt">Butt</option><option value="round">Round</option><option value="square">Square</option></select></label>
+            <label>Stroke joins <select id="strokeLinejoinInput"><option value="">Default</option><option value="miter">Miter</option><option value="round">Round</option><option value="bevel">Bevel</option></select></label>
+            <label>Stroke dash <input id="strokeDashInput" type="text" placeholder="e.g. 8 4"></label>
           </div>
           <div class="inspector-actions">
             <div class="action-group" role="group" aria-label="Remove paint">
               <button id="fillNoneBtn" class="button-icon-pending">Remove fill</button>
               <button id="strokeNoneBtn" class="button-icon-pending">Remove stroke</button>
+              <button id="gradientBtn">Add gradient</button>
             </div>
             <div class="action-group" role="group" aria-label="Layer order">
               <button id="sendBackwardBtn" class="button-icon-pending">Send backward</button>
@@ -302,6 +400,7 @@
 
         <section class="panel-block">
           <div class="panel-heading">Geometry</div>
+          <div id="dimensionSummary" class="dimension-summary" aria-live="polite">Select a vector to see local and rendered dimensions.</div>
           <div id="geometryControls" class="control-grid"><div class="learn-panel geometry-placeholder">Select a vector to edit its geometry.</div></div>
         </section>
 
@@ -312,6 +411,7 @@
             <label>Move Y <input id="translateYInput" type="number" step="1" value="0"></label>
             <label>Scale <input id="scaleInput" type="number" step="0.05" value="1"></label>
             <label>Rotate <input id="rotateInput" type="number" step="1" value="0"></label>
+            <label class="check-control"><input id="objectRatioToggle" type="checkbox" checked> Lock resize aspect ratio</label>
           </div>
           <button id="applyTransformBtn" class="wide-button button-icon-pending">Apply transform</button>
         </section>
@@ -332,7 +432,15 @@
             <button id="normalizePathBtn" class="button-icon-pending">Normalize</button>
           </div>
           <textarea id="pathInput" spellcheck="false" aria-label="Selected path data"></textarea>
-          <div id="pathTable" class="path-table"></div>
+          <div class="path-actions" role="group" aria-label="Path node actions">
+            <button id="addNodeBtn">Add node</button>
+            <button id="removeNodeBtn">Remove node</button>
+            <button id="straightNodeBtn">Make straight</button>
+            <button id="curveNodeBtn">Make curved</button>
+            <button id="closePathBtn">Close path</button>
+            <button id="joinPathsBtn">Join selected paths</button>
+          </div>
+          <div id="pathTable" class="path-table" role="grid" aria-label="Path commands"></div>
         </section>
 
         <section class="panel-block">
@@ -358,6 +466,7 @@
         <section class="panel-block learn-block">
           <div class="panel-heading">Vector notes</div>
           <div id="learnPanel" class="learn-panel">Select a vector to inspect how its coordinates and drawing commands work.</div>
+          <div class="shortcut-note"><strong>Editing tip:</strong> use <kbd>Ctrl+Z</kbd> to undo, <kbd>Ctrl+Shift+Z</kbd> to redo, <kbd>Shift</kbd> for multi-select, and <kbd>Space</kbd> while dragging to pan.</div>
           <aside class="ad-slot" aria-label="Advertisement">
             <ins class="adsbygoogle"
                  style="display:block"
@@ -371,20 +480,56 @@
     </aside>
   </main>
 
+  <dialog id="pasteDialog" class="paste-dialog" aria-labelledby="pasteDialogTitle">
+    <form method="dialog">
+      <div class="dialog-kicker">SVG clipboard detected</div>
+      <h2 id="pasteDialogTitle">How should this SVG be pasted?</h2>
+      <p>Paste its child elements into the current design, or replace the entire current document.</p>
+      <div class="dialog-actions">
+        <button id="pasteAsObjectsBtn" type="button" value="objects">Paste as objects</button>
+        <button id="replaceFromPasteBtn" type="button" value="replace" class="danger-action">Replace current document</button>
+        <button type="submit" value="cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <section class="editor-home-copy" aria-labelledby="editor-home-copy-title">
+    <div class="editor-home-copy-heading">
+      <span class="eyebrow">Edit vectors in your browser</span>
+      <h2 id="editor-home-copy-title">A free online SVG editor for paths, points, and attributes</h2>
+    </div>
+    <div class="editor-home-copy-grid">
+      <div>
+        <h3>Open and edit real SVG files</h3>
+        <p>SVG Vector Lab is a free online SVG editor built for people who want direct control over paths, points, and attributes without installing desktop software. Open an SVG file, paste SVG source code, or load the sample drawing to begin. The canvas and source panel stay synchronized, so visual edits remain part of the real SVG structure instead of being flattened into an image.</p>
+        <p>Select an object to move, resize, rotate, duplicate, group, align, or reorder it. You can edit fill and stroke colours, opacity, line styles, transforms, geometry values, and individual path commands. Rectangle, ellipse, line, polygon, text, image, freehand, and Pen tools are available when you need to add new artwork. Grid snapping and adjustable zoom help with precise edits.</p>
+      </div>
+      <div>
+        <h3>Keep your work private and portable</h3>
+        <p>Your files are processed locally in the browser. SVG Vector Lab does not upload your artwork to our servers, require an account, or store a copy of your design. Autosave and the Save button use storage in this browser on this device. For a portable backup, download a clean SVG or export a transparent PNG at a preset scale or custom width and height.</p>
+        <p>The editor preserves the SVG viewBox, aspect ratio, and transparent background when possible. You can also choose a custom canvas background, resize the SVG canvas without stretching the artwork, and inspect the generated markup before downloading. Undo and redo are available from the toolbar or with Ctrl+Z and Ctrl+Shift+Z, while the Shortcuts menu lists selection, grouping, panning, zooming, and drawing commands.</p>
+      </div>
+      <div>
+        <h3>Learn while you make changes</h3>
+        <p>SVG files are editable documents made from elements such as paths, shapes, text, groups, and definitions. The Layers panel makes those objects visible, while the Path panel exposes nodes and commands for detailed adjustments. If you are learning SVG, start with the <a href="/guides/edit-svg-paths/">path editing guide</a>, review how the <a href="/guides/svg-viewbox/">SVG viewBox</a> controls scaling, or explore the complete <a href="/free-svg-editor/">editor feature overview</a>.</p>
+      </div>
+    </div>
+  </section>
+
   <noscript>
     <div class="noscript-note">
       SVG Vector Lab is a free, in-browser SVG editor for paths, points, shapes, attributes, and transforms.
-      It needs JavaScript to run — please enable JavaScript, then reload this page.
+      It needs JavaScript to run. Please enable JavaScript, then reload this page.
     </div>
   </noscript>
 
   <site-footer></site-footer>
 
   <script src="js/path-data.js"></script>
-  <script src="js/svg-utils.js"></script>
-  <script src="js/icons.js?v=20260719a"></script>
+  <script src="js/svg-utils.js?v=20260721a"></script>
+  <script src="js/icons.js?v=20260721a"></script>
   <script src="js/ads.js?v=20260718b"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=20260721a"></script>
   <script src="js/webmcp.js"></script>
 </body>
 </html>

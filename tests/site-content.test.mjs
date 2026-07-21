@@ -94,6 +94,45 @@ test("root-relative internal links resolve to files", () => {
   }
 });
 
+test("every published image has descriptive alternative text", () => {
+  const htmlFiles = [
+    ...routes.values(),
+    "404.html",
+    "partials/site-header.html",
+    "partials/site-footer.html",
+  ];
+
+  for (const file of htmlFiles) {
+    const html = read(file);
+    for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
+      assert.match(match[0], /\salt="[^"]+"/i, `${file} has an image without descriptive alt text`);
+    }
+
+    if (/property="og:image"/.test(html)) {
+      assert.match(html, /property="og:image:alt"\s+content="[^"]+"/, `${file} is missing Open Graph image alt text`);
+    }
+    if (/name="twitter:image"/.test(html)) {
+      assert.match(html, /name="twitter:image:alt"\s+content="[^"]+"/, `${file} is missing Twitter image alt text`);
+    }
+  }
+});
+
+test("landing page previews use the current editor screenshot dimensions", () => {
+  for (const file of [
+    "free-svg-editor/index.html",
+    "edit-svg-online/index.html",
+    "svg-path-editor/index.html",
+    "convert-shapes-to-paths/index.html",
+    "svg-to-png/index.html",
+  ]) {
+    assert.match(
+      read(file),
+      /<img\s+src="\/docs\/screenshot\.webp"\s+width="1270"\s+height="714"\s+alt="[^"]+"/,
+      `${file} is not using the current editor screenshot metadata`,
+    );
+  }
+});
+
 test("every HTML page links to the free editor landing page", () => {
   for (const file of [...routes.values(), "404.html"]) {
     assert.match(
@@ -222,6 +261,28 @@ test("homepage exposes a clean document outline", () => {
   const heading = matchOne(html, /<h1>([^<]+)<\/h1>/i, "a direct H1", "index.html");
   assert.ok(heading.length >= 20, `homepage H1 is too short: ${heading.length} characters`);
   assert.doesNotMatch(appMarkup, /<h[1-6]\b/, "editor panel labels must not alter the page heading outline");
+});
+
+test("homepage includes useful paragraph content using the editor H1 topic", () => {
+  const html = read("index.html");
+  const content = matchOne(
+    html,
+    /<section class="editor-home-copy"[\s\S]*?>([\s\S]*?)<\/section>/,
+    "editor homepage copy",
+    "index.html",
+  );
+  const paragraphs = [...content.matchAll(/<p>([\s\S]*?)<\/p>/g)].map((match) => match[1]);
+  const plainText = content
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&(?:amp|nbsp);/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const wordCount = plainText.match(/[A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*/g)?.length || 0;
+
+  assert.ok(paragraphs.length >= 3, "homepage needs multiple useful paragraphs");
+  assert.ok(wordCount >= 250, `homepage editor copy has only ${wordCount} words`);
+  assert.match(plainText, /free online SVG editor/i);
+  assert.match(plainText, /paths, points, and attributes/i);
 });
 
 test("homepage search metadata stays within snippet-safe lengths", () => {
@@ -477,7 +538,7 @@ test("editor panels expand to fit original ads and use slim overflow scrollbars"
 
   assert.match(css, /\*::-webkit-scrollbar \{[\s\S]*?width: 7px;[\s\S]*?height: 7px;/);
   assert.match(css, /\* \{[\s\S]*?scrollbar-width: thin;/);
-  assert.match(css, /\.inspector-panel > \.tab-panel \{[\s\S]*?flex: 0 0 auto;[\s\S]*?overflow: visible;/);
+  assert.match(css, /\.inspector-panel > \.tab-panel \{[\s\S]*?flex: 1 1 auto;[\s\S]*?overflow: auto;/);
   assert.match(css, /\.app-shell \{[\s\S]*?height: auto;[\s\S]*?grid-template-rows: minmax\(620px, auto\);/);
   assert.match(css, /@media \(max-width: 1120px\)[\s\S]*?\.app-shell \{[\s\S]*?height: auto;[\s\S]*?grid-template-rows: minmax\(360px, 60svh\) auto;/);
   assert.match(css, /@media \(max-width: 900px\)[\s\S]*?\.topbar \{[\s\S]*?min-height: 120px;/);
@@ -499,11 +560,87 @@ test("canvas zoom is isolated from serialized SVG source", () => {
   assert.doesNotMatch(app, /svg\.style\.width = .*state\.zoom/);
   assert.doesNotMatch(app, /svg\.style\.height = .*state\.zoom/);
   assert.match(css, /\.svg-zoom-surface > svg \{[\s\S]*?transform: scale\(var\(--canvas-zoom, 1\)\);/);
-  assert.match(css, /grid-template-rows: 58svh auto auto;/);
+  assert.match(css, /grid-template-rows: 72svh;/);
   assert.doesNotMatch(css, /grid-template-rows: minmax\(58svh, 1fr\) auto auto;/);
   assert.match(ads, /function protectEditorLayoutSizing\(\)/);
   assert.match(ads, /element\.style\.removeProperty\(property\)/);
   assert.match(ads, /observer\.observe\(document\.body, \{ attributes: true, attributeFilter: \["style"\], subtree: true \}\)/);
+});
+
+test("launch-essential editor controls are visible and wired", () => {
+  const html = read("index.html");
+  const app = read("js/app.js");
+  const css = read("styles.css");
+
+  for (const id of [
+    "saveLocalBtn",
+    "handToolBtn",
+    "canvasWidthInput",
+    "canvasHeightInput",
+    "gridToggle",
+    "gridSizeInput",
+    "freehandToolBtn",
+    "penToolBtn",
+    "imageInput",
+    "groupBtn",
+    "ungroupBtn",
+    "objectRatioToggle",
+    "gradientBtn",
+    "addNodeBtn",
+    "removeNodeBtn",
+    "closePathBtn",
+    "joinPathsBtn",
+    "pngWidthInput",
+    "pngHeightInput",
+  ]) {
+    assert.match(html, new RegExp(`id="${id}"`), `${id} is missing`);
+  }
+
+  assert.match(html, /Ctrl\+Z[\s\S]*?Undo/);
+  assert.match(html, /Create a named checkpoint in this browser[\s\S]*?never leaves this device/);
+  assert.match(app, /function moveLayerForNode\(node, direction/);
+  assert.match(app, /fillRemoved \? "Add fill" : "Remove fill"/);
+  assert.match(app, /strokeRemoved \? "Add stroke" : "Remove stroke"/);
+  assert.match(app, /localStorage\.setItem\(LOCAL_SAVE_KEY, snapshot\)/);
+  assert.match(app, /event\.returnValue = ""/);
+  assert.match(app, /function groupSelection\(\)/);
+  assert.match(app, /function alignSelection\(kind\)/);
+  assert.match(app, /function startFreehand\(event\)/);
+  assert.match(app, /function addPenPoint\(event\)/);
+  assert.match(css, /\.pan-cursor \{[\s\S]*?mix-blend-mode: difference;/);
+});
+
+test("editor safeguards, compact tabs, and accessible feedback are wired", () => {
+  const html = read("index.html");
+  const app = read("js/app.js");
+  const css = read("styles.css");
+
+  assert.match(html, /id="left-add-tab"[\s\S]*?data-tab-target="left-add-panel"/);
+  assert.match(html, /id="statusLine"[\s\S]*?role="status"[\s\S]*?aria-live="polite"/);
+  assert.match(html, /id="backgroundAlphaInput"[^>]*aria-label="Canvas background opacity"/);
+  assert.match(html, /id="handToolBtn"[^>]*aria-pressed="false"/);
+  assert.match(html, /id="restoreLocalBtn"/);
+  assert.match(html, /id="pasteDialog"[\s\S]*?Paste as objects[\s\S]*?Replace current document/);
+  assert.match(app, /function guardNodeEditable\(node, operation/);
+  assert.match(app, /state\.documentDirty = true/);
+  assert.match(app, /function restoreLocal\(\)/);
+  assert.match(app, /if \(handle\.kind === "control"\) \{[\s\S]*?positionHandleAwayFromElement/);
+  assert.doesNotMatch(app, /window\.prompt\(/);
+  assert.match(css, /\.inspector-panel,[\s\S]*?\.source-panel \{[\s\S]*?position: fixed;/);
+  assert.match(css, /\.status-line\.error \{[\s\S]*?position: fixed;[\s\S]*?z-index: 120;/);
+});
+
+test("text bounding-box clicks select objects instead of clearing the canvas", () => {
+  const app = read("js/app.js");
+  const css = read("styles.css");
+  assert.match(app, /function vectorAtBoundingPoint\(clientX, clientY\)/);
+  assert.match(app, /const selectedRect = screenRectOf\(state\.selected\)/);
+  assert.match(app, /area > 0 && area < rootArea \* 0\.9/);
+  assert.match(app, /const boundingVector = vectorAtBoundingPoint\(event\.clientX, event\.clientY\)/);
+  assert.match(app, /startElementDrag\(event, boundingVector, true\)/);
+  assert.match(app, /drag\.moved \|\| drag\.suppressClickOnUp/);
+  assert.match(css, /\.work-area \{[\s\S]*?align-self: start;[\s\S]*?height: max\(620px, calc\(100svh - 70px - var\(--editor-top-ad-height\)\)\);/);
+  assert.match(css, /@media \(max-width: 1120px\)[\s\S]*?\.work-area \{[\s\S]*?align-self: stretch;[\s\S]*?height: auto;/);
 });
 
 test("guide articles include two stable, clearly labeled ad placements", () => {

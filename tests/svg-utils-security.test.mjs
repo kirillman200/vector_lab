@@ -29,6 +29,7 @@ test("keeps ordinary attributes and local SVG references", () => {
     ["fill", "#4e7cff"],
     ["fill", "url(#gradient)"],
     ["href", "#shape"],
+    ["href", "data:image/png;base64,iVBORw0KGgo="],
     ["stroke-width", "2"],
     ["transform", "translate(10 20)"],
   ];

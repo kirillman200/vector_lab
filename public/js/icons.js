@@ -5,6 +5,8 @@ const ICONS = {
   load: '<path d="M4 20h16"/><path d="M12 4v12"/><path d="M7 9l5-5 5 5"/>',
   copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/>',
   download: '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>',
+  save: '<path d="M5 3h12l2 2v16H5z"/><path d="M8 3v6h8V3"/><path d="M8 21v-8h8v8"/>',
+  hand: '<path d="M7.5 12V7.5a1.5 1.5 0 0 1 3 0V11 5.5a1.5 1.5 0 0 1 3 0V11 6.5a1.5 1.5 0 0 1 3 0V12 9a1.5 1.5 0 0 1 3 0v5c0 4.4-2.6 7-7 7h-1c-2.2 0-3.5-1-4.8-2.7L4 14.8a1.6 1.6 0 0 1 2.4-2.1z"/>',
   refresh: '<path d="M21 12a9 9 0 0 1-15 6.7L3 21v-6h6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 3v6h-6"/>',
   fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
   panelLeft: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 5v14"/>',
@@ -18,6 +20,8 @@ const ICONS = {
   backward: '<path d="M12 19l-7-7 7-7"/><path d="M5 12h14"/>',
   fillOff: '<path d="M12 3s-6 6.2-6 11a6 6 0 0 0 10.8 3.6"/><path d="M4 20L20 4"/>',
   strokeOff: '<path d="M4 12h16"/><path d="M4 20L20 4"/>',
+  fillOn: '<path d="M12 3s-6 6.2-6 11a6 6 0 0 0 12 0c0-4.8-6-11-6-11z"/><path d="M9 14h6"/><path d="M12 11v6"/>',
+  strokeOn: '<path d="M4 12h16"/><path d="M12 7v10"/>',
   check: '<path d="M20 6L9 17l-5-5"/>'
 };
 
