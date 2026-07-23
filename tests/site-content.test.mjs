@@ -400,6 +400,7 @@ test("hosting and advertising files are safe", () => {
   assert.match(headers, /Strict-Transport-Security:/);
   assert.match(headers, /X-Frame-Options: DENY/);
   assert.match(headers, /\/content\.css[\s\S]*?Cache-Control: public, max-age=3600/);
+  assert.match(headers, /\/\.well-known\/security\.txt[\s\S]*?Content-Type: text\/plain; charset=utf-8/);
   assert.match(headers, /\/docs\/\*[\s\S]*?Cache-Control: public, max-age=86400/);
 
   const worker = readRoot("src/worker.mjs");
@@ -416,9 +417,33 @@ test("hosting and advertising files are safe", () => {
   assert.match(worker, /headers\.set\("Link", HOMEPAGE_DISCOVERY_LINKS\)/);
   assert.match(worker, /headers\.set\("Content-Signal", CONTENT_SIGNAL\)/);
   assert.match(worker, /headers\.set\("Content-Type", "text\/html; charset=utf-8"\)/);
+  assert.match(worker, /url\.pathname === "\/\.well-known\/security\.txt"/);
+  assert.match(worker, /headers\.set\("Content-Type", "text\/plain; charset=utf-8"\)/);
   assert.match(worker, /text\/markdown; charset=utf-8/);
   assert.match(worker, /x-markdown-tokens/);
   assert.ok((worker.match(/appendVary\(headers, "Accept"\)/g) || []).length >= 2);
+});
+
+test("security.txt follows the RFC 9116 publication contract", () => {
+  const securityTxt = read(".well-known/security.txt");
+  const fields = securityTxt
+    .split(/\r?\n/)
+    .filter((line) => line && !line.startsWith("#"))
+    .map((line) => line.split(":", 1)[0]);
+
+  assert.ok(fields.includes("Contact"), "security.txt requires at least one Contact field");
+  assert.equal(fields.filter((field) => field === "Expires").length, 1, "security.txt requires exactly one Expires field");
+  assert.match(securityTxt, /^Contact: mailto:contact@svgvectorlab\.com\?subject=SVG%20Vector%20Lab%20security%20report$/m);
+  assert.match(securityTxt, /^Contact: https:\/\/svgvectorlab\.com\/contact\/$/m);
+  assert.match(securityTxt, /^Expires: 2027-07-01T00:00:00Z$/m);
+  assert.match(securityTxt, /^Preferred-Languages: en$/m);
+  assert.match(securityTxt, /^Canonical: https:\/\/svgvectorlab\.com\/\.well-known\/security\.txt$/m);
+  assert.match(securityTxt, /^Policy: https:\/\/github\.com\/kirillman200\/vector_lab\/security\/policy$/m);
+
+  const expires = new Date(matchOne(securityTxt, /^Expires: (.+)$/m, "an expiry timestamp", ".well-known/security.txt"));
+  assert.equal(Number.isNaN(expires.valueOf()), false, "security.txt expiry must be a valid RFC 3339 timestamp");
+  assert.ok(expires > new Date("2026-07-23T00:00:00Z"), "security.txt must not already be stale");
+  assert.ok(expires < new Date("2027-07-23T00:00:00Z"), "security.txt expiry should be less than one year ahead");
 });
 
 test("Cloudflare publishes only the public allowlist", () => {

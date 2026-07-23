@@ -56,6 +56,25 @@ test("homepage markdown responses include discovery and variant headers", async 
   assert.match(await response.text(), /^# Example & Test$/m);
 });
 
+test("security.txt is served as RFC 9116 plain text", async () => {
+  const body = "Contact: mailto:contact@svgvectorlab.com\nExpires: 2027-07-01T00:00:00Z\n";
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response(body, {
+        headers: { "Content-Type": "application/octet-stream" },
+      }),
+    },
+  };
+  const response = await worker.fetch(
+    new Request("https://svgvectorlab.com/.well-known/security.txt"),
+    env,
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Content-Type"), "text/plain; charset=utf-8");
+  assert.equal(await response.text(), body);
+});
+
 test("shared layout partials are composed before markdown conversion", async () => {
   const page = `<!doctype html><html><head><title>Layout test</title></head><body><site-header></site-header><main><h1>Page</h1></main><site-footer></site-footer></body></html>`;
   const env = {

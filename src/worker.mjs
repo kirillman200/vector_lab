@@ -196,6 +196,9 @@ export default {
     }
 
     const contentType = response.headers.get("content-type") || "";
+    if (url.pathname === "/.well-known/security.txt") {
+      headers.set("Content-Type", "text/plain; charset=utf-8");
+    }
     if (url.pathname.endsWith(".md")) {
       headers.set("Content-Type", "text/markdown; charset=utf-8");
     }

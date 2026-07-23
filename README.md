@@ -48,7 +48,7 @@ Content routes use the small `content.css` bundle and no production page JavaScr
 
 The production origin is `https://svgvectorlab.com`. Canonical URLs, social metadata, structured data, `robots.txt`, and `sitemap.xml` all use that origin.
 
-Cloudflare publishes only the `public/` directory. Repository metadata, tests, documentation, and Wrangler configuration stay outside the web root. The static `_headers` file sets browser protections, while `src/worker.mjs` adds a fresh script nonce and Content Security Policy to every HTML response so AdSense can run under Google's supported strict-CSP model.
+Cloudflare publishes only the `public/` directory. Repository metadata, tests, documentation, and Wrangler configuration stay outside the web root. The static `_headers` file sets browser protections, while `src/worker.mjs` adds a fresh script nonce and Content Security Policy to every HTML response so AdSense can run under Google's supported strict-CSP model. Vulnerability reporting details are published at `/.well-known/security.txt`; refresh its `Expires` field before it becomes stale.
 
 For Cloudflare Workers Builds, connect the GitHub repository once and use Git-integrated deployments. The included `wrangler.jsonc` points to the Worker and the `public/` asset directory, and disables public `workers.dev` and preview URLs so the custom domain remains the only production address. Future pushes deploy automatically; no local deploy command is required.
 

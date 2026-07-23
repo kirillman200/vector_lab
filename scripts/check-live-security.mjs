@@ -1,6 +1,14 @@
 const origin = new URL(process.argv[2] || "https://svgvectorlab.com");
 
-const publicPaths = ["/", "/free-svg-editor/", "/robots.txt", "/sitemap.xml", "/llms.txt", "/ads.txt"];
+const publicPaths = [
+  "/",
+  "/free-svg-editor/",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/llms.txt",
+  "/ads.txt",
+  "/.well-known/security.txt",
+];
 const privatePaths = [
   "/.git/config",
   "/.git/HEAD",
@@ -30,6 +38,16 @@ async function checkStatus(path, expected) {
 const home = await checkStatus("/", 200);
 for (const path of publicPaths.slice(1)) await checkStatus(path, 200);
 for (const path of privatePaths) await checkStatus(path, 404);
+
+const securityTxt = await fetch(new URL("/.well-known/security.txt", origin));
+if (securityTxt.headers.get("content-type")?.toLowerCase() !== "text/plain; charset=utf-8") {
+  failed = true;
+  console.error(
+    `FAIL /.well-known/security.txt: expected text/plain; charset=utf-8, received ${securityTxt.headers.get("content-type")}`,
+  );
+} else {
+  console.log("PASS /.well-known/security.txt: content-type is text/plain; charset=utf-8");
+}
 
 const requiredHeaders = [
   "content-security-policy",
