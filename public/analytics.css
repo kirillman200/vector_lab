@@ -1,0 +1,124 @@
+.analytics-consent {
+  position: fixed;
+  inset: auto 16px 16px;
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.analytics-consent[data-open] {
+  display: flex;
+}
+
+.analytics-consent__card {
+  width: min(680px, 100%);
+  padding: 22px;
+  border: 1px solid #8ba2c4;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #071d3d;
+  box-shadow: 0 20px 60px rgb(7 29 61 / 24%);
+  pointer-events: auto;
+}
+
+.analytics-consent__card h2 {
+  margin: 4px 0 8px;
+  font-size: 1.35rem;
+}
+
+.analytics-consent__card p {
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+
+.analytics-consent__eyebrow {
+  color: #276ef1;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.analytics-consent__status {
+  color: #586a82;
+  font-size: 0.85rem;
+}
+
+.analytics-consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.analytics-consent__actions button,
+.analytics-preferences {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #276ef1;
+  border-radius: 8px;
+  background: #276ef1;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.analytics-consent__actions button + button {
+  border-color: #8ba2c4;
+  background: #ffffff;
+  color: #071d3d;
+}
+
+.analytics-consent__actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.analytics-consent__actions a {
+  color: #174fae;
+  font-weight: 700;
+}
+
+.analytics-preferences {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 900;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-color: #667b98;
+  background: #071d3d;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 560px) {
+  .analytics-consent {
+    inset: auto 8px 8px;
+  }
+
+  .analytics-consent__card {
+    max-height: calc(100svh - 16px);
+    overflow: auto;
+    padding: 18px;
+  }
+
+  .analytics-consent__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .analytics-consent[data-open] .analytics-consent__card {
+    animation: analytics-consent-in 180ms ease-out;
+  }
+
+  @keyframes analytics-consent-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+}

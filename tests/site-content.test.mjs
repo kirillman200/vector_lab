@@ -410,6 +410,8 @@ test("hosting and advertising files are safe", () => {
   assert.match(worker, /\/partials\/site-footer\.html/);
   assert.match(worker, /'strict-dynamic'/);
   assert.match(worker, /element\.setAttribute\("nonce", nonce\)/);
+  assert.match(worker, /injectAnalytics/);
+  assert.match(worker, /env\.GA_MEASUREMENT_ID/);
   assert.match(worker, /headers\.set\("Strict-Transport-Security"/);
   assert.match(worker, /headers\.set\("X-Frame-Options", "DENY"\)/);
   assert.match(worker, /\.workers\.dev/);
@@ -422,6 +424,44 @@ test("hosting and advertising files are safe", () => {
   assert.match(worker, /text\/markdown; charset=utf-8/);
   assert.match(worker, /x-markdown-tokens/);
   assert.ok((worker.match(/appendVary\(headers, "Accept"\)/g) || []).length >= 2);
+});
+
+test("Google Analytics is consent-gated and excludes artwork data", () => {
+  const analytics = read("js/analytics.js");
+  const privacy = read("privacy/index.html");
+  const app = read("js/app.js");
+
+  assert.match(analytics, /analytics_storage: analyticsStorage/);
+  assert.match(analytics, /ad_storage: "denied"/);
+  assert.match(analytics, /ad_user_data: "denied"/);
+  assert.match(analytics, /ad_personalization: "denied"/);
+  assert.match(analytics, /navigator\.globalPrivacyControl === true/);
+  assert.match(analytics, /allow_google_signals: false/);
+  assert.match(analytics, /allow_ad_personalization_signals: false/);
+  assert.match(analytics, /page_location: `\$\{location\.origin\}\$\{location\.pathname\}`/);
+  assert.match(analytics, /allowedEvents/);
+  assert.match(analytics, /allowedValues/);
+  assert.match(analytics, /"site_click"/);
+  assert.match(analytics, /click_target: clickTargets/);
+  assert.match(analytics, /navigation_target/);
+  assert.match(analytics, /control\.closest\("\.ad-slot, ins\.adsbygoogle"\)/);
+  assert.doesNotMatch(analytics, /svgInput|file\.name|clipboardMarkup|clientX|clientY/);
+  assert.match(app, /editor_document_load/);
+  assert.match(app, /editor_action/);
+  assert.match(app, /editor_export/);
+  assert.match(privacy, /never receives SVG contents/i);
+  assert.match(privacy, /Analytics choices/);
+  assert.match(privacy, /does not intercept clicks inside ads/i);
+});
+
+test("ad diagnostics never intercept or synthesize ad clicks", () => {
+  const ads = read("js/ads.js");
+  assert.match(ads, /function adPlacement\(unit\)/);
+  assert.match(ads, /"ad_slot_status"/);
+  assert.match(ads, /"ad_slot_view"/);
+  assert.match(ads, /intersectionRatio >= 0\.5/);
+  assert.match(ads, /}, 1000\)/);
+  assert.doesNotMatch(ads, /addEventListener\(["']click|\.click\(\)/);
 });
 
 test("security.txt follows the RFC 9116 publication contract", () => {
@@ -453,6 +493,7 @@ test("Cloudflare publishes only the public allowlist", () => {
   assert.equal(wrangler.assets.run_worker_first, true);
   assert.equal(wrangler.assets.not_found_handling, "404-page");
   assert.equal(wrangler.main, "src/worker.mjs");
+  assert.equal(wrangler.vars.GA_MEASUREMENT_ID, "G-XLNFRJLFK4");
   assert.equal(wrangler.workers_dev, false);
   assert.equal(wrangler.preview_urls, false);
 
@@ -628,7 +669,7 @@ test("launch-essential editor controls are visible and wired", () => {
   assert.match(app, /strokeRemoved \? "Add stroke" : "Remove stroke"/);
   assert.match(app, /localStorage\.setItem\(LOCAL_SAVE_KEY, snapshot\)/);
   assert.match(app, /event\.returnValue = ""/);
-  assert.match(app, /function groupSelection\(\)/);
+  assert.match(app, /function groupSelection\(actionSurface = "toolbar"\)/);
   assert.match(app, /function alignSelection\(kind\)/);
   assert.match(app, /function startFreehand\(event\)/);
   assert.match(app, /function addPenPoint\(event\)/);

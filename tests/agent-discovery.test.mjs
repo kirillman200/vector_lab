@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import worker, { acceptsMarkdown, composeLayout, htmlToMarkdown } from "../src/worker.mjs";
+import worker, { acceptsMarkdown, composeLayout, htmlToMarkdown, injectAnalytics } from "../src/worker.mjs";
 
 const homepage = `<!doctype html>
 <html>
@@ -119,4 +119,15 @@ test("Worker composition removes the static-host layout dependency", async () =>
   assert.match(html, /<header>Header<\/header>/);
   assert.match(html, /<footer>Footer<\/footer>/);
   assert.doesNotMatch(html, /layout\.js|site-header|site-footer/);
+});
+
+test("analytics injection requires a valid GA4 measurement ID", () => {
+  const html = "<!doctype html><html><head><title>Test</title></head><body></body></html>";
+  assert.equal(injectAnalytics(html, ""), html);
+  assert.equal(injectAnalytics(html, "not-an-id"), html);
+  const injected = injectAnalytics(html, "g-abc123def4");
+  assert.match(injected, /window\.SVG_VECTOR_LAB_GA_ID="G-ABC123DEF4"/);
+  assert.match(injected, /\/js\/analytics\.js\?v=20260729a/);
+  assert.match(injected, /\/analytics\.css\?v=20260729a/);
+  assert.ok(injected.indexOf("analytics.css") < injected.indexOf("<title>"));
 });

@@ -52,7 +52,20 @@ Cloudflare publishes only the `public/` directory. Repository metadata, tests, d
 
 For Cloudflare Workers Builds, connect the GitHub repository once and use Git-integrated deployments. The included `wrangler.jsonc` points to the Worker and the `public/` asset directory, and disables public `workers.dev` and preview URLs so the custom domain remains the only production address. Future pushes deploy automatically; no local deploy command is required.
 
-Cloudflare Web Analytics can be enabled from the project's Metrics screen. Cloudflare injects the analytics beacon on the next deployment, so no analytics token or script needs to be committed. The Privacy Policy already includes the corresponding disclosure.
+Google Analytics 4 is loaded through `public/js/analytics.js`. The Worker injects it into every HTML response only when `GA_MEASUREMENT_ID` is a valid GA4 web-stream ID. The client defaults all Google consent signals to denied, waits for an explicit analytics choice before loading `gtag.js`, honors Global Privacy Control, and provides a persistent Analytics choices button.
+
+The event contract is deliberately narrow:
+
+- `editor_session_start` records an allowed analytics session on an editor or content page.
+- `editor_document_load` records only a fixed source category such as sample, starter, autosave, file picker, drag and drop, source, clipboard, or checkpoint.
+- `editor_action` records a fixed action, surface, outcome, broad element type, selection-size bucket, and selected tool where relevant.
+- `editor_export` records only SVG, PNG, or clipboard format and success or error.
+- `site_click` records allowlisted navigation, menu, tab, button, tool, and dialog targets with a broad page area. It never sends visible text, raw URLs, form values, or arbitrary element IDs.
+- `ad_slot_status` and `ad_slot_view` record only the named placement and whether it filled, failed, or remained at least 50% visible for one second. These are placement diagnostics, not billable AdSense impressions.
+
+SVG contents, typed values, attribute values, filenames, clipboard contents, embedded image data, pointer coordinates, and keystrokes are not analytics parameters. In the GA4 property, register the event-scoped custom dimensions `action`, `action_surface`, `ad_placement`, `ad_status`, `click_area`, `click_target`, `document_source`, `element_type`, `export_format`, `navigation_target`, `outcome`, `selection_size`, and `tool`. Keep enhanced measurement enabled for page views, scrolls, outbound clicks, site search, and file downloads, set internal-traffic and unwanted-referral rules as needed, and verify the implementation with Realtime and DebugView after deployment.
+
+Do not add a click listener, transparent overlay, or synthetic click handling to AdSense units. Actual publisher ad clicks, impressions, and revenue should come from the official AdSense to GA4 account link and the GA4 Publisher ads report.
 
 The editor loads the AdSense library once and lazy-initializes one responsive unit in each tab. The production `ads.txt` contains the authorized publisher record. Keep it synchronized with AdSense and confirm it remains available at `https://svgvectorlab.com/ads.txt`.
 
@@ -66,7 +79,8 @@ public/                 Only files published to the web
   partials/             Shared header/footer, with Worker composition and a static-host fallback
   styles.css            Editor and shared layout styling
   content.css           Lightweight styling for articles and landing pages
-  js/                   Editor, sanitizer, icons, path data, ad initialization
+  js/                   Editor, sanitizer, icons, path data, analytics, and ad initialization
+  analytics.css         Consent and analytics-preference interface
   about/                Project background and product principles
   free-svg-editor/      Editor features and overview page
   edit-svg-online/      General online SVG editing landing page

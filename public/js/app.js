@@ -234,7 +234,32 @@ function setStatus(message, isError = false) {
   els.statusLine.textContent = message;
 }
 
+function analyticsElementType(nodes = state.selection) {
+  const types = [...new Set(nodes.map((node) => node?.tagName?.toLowerCase()).filter(Boolean))];
+  if (!types.length) return "none";
+  if (types.length > 1) return "mixed";
+  return ["circle", "ellipse", "g", "image", "line", "path", "polygon", "polyline", "rect", "text", "use"].includes(types[0])
+    ? types[0]
+    : "other";
+}
+
+function analyticsSelectionSize(nodes = state.selection) {
+  return nodes.length === 0 ? "none" : nodes.length === 1 ? "one" : "multiple";
+}
+
+function trackEditorAction(action, actionSurface, outcome = "success", nodes = state.selection, extra = {}) {
+  window.svgAnalytics?.track("editor_action", {
+    action,
+    action_surface: actionSurface,
+    element_type: analyticsElementType(nodes),
+    outcome,
+    selection_size: analyticsSelectionSize(nodes),
+    ...extra
+  });
+}
+
 function setTool(tool) {
+  const previousTool = state.tool;
   state.tool = tool;
   const handActive = tool === "hand" || state.spacePan;
   els.handToolBtn.classList.toggle("active", tool === "hand");
@@ -245,6 +270,16 @@ function setTool(tool) {
   updatePanCursor(handActive);
   if (tool !== "pen") finishDrawing(true);
   setStatus(`${tool === "select" ? "Select" : tool[0].toUpperCase() + tool.slice(1)} tool active.`);
+  if (tool !== previousTool) {
+    window.svgAnalytics?.track("editor_action", {
+      action: "select_tool",
+      action_surface: "toolbar",
+      element_type: "none",
+      outcome: "success",
+      selection_size: "none",
+      tool
+    });
+  }
 }
 
 function updatePanCursor(visible, event = null) {
@@ -417,9 +452,23 @@ function loadSvg(markup, options = {}) {
     if (options.fit !== false) {
       requestAnimationFrame(() => fitToView({ announce: false }));
     }
+    if (options.analyticsSource) {
+      window.svgAnalytics?.track("editor_document_load", {
+        action_surface: options.analyticsSurface || "startup",
+        document_source: options.analyticsSource,
+        outcome: "success"
+      });
+    }
     return true;
   } catch (error) {
     setStatus(error.message, true);
+    if (options.analyticsSource) {
+      window.svgAnalytics?.track("editor_document_load", {
+        action_surface: options.analyticsSurface || "source",
+        document_source: options.analyticsSource,
+        outcome: "error"
+      });
+    }
     return false;
   }
 }
@@ -1299,6 +1348,11 @@ function handlePointerUp() {
   if (drag.type === "element" && (drag.moved || drag.suppressClickOnUp)) suppressNextSvgClick();
   if (!drag.moved && drag.type !== "path-handle") return;
   const activePoint = state.activePoint ? { ...state.activePoint } : null;
+  const analyticsNodes = drag.type === "element"
+    ? drag.items.map((item) => item.node)
+    : drag.node
+      ? [drag.node]
+      : state.selection;
   afterMutation();
   if (drag.type === "element") {
     const node = drag.items.at(-1)?.node;
@@ -1316,6 +1370,13 @@ function handlePointerUp() {
   } else if (drag.type === "rotate") {
     setStatus(`Rotated ${drag.node.tagName.toLowerCase()} by ${round(drag.lastDegrees || 0)} degrees.`);
   }
+  const action = {
+    element: "move_element",
+    "path-handle": "move_path_node",
+    resize: "resize_element",
+    rotate: "rotate_element"
+  }[drag.type];
+  if (action) trackEditorAction(action, "canvas", "success", analyticsNodes);
 }
 
 /* --------------------------------------------------------------------- snap */
@@ -1733,6 +1794,7 @@ function finishDrawing(commit = true) {
   setSelection([drawing.node]);
   afterMutation();
   setStatus(`${drawing.type === "pen" ? "Pen path" : "Freehand path"} added.`);
+  trackEditorAction("draw_path", "canvas", "success", [drawing.node], { tool: drawing.type });
 }
 
 function startFreehand(event) {
@@ -2021,12 +2083,16 @@ function restoreHistory(index) {
   setStatus("History restored.");
 }
 
-function undo() {
+function undo(actionSurface = "toolbar") {
+  if (state.historyIndex <= 0) return;
   restoreHistory(state.historyIndex - 1);
+  trackEditorAction("undo", actionSurface);
 }
 
-function redo() {
+function redo(actionSurface = "toolbar") {
+  if (state.historyIndex < 0 || state.historyIndex >= state.history.length - 1) return;
   restoreHistory(state.historyIndex + 1);
+  trackEditorAction("redo", actionSurface);
 }
 
 function updateHistoryButtons() {
@@ -2105,6 +2171,7 @@ function togglePaint(name) {
   }
   afterMutation();
   setStatus(`${add ? "Restored" : "Removed"} ${name} on ${targets.length} element${targets.length === 1 ? "" : "s"}.`);
+  trackEditorAction(name === "fill" ? "toggle_fill" : "toggle_stroke", "inspector", "success", targets);
 }
 
 function applyTransform() {
@@ -2125,6 +2192,7 @@ function applyTransform() {
   els.rotateInput.value = "0";
   afterMutation();
   setStatus(`Transform applied to ${targets.length} element${targets.length === 1 ? "" : "s"}.`);
+  trackEditorAction("apply_transform", "inspector", "success", targets);
 }
 
 function vectorSiblings(node) {
@@ -2180,9 +2248,10 @@ function moveLayer(direction) {
   }
   afterMutation();
   setStatus(`${moved} layer${moved === 1 ? "" : "s"} moved ${direction > 0 ? "forward" : "backward"}.`);
+  trackEditorAction("move_layer", "inspector", "success", targets);
 }
 
-function groupSelection() {
+function groupSelection(actionSurface = "toolbar") {
   const targets = topLevelSelection().filter((node) => !isNodeLocked(node));
   if (targets.length < 2) {
     setStatus("Select at least two objects to group.", true);
@@ -2208,9 +2277,10 @@ function groupSelection() {
   setSelection([group]);
   afterMutation();
   setStatus(`Grouped ${targets.length} objects.`);
+  trackEditorAction("group", actionSurface, "success", targets);
 }
 
-function ungroupSelection() {
+function ungroupSelection(actionSurface = "toolbar") {
   const groups = topLevelSelection().filter((node) => node.tagName.toLowerCase() === "g" && !node.classList.contains("lab-overlay") && !isNodeLocked(node));
   if (!groups.length) {
     setStatus("Select a group to ungroup.", true);
@@ -2230,6 +2300,7 @@ function ungroupSelection() {
   setSelection(children);
   afterMutation();
   setStatus(`Ungrouped ${groups.length} group${groups.length === 1 ? "" : "s"}.`);
+  trackEditorAction("ungroup", actionSurface, "success", groups);
 }
 
 function alignSelection(kind) {
@@ -2261,6 +2332,7 @@ function alignSelection(kind) {
   state.snapEnabled = snapWasEnabled;
   afterMutation();
   setStatus(`Aligned ${entries.length} objects ${kind}.`);
+  trackEditorAction("align", "toolbar", "success", entries.map((entry) => entry.node));
 }
 
 function distributeSelection(axis) {
@@ -2294,9 +2366,10 @@ function distributeSelection(axis) {
   state.snapEnabled = snapWasEnabled;
   afterMutation();
   setStatus(`Distributed ${entries.length} objects ${axis}ly.`);
+  trackEditorAction("distribute", "toolbar", "success", entries.map((entry) => entry.node));
 }
 
-function deleteSelected() {
+function deleteSelected(actionSurface = "toolbar") {
   const targets = editableSelection("delete it");
   if (!targets.length) return;
   const count = targets.length;
@@ -2304,9 +2377,10 @@ function deleteSelected() {
   setSelection([]);
   afterMutation();
   setStatus(`Deleted ${count} element(s).`);
+  trackEditorAction("remove_element", actionSurface, "success", targets);
 }
 
-function duplicateSelected() {
+function duplicateSelected(actionSurface = "toolbar") {
   const targets = topLevelSelection().filter((node) => node.parentNode && !isNodeLocked(node));
   if (!targets.length) {
     if (state.selection.length) setStatus("Locked layer protected. Unlock it before duplicating it.", true);
@@ -2322,6 +2396,7 @@ function duplicateSelected() {
   setSelection(clones);
   afterMutation();
   setStatus(`Duplicated ${clones.length} element(s).`);
+  trackEditorAction("duplicate", actionSurface, "success", targets);
 }
 
 function convertSelectedToPath() {
@@ -2357,6 +2432,7 @@ function convertSelectedToPath() {
   setSelection(nextSelection);
   afterMutation();
   setStatus(`Converted ${converted} shape(s) to path.`);
+  trackEditorAction("convert_to_path", "toolbar", "success", targets);
 }
 
 function getCanvasFrame() {
@@ -2428,6 +2504,7 @@ function addBasicShape(kind) {
   setSelection([node]);
   afterMutation();
   setStatus(`${kind[0].toUpperCase() + kind.slice(1)} added.`);
+  trackEditorAction("add_shape", "toolbar", "success", [node]);
 }
 
 function applyCanvasSize() {
@@ -2451,6 +2528,7 @@ function applyCanvasSize() {
   applySvgZoom(state.svg);
   afterMutation();
   setStatus(`Canvas resized to ${width} x ${height}. The viewBox and artwork proportions were preserved.`);
+  trackEditorAction("canvas_resize", "toolbar", "success", [state.svg]);
 }
 
 function addGradient() {
@@ -2477,6 +2555,7 @@ function addGradient() {
   targets.forEach((node) => node.setAttribute("fill", `url(#${id})`));
   afterMutation();
   setStatus("Linear gradient added. Edit its stops in SVG source for precise control.");
+  trackEditorAction("add_gradient", "inspector", "success", targets);
 }
 
 function pathEndpoint(commandIndex) {
@@ -2570,6 +2649,7 @@ function joinSelectedPaths() {
   setSelection([first]);
   afterMutation();
   setStatus(`Joined ${paths.length} paths.`);
+  trackEditorAction("join_paths", "inspector", "success", paths);
 }
 
 /* ---------------------------------------------------------------- input/out */
@@ -2623,8 +2703,10 @@ function saveLocal() {
     els.checkpointMeta.textContent = `Saved ${new Date(savedAt).toLocaleString()}`;
     els.restoreLocalBtn.disabled = false;
     setStatus(`Checkpoint saved in this browser at ${new Date(savedAt).toLocaleTimeString()}.`);
+    trackEditorAction("save_checkpoint", "menu");
   } catch {
     setStatus("Local save is unavailable in this browser session. Download the SVG to keep a copy.", true);
+    trackEditorAction("save_checkpoint", "menu", "error");
   }
 }
 
@@ -2641,7 +2723,10 @@ function restoreLocal() {
     return;
   }
   if (!confirmReplaceCurrent()) return;
-  if (loadSvg(snapshot)) setStatus("Saved checkpoint restored and made the active document.");
+  if (loadSvg(snapshot, { analyticsSource: "checkpoint", analyticsSurface: "menu" })) {
+    setStatus("Saved checkpoint restored and made the active document.");
+    trackEditorAction("restore_checkpoint", "menu");
+  }
 }
 
 async function copySelection() {
@@ -2654,6 +2739,7 @@ async function copySelection() {
   state.clipboardMarkup = new XMLSerializer().serializeToString(wrapper);
   await copyText(state.clipboardMarkup);
   setStatus(`Copied ${targets.length} object${targets.length === 1 ? "" : "s"}.`);
+  trackEditorAction("copy_objects", "keyboard", "success", targets);
   return true;
 }
 
@@ -2675,6 +2761,7 @@ function pasteObjects(markup = state.clipboardMarkup) {
   setSelection(nodes);
   afterMutation();
   setStatus(`Pasted ${nodes.length} object${nodes.length === 1 ? "" : "s"}.`);
+  trackEditorAction("paste_objects", "keyboard", "success", nodes);
   return true;
 }
 
@@ -2724,6 +2811,7 @@ async function insertImageFile(file) {
   setSelection([node]);
   afterMutation();
   setStatus(`Inserted ${file.name} as an embedded local image.`);
+  trackEditorAction("add_image", "toolbar", "success", [node]);
 }
 
 async function downloadPng() {
@@ -2766,6 +2854,11 @@ async function downloadPng() {
     }
     downloadBlob(pngBlob, `vector-lab-export-${scale}x.png`);
     setStatus(`PNG downloaded at ${canvas.width}x${canvas.height}.`);
+    window.svgAnalytics?.track("editor_export", {
+      action_surface: "toolbar",
+      export_format: "png",
+      outcome: "success"
+    });
   }, "image/png");
 }
 
@@ -2816,10 +2909,14 @@ function confirmReplaceCurrent() {
 }
 
 els.loadInputBtn.addEventListener("click", () => {
-  if (confirmReplaceCurrent()) loadSvg(els.svgInput.value);
+  if (confirmReplaceCurrent()) {
+    loadSvg(els.svgInput.value, { analyticsSource: "source", analyticsSurface: "source" });
+  }
 });
 els.loadSampleBtn.addEventListener("click", () => {
-  if (confirmReplaceCurrent()) loadSvg(SAMPLE_SVG);
+  if (confirmReplaceCurrent()) {
+    loadSvg(SAMPLE_SVG, { analyticsSource: "sample", analyticsSurface: "toolbar" });
+  }
 });
 els.saveLocalBtn.addEventListener("click", saveLocal);
 els.restoreLocalBtn.addEventListener("click", restoreLocal);
@@ -2828,7 +2925,9 @@ els.refreshLayersBtn.addEventListener("click", refreshLayers);
 els.fileInput.addEventListener("change", async () => {
   const file = els.fileInput.files[0];
   if (!file) return;
-  if (confirmReplaceCurrent()) loadSvg(await file.text());
+  if (confirmReplaceCurrent()) {
+    loadSvg(await file.text(), { analyticsSource: "file_picker", analyticsSurface: "toolbar" });
+  }
   els.fileInput.value = "";
 });
 els.imageInput.addEventListener("change", async () => {
@@ -2842,14 +2941,19 @@ document.querySelectorAll("[data-add-shape]").forEach((button) => {
 els.handToolBtn.addEventListener("click", () => setTool(state.tool === "hand" ? "select" : "hand"));
 els.freehandToolBtn.addEventListener("click", () => setTool(state.tool === "freehand" ? "select" : "freehand"));
 els.penToolBtn.addEventListener("click", () => setTool(state.tool === "pen" ? "select" : "pen"));
-els.groupBtn.addEventListener("click", groupSelection);
-els.ungroupBtn.addEventListener("click", ungroupSelection);
+els.groupBtn.addEventListener("click", () => groupSelection("toolbar"));
+els.ungroupBtn.addEventListener("click", () => ungroupSelection("toolbar"));
 document.querySelectorAll("[data-align]").forEach((button) => button.addEventListener("click", () => alignSelection(button.dataset.align)));
 document.querySelectorAll("[data-distribute]").forEach((button) => button.addEventListener("click", () => distributeSelection(button.dataset.distribute)));
 els.copySvgBtn.addEventListener("click", async () => {
   if (!state.svg) return;
   const copied = await copyText(serializeCurrentSvg());
   setStatus(copied ? "SVG copied." : "Copy failed. Copy the source panel text manually.", !copied);
+  window.svgAnalytics?.track("editor_export", {
+    action_surface: "toolbar",
+    export_format: "clipboard",
+    outcome: copied ? "success" : "error"
+  });
 });
 els.downloadSvgBtn.addEventListener("click", () => {
   if (!state.svg) return;
@@ -2857,6 +2961,11 @@ els.downloadSvgBtn.addEventListener("click", () => {
   downloadBlob(blob, "vector-lab-export.svg");
   state.documentDirty = false;
   setStatus("SVG downloaded.");
+  window.svgAnalytics?.track("editor_export", {
+    action_surface: "toolbar",
+    export_format: "svg",
+    outcome: "success"
+  });
 });
 els.downloadPngBtn.addEventListener("click", () => {
   downloadPng().catch((error) => {
@@ -2968,8 +3077,8 @@ stageResizeObserver?.observe(els.stage);
 window.addEventListener("resize", () => {
   if (state.fitMode) requestAnimationFrame(() => fitToView({ announce: false }));
 });
-els.undoBtn.addEventListener("click", undo);
-els.redoBtn.addEventListener("click", redo);
+els.undoBtn.addEventListener("click", () => undo("toolbar"));
+els.redoBtn.addEventListener("click", () => redo("toolbar"));
 document.querySelectorAll("[data-zoom]").forEach((button) => {
   button.addEventListener("click", () => {
     setZoom(Number(button.dataset.zoom));
@@ -3053,18 +3162,23 @@ els.stage.addEventListener("drop", async (event) => {
   event.preventDefault();
   const file = event.dataTransfer.files && event.dataTransfer.files[0];
   if (file && (file.type === "image/svg+xml" || /\.svg$/i.test(file.name))) {
-    if (confirmReplaceCurrent() && loadSvg(await file.text())) setStatus(`Loaded ${file.name}.`);
+    if (confirmReplaceCurrent() && loadSvg(await file.text(), {
+      analyticsSource: "drag_drop",
+      analyticsSurface: "canvas"
+    })) setStatus(`Loaded ${file.name}.`);
     return;
   }
   const text = event.dataTransfer.getData("text/plain") || "";
   if (/<svg[\s>]/i.test(text)) {
-    if (confirmReplaceCurrent()) loadSvg(text);
+    if (confirmReplaceCurrent()) {
+      loadSvg(text, { analyticsSource: "drag_drop", analyticsSurface: "canvas" });
+    }
     return;
   }
   setStatus("Drop an .svg file or SVG markup onto the canvas.", true);
 });
-els.deleteBtn.addEventListener("click", deleteSelected);
-els.duplicateBtn.addEventListener("click", duplicateSelected);
+els.deleteBtn.addEventListener("click", () => deleteSelected("toolbar"));
+els.duplicateBtn.addEventListener("click", () => duplicateSelected("toolbar"));
 els.convertPathBtn.addEventListener("click", convertSelectedToPath);
 bindColorPicker(els.fillInput, els.fillHexInput, () => applyColorPaint("fill"));
 els.fillAlphaInput.addEventListener("input", () => applyColorPaint("fill"));
@@ -3119,6 +3233,7 @@ els.normalizePathBtn.addEventListener("click", () => {
   applyPathCommands();
   renderPathTable();
   setStatus(`Path normalized to ${state.pathCommands.length} command${state.pathCommands.length === 1 ? "" : "s"}.`);
+  trackEditorAction("normalize_path", "inspector", "success", [state.selected]);
 });
 els.addNodeBtn.addEventListener("click", addPathNode);
 els.removeNodeBtn.addEventListener("click", removePathNode);
@@ -3146,6 +3261,7 @@ els.setAttrBtn.addEventListener("click", () => {
   els.attrValueInput.value = "";
   afterMutation();
   setStatus(`Set ${name} on ${applied} element(s).`);
+  trackEditorAction("set_attribute", "inspector", "success");
 });
 
 document.addEventListener("paste", (event) => {
@@ -3173,7 +3289,9 @@ els.replaceFromPasteBtn.addEventListener("click", () => {
   if (!confirmReplaceCurrent()) return;
   els.pasteDialog.close("replace");
   state.pendingPasteMarkup = "";
-  if (loadSvg(markup)) setStatus("Clipboard SVG replaced the current document.");
+  if (loadSvg(markup, { analyticsSource: "clipboard", analyticsSurface: "dialog" })) {
+    setStatus("Clipboard SVG replaced the current document.");
+  }
 });
 els.pasteDialog.addEventListener("close", () => {
   state.pendingPasteMarkup = "";
@@ -3199,13 +3317,13 @@ document.addEventListener("keydown", (event) => {
   }
   if (mod && event.key.toLowerCase() === "z") {
     event.preventDefault();
-    if (event.shiftKey) redo();
-    else undo();
+    if (event.shiftKey) redo("keyboard");
+    else undo("keyboard");
     return;
   }
   if (mod && event.key.toLowerCase() === "y") {
     event.preventDefault();
-    redo();
+    redo("keyboard");
     return;
   }
   if (mod && event.key.toLowerCase() === "c" && state.selection.length) {
@@ -3215,8 +3333,8 @@ document.addEventListener("keydown", (event) => {
   }
   if (mod && event.key.toLowerCase() === "g") {
     event.preventDefault();
-    if (event.shiftKey) ungroupSelection();
-    else groupSelection();
+    if (event.shiftKey) ungroupSelection("keyboard");
+    else groupSelection("keyboard");
     return;
   }
   if (!mod && event.key.toLowerCase() === "h") {
@@ -3244,12 +3362,12 @@ document.addEventListener("keydown", (event) => {
   if (nudgeActiveHandle(event)) return;
   if (nudgeSelection(event)) return;
   if (event.key === "Delete" || event.key === "Backspace") {
-    deleteSelected();
+    deleteSelected("keyboard");
     return;
   }
   if (mod && event.key.toLowerCase() === "d") {
     event.preventDefault();
-    duplicateSelected();
+    duplicateSelected("keyboard");
   }
 });
 document.addEventListener("keyup", (event) => {
@@ -3299,14 +3417,17 @@ try {
 els.restoreLocalBtn.disabled = !manualSaved;
 els.checkpointMeta.textContent = manualSavedAt ? `Saved ${new Date(manualSavedAt).toLocaleString()}` : "No saved checkpoint";
 if (starterSvg) {
-  loadSvg(starterSvg);
+  loadSvg(starterSvg, {
+    analyticsSource: `starter_${starterName}`,
+    analyticsSurface: "startup"
+  });
   setStatus(`Loaded the ${starterName} starter. It is now your current autosaved canvas.`);
 } else if (autosaved && /<svg[\s>]/i.test(autosaved)) {
-  loadSvg(autosaved);
+  loadSvg(autosaved, { analyticsSource: "autosave", analyticsSurface: "startup" });
   setStatus(manualSaved ? "Restored your latest autosave. A saved checkpoint is available in Options." : "Restored your latest autosave. Create a checkpoint or download the SVG for a deliberate save.");
 } else if (manualSaved && /<svg[\s>]/i.test(manualSaved)) {
-  loadSvg(manualSaved);
+  loadSvg(manualSaved, { analyticsSource: "checkpoint", analyticsSurface: "startup" });
   setStatus("Restored your locally saved SVG. Your file never left this browser.");
 } else {
-  loadSvg(SAMPLE_SVG);
+  loadSvg(SAMPLE_SVG, { analyticsSource: "sample", analyticsSurface: "startup" });
 }

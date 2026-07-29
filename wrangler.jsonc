@@ -8,6 +8,9 @@
   "observability": {
     "enabled": true
   },
+  "vars": {
+    "GA_MEASUREMENT_ID": "G-XLNFRJLFK4"
+  },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
