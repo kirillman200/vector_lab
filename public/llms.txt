@@ -22,6 +22,14 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 - [Understand Bezier Curves](https://svgvectorlab.com/guides/bezier-curves/): Cubic curves, C and S commands, handles, and smooth curve construction.
 - [Convert Shapes to Paths](https://svgvectorlab.com/guides/convert-shapes-to-paths/): When and how to convert SVG shapes into editable path data.
 - [Optimize SVG](https://svgvectorlab.com/guides/optimize-svg/): Reduce unnecessary SVG markup while preserving appearance and accessibility.
+- [SVG Path Commands](https://svgvectorlab.com/guides/path-commands/): Read move, line, curve, arc, and close commands, including relative coordinates.
+- [SVG Transforms](https://svgvectorlab.com/guides/svg-transforms/): Understand transform order, pivot points, nested groups, and matrices.
+- [SVG Strokes](https://svgvectorlab.com/guides/svg-strokes/): Control stroke width, linecaps, joins, dash patterns, and scaling.
+- [SVG Gradients](https://svgvectorlab.com/guides/svg-gradients/): Build linear and radial gradients with deliberate units, stops, and reusable IDs.
+- [Accessible SVG](https://svgvectorlab.com/guides/svg-accessibility/): Choose text alternatives, titles, focus behavior, contrast, and motion settings.
+- [Responsive SVG](https://svgvectorlab.com/guides/responsive-svg/): Combine viewBox, CSS sizing, intrinsic ratio, and embedding methods.
+- [SVG Clipping and Masking](https://svgvectorlab.com/guides/clipping-and-masking/): Choose hard clips or soft masks and debug their bounds and coordinate systems.
+- [Debug Invisible SVG](https://svgvectorlab.com/guides/debug-invisible-svg/): Isolate size, viewBox, paint, geometry, transforms, references, and effects.
 
 ## Site Information
 

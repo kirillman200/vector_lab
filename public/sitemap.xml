@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://svgvectorlab.com/</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-05</lastmod>
   </url>
   <url>
     <loc>https://svgvectorlab.com/free-svg-editor/</loc>
@@ -30,7 +30,7 @@
   </url>
   <url>
     <loc>https://svgvectorlab.com/guides/</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-05</lastmod>
   </url>
   <url>
     <loc>https://svgvectorlab.com/guides/svg-viewbox/</loc>
@@ -51,6 +51,38 @@
   <url>
     <loc>https://svgvectorlab.com/guides/optimize-svg/</loc>
     <lastmod>2026-07-17</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/path-commands/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/svg-transforms/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/svg-strokes/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/svg-gradients/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/svg-accessibility/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/responsive-svg/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/clipping-and-masking/</loc>
+    <lastmod>2026-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://svgvectorlab.com/guides/debug-invisible-svg/</loc>
+    <lastmod>2026-08-05</lastmod>
   </url>
   <url>
     <loc>https://svgvectorlab.com/privacy/</loc>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SVG Path Commands: M, L, C, Q, A and Z</title>
+  <meta name="description" content="Read SVG path data with practical examples for move, line, curve, arc, and close commands, including relative coordinates and debugging tips.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/guides/path-commands/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/content.css?v=20260805a">
+  <script src="/js/layout.js" defer></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
+  <script src="/js/ads.js?v=20260718b" defer></script>
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="SVG Path Commands: M, L, C, Q, A and Z">
+  <meta property="og:description" content="A practical reference for reading and editing SVG path data without guessing what each command does.">
+  <meta property="og:url" content="https://svgvectorlab.com/guides/path-commands/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
+  <meta property="article:published_time" content="2026-08-05">
+  <meta property="article:modified_time" content="2026-08-05">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SVG Path Commands Reference">
+  <meta name="twitter:description" content="Learn move, line, curve, arc, and close commands with editable SVG examples.">
+  <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta name="twitter:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["Article", "TechArticle"],
+    "headline": "SVG Path Commands: M, L, C, Q, A and Z",
+    "description": "A practical reference for reading, writing, and debugging SVG path commands.",
+    "datePublished": "2026-08-05",
+    "dateModified": "2026-08-05",
+    "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
+    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "mainEntityOfPage": "https://svgvectorlab.com/guides/path-commands/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "SVG Vector Lab", "item": "https://svgvectorlab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "SVG Guides", "item": "https://svgvectorlab.com/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "Path Commands", "item": "https://svgvectorlab.com/guides/path-commands/" }
+    ]
+  }
+  </script>
+</head>
+<body class="content-page">
+  <site-header></site-header>
+  <main class="content-main">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / Path commands</nav>
+    <article>
+      <header class="content-hero">
+        <p class="eyebrow">Path data reference</p>
+        <h1>SVG path commands: read M, L, C, Q, A, and Z</h1>
+        <p class="lede">The <code>d</code> attribute is a compact drawing language. Learn its command families, how the current point moves, and how to change a path without accidentally moving the rest of the shape.</p>
+        <p class="article-meta">Published August 5, 2026 · About 11 minutes</p>
+      </header>
+
+      <section>
+        <h2>How to read a path from left to right</h2>
+        <p>Every path begins with a current point. A command either moves that point, draws from it, or closes the current subpath. Uppercase commands use absolute coordinates in the SVG coordinate system. Lowercase commands use offsets from the current point.</p>
+        <pre><code>&lt;path d="M 20 80 L 80 20 L 140 80 Z" /&gt;</code></pre>
+        <p>Read this as: move to 20,80; draw a line to 80,20; draw another line to 140,80; then close the path back to its starting point. Commas are optional, while signs and whitespace can separate numbers. A negative number can begin immediately after another number, so <code>10-5</code> means <code>10 -5</code>, not subtraction.</p>
+      </section>
+
+      <section>
+        <h2>Move and line commands</h2>
+        <ul>
+          <li><code>M x y</code> starts a new subpath without drawing.</li>
+          <li><code>L x y</code> draws a straight line to a point.</li>
+          <li><code>H x</code> draws horizontally while preserving the current y value.</li>
+          <li><code>V y</code> draws vertically while preserving the current x value.</li>
+          <li><code>Z</code> closes the subpath with a straight segment.</li>
+        </ul>
+        <p>Extra coordinate pairs after <code>M</code> are treated as line commands. That shorthand is valid, but writing the first <code>L</code> explicitly can make hand editing easier. Use <code>Z</code> when a filled boundary should close exactly. Manually returning to the first point with <code>L</code> may produce a different stroke join.</p>
+      </section>
+
+      <aside class="article-ad ad-slot" aria-label="Advertisement">
+        <span class="ad-label">Advertisements</span>
+        <ins class="adsbygoogle" style="display:block;width:100%;height:250px" data-ad-client="ca-pub-7469113252837951" data-ad-slot="2173866609"></ins>
+      </aside>
+
+      <section>
+        <h2>Cubic and quadratic curves</h2>
+        <p>A cubic curve uses two control points and one endpoint: <code>C x1 y1 x2 y2 x y</code>. The first handle pulls the curve away from its starting point. The second handle guides it into the endpoint. The curve usually stays inside the convex hull of these four points, but it does not pass through either handle.</p>
+        <pre><code>&lt;path d="M 20 100 C 45 20 115 20 140 100" /&gt;</code></pre>
+        <p>A quadratic curve uses one control point: <code>Q x1 y1 x y</code>. Its smooth continuation command is <code>T x y</code>. The cubic continuation command is <code>S x2 y2 x y</code>. Both shorthand commands reflect the previous compatible handle across the current point. If the previous command is not compatible, the reflected handle collapses onto the current point.</p>
+        <p>Use cubic curves for precise logo and illustration work. Quadratic curves are compact and useful for simple bends. For a visual explanation of handle direction and length, read the <a href="/guides/bezier-curves/">cubic Bezier curve guide</a>.</p>
+      </section>
+
+      <section>
+        <h2>Elliptical arc commands</h2>
+        <p>The arc command has the most parameters: <code>A rx ry rotation large-arc sweep x y</code>. The endpoint is the last pair. The radii describe the source ellipse. Rotation turns that ellipse. The two flags select one of the possible arcs connecting the same endpoints.</p>
+        <pre><code>&lt;path d="M 30 90 A 60 40 0 0 1 150 90" /&gt;</code></pre>
+        <p>The large-arc flag chooses the longer or shorter route. The sweep flag chooses the drawing direction. Each flag must be 0 or 1. If the requested radii are too small to connect the endpoints, the browser scales them up automatically. When an arc looks wrong, first check the endpoint and flags, then test the radii, and only then adjust rotation.</p>
+      </section>
+
+      <section>
+        <h2>Absolute versus relative coordinates</h2>
+        <p>Relative commands can make a reusable motif easy to move because its later points are expressed as offsets. They can also make debugging harder because one incorrect value shifts every command that follows. Absolute coordinates reveal exact locations but require more edits when moving a group.</p>
+        <pre><code>&lt;!-- These draw the same two segments --&gt;
+M 20 20 L 80 20 L 80 70
+m 20 20 l 60 0 l 0 50</code></pre>
+        <p>Choose one form based on the editing task, not file size alone. Compression usually makes the size difference small. SVG Vector Lab can display and manipulate paths regardless of command case, so visual editing is a useful check after any manual conversion.</p>
+      </section>
+
+      <aside class="article-ad ad-slot" aria-label="Advertisement">
+        <span class="ad-label">Advertisements</span>
+        <ins class="adsbygoogle" style="display:block;width:100%;height:250px" data-ad-client="ca-pub-7469113252837951" data-ad-slot="2173866609"></ins>
+      </aside>
+
+      <section>
+        <h2>A safe editing checklist</h2>
+        <ol>
+          <li>Find the last known current point before the segment you want to change.</li>
+          <li>Confirm whether the command is absolute or relative.</li>
+          <li>Count parameters according to the command family.</li>
+          <li>For curves, distinguish handles from the final endpoint.</li>
+          <li>For arcs, keep both flags at exactly 0 or 1.</li>
+          <li>Check whether a later relative command depends on the value you changed.</li>
+          <li>Verify fill closure and stroke joins after editing.</li>
+        </ol>
+        <p>Paste a path into the <a href="/svg-path-editor/">visual SVG path editor</a> to inspect anchors and handles beside the source. Continue with the <a href="/guides/edit-svg-paths/">point-by-point editing workflow</a> when you are ready to reshape a complete icon or illustration.</p>
+      </section>
+    </article>
+  </main>
+  <site-footer></site-footer>
+</body>
+</html>

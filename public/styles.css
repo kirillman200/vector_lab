@@ -11,7 +11,7 @@
   --red: #d92d3a;
   --shadow: 0 18px 48px rgba(34, 72, 126, 0.10);
   --shadow-soft: 0 8px 24px rgba(34, 72, 126, 0.08);
-  --editor-top-ad-height: 112px;
+  --editor-top-ad-height: 0px;
 }
 
 * {
@@ -986,90 +986,6 @@ h2,
   color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.ad-slot {
-  position: relative;
-  min-height: 286px;
-  display: block;
-  gap: 5px;
-  margin-top: 16px;
-  border: 1px solid #d9e3ef;
-  border-radius: 11px;
-  background: #f9fbff;
-  color: #7a8da6;
-  text-align: center;
-  padding: 8px;
-  overflow: hidden;
-}
-
-.ad-slot .adsbygoogle {
-  width: 100%;
-  min-height: 250px;
-}
-
-.ad-slot:not(.ad-slot-active)::before,
-.ad-slot-unfilled::before {
-  content: "Reserved ad space";
-  position: absolute;
-  inset: 8px;
-  display: grid;
-  place-items: center;
-  border: 1px dashed #c8d5e5;
-  border-radius: 7px;
-  color: #7a8da6;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.ad-slot-unfilled .adsbygoogle {
-  visibility: hidden;
-}
-
-.ad-slot-compact {
-  min-height: 286px;
-  margin-top: 2px;
-}
-
-.tab-ad-slot {
-  margin: 14px;
-}
-
-.editor-header-ad {
-  min-height: var(--editor-top-ad-height);
-  margin: 0;
-  border-width: 0 0 1px;
-  border-radius: 0;
-  background: rgba(249, 251, 255, 0.96);
-  padding: 21px 0 0;
-  overflow-x: clip;
-  overflow-y: visible;
-}
-
-.editor-header-ad .ad-label {
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: 0;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.editor-header-ad .adsbygoogle {
-  width: 100%;
-  max-width: 100%;
-  height: 90px;
-  min-height: 90px;
-}
-
-.editor-header-ad:not(.ad-slot-active)::before,
-.editor-header-ad.ad-slot-unfilled::before {
-  inset: 21px 0 0;
 }
 
 .work-area {

@@ -22,6 +22,14 @@ const routes = new Map([
   ["/guides/bezier-curves/", "guides/bezier-curves/index.html"],
   ["/guides/convert-shapes-to-paths/", "guides/convert-shapes-to-paths/index.html"],
   ["/guides/optimize-svg/", "guides/optimize-svg/index.html"],
+  ["/guides/path-commands/", "guides/path-commands/index.html"],
+  ["/guides/svg-transforms/", "guides/svg-transforms/index.html"],
+  ["/guides/svg-strokes/", "guides/svg-strokes/index.html"],
+  ["/guides/svg-gradients/", "guides/svg-gradients/index.html"],
+  ["/guides/svg-accessibility/", "guides/svg-accessibility/index.html"],
+  ["/guides/responsive-svg/", "guides/responsive-svg/index.html"],
+  ["/guides/clipping-and-masking/", "guides/clipping-and-masking/index.html"],
+  ["/guides/debug-invisible-svg/", "guides/debug-invisible-svg/index.html"],
   ["/privacy/", "privacy/index.html"],
   ["/terms/", "terms/index.html"],
   ["/contact/", "contact/index.html"],
@@ -328,8 +336,29 @@ test("guides expose article dates, social metadata, and breadcrumb JSON-LD", () 
     assert.match(html, /property="article:modified_time"/);
     assert.match(html, /name="twitter:title"/);
     assert.match(html, /name="twitter:description"/);
-    assert.match(html, /"@type": "BreadcrumbList"/);
-    assert.match(html, /"dateModified": "2026-07-17"/);
+    const records = [...html.matchAll(/<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/gi)]
+      .map((match) => JSON.parse(match[1]));
+    assert.ok(records.some((record) => record["@type"] === "BreadcrumbList"), `${file} is missing breadcrumb data`);
+    const article = records.find((record) => Array.isArray(record["@type"]) && record["@type"].includes("Article"));
+    assert.ok(article, `${file} is missing article data`);
+    assert.match(article.dateModified, /^2026-(?:07|08)-\d{2}$/);
+  }
+});
+
+test("the guide library links to substantial task-specific articles", () => {
+  const guideEntries = [...routes.entries()].filter(([route]) => route.startsWith("/guides/") && route !== "/guides/");
+  const guideIndex = read("guides/index.html");
+  assert.ok(guideEntries.length >= 13, `only ${guideEntries.length} guide articles are published`);
+
+  for (const [route, file] of guideEntries) {
+    assert.match(guideIndex, new RegExp(`href="${route.replaceAll("/", "\\/")}"`), `${route} is missing from the guide library`);
+    const html = read(file)
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z0-9#]+;/gi, " ");
+    const wordCount = html.match(/[A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*/g)?.length || 0;
+    assert.ok(wordCount >= 550, `${file} has only ${wordCount} visible words`);
   }
 });
 
@@ -523,45 +552,12 @@ test("Cloudflare publishes only the public allowlist", () => {
   assert.match(assetsIgnore, /^\*\.pem$/m);
 });
 
-test("the editor banner and every editor tab contain configured AdSense units", () => {
+test("the interactive editor stays free of AdSense units near editing controls", () => {
   const html = read("index.html");
-  const loaderMatches = html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-7469113252837951/g) || [];
-  assert.equal(loaderMatches.length, 1, "the AdSense loader must appear exactly once");
-
-  const units = [...html.matchAll(/<ins class="adsbygoogle"([\s\S]*?)<\/ins>/g)];
-  assert.equal(units.length, 6, "the editor requires one banner and five original panel ads");
-  for (const [, attributes] of units) {
-    assert.match(attributes, /data-ad-client="ca-pub-7469113252837951"/);
-    assert.match(attributes, /data-ad-slot="2173866609"/);
-  }
-  assert.match(units[0][1], /style="display:block;width:100%;height:90px"/);
-  for (const [, attributes] of units.slice(1)) {
-    assert.match(attributes, /data-ad-format="auto"/);
-    assert.match(attributes, /data-full-width-responsive="true"/);
-  }
-
-  for (const panelId of [
-    "left-source-panel",
-    "left-layers-panel",
-    "right-design-panel",
-    "right-path-panel",
-    "right-notes-panel",
-  ]) {
-    const panelStart = html.indexOf(`id="${panelId}"`);
-    assert.notEqual(panelStart, -1, `missing panel ${panelId}`);
-    const nextPanel = html.indexOf('class="tab-panel"', panelStart + 1);
-    const panelMarkup = html.slice(panelStart, nextPanel === -1 ? html.length : nextPanel);
-    assert.match(panelMarkup, /class="adsbygoogle"/, `${panelId} is missing its original ad unit`);
-  }
-
-  const headerEnd = html.indexOf("</header>");
-  const shellStart = html.indexOf('<main class="app-shell">');
-  const headerBanner = html.slice(headerEnd, shellStart);
-  assert.match(headerBanner, /class="editor-header-ad ad-slot"/);
-  assert.match(headerBanner, /class="ad-label">Advertisements<\/span>/);
-  assert.match(headerBanner, /class="adsbygoogle"/);
-
-  assert.doesNotMatch(html, /adsbygoogle\s*=.*\.push/s, "ad initialization must remain in the external script");
+  assert.doesNotMatch(html, /pagead2\.googlesyndication\.com/);
+  assert.doesNotMatch(html, /class="adsbygoogle"/);
+  assert.doesNotMatch(html, /class="[^"]*ad-slot/);
+  assert.doesNotMatch(html, /src="js\/ads\.js/);
 });
 
 test("newly loaded artwork is fitted and centered by default", () => {
@@ -572,7 +568,7 @@ test("newly loaded artwork is fitted and centered by default", () => {
   assert.match(app, /recordHistory: false, fit: false/, "undo and redo should preserve manual zoom");
 });
 
-test("the editor reserves space for startup UI and responsive ads", () => {
+test("the editor reserves space for startup UI without an advertising offset", () => {
   const html = read("index.html");
   const css = read("styles.css");
   const icons = read("js/icons.js");
@@ -583,21 +579,15 @@ test("the editor reserves space for startup UI and responsive ads", () => {
   }
   assert.match(html, /id="geometryControls"[^>]*>[\s\S]*?geometry-placeholder/);
   assert.match(css, /\.button-icon-pending:not\(\.button-icon-ready\)::before/);
-  assert.match(css, /\.ad-slot \.adsbygoogle \{[\s\S]*?min-height: 250px;/);
-  assert.match(css, /--editor-top-ad-height: 112px;/);
-  assert.match(css, /\.editor-header-ad \.adsbygoogle \{[\s\S]*?height: 90px;/);
-  const editorAdCss = matchOne(css, /\.editor-header-ad \.adsbygoogle \{([^}]*)\}/, "editor banner CSS", "styles.css");
-  assert.match(editorAdCss, /max-width: 100%;/);
-  assert.doesNotMatch(editorAdCss, /max-width: 970px;/);
-  assert.match(css, /content: "Reserved ad space"/);
-  assert.doesNotMatch(css, /\.ad-slot-unfilled\s*\{[\s\S]*?visibility:\s*hidden/);
+  assert.match(css, /--editor-top-ad-height: 0px;/);
+  assert.doesNotMatch(css, /\.editor-header-ad|\.tab-ad-slot|\.ad-slot-compact/);
   assert.match(css, /min-height: max\(620px, calc\(100svh - 70px - var\(--editor-top-ad-height\)\)\);/);
   assert.match(css, /\.content-header-inner \{[\s\S]*?min-height: 70px;/);
   assert.match(icons, /classList\.add\("button-icon-ready"\)/);
   assert.match(app, /geometryPlaceholder\.className = "learn-panel geometry-placeholder"/);
 });
 
-test("editor panels expand to fit original ads and use slim overflow scrollbars", () => {
+test("editor panels use slim overflow scrollbars and compact responsive sizing", () => {
   const css = read("styles.css");
   const app = read("js/app.js");
   const icons = read("js/icons.js");

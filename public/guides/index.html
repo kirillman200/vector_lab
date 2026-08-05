@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SVG Guides — viewBox, Paths, Bézier Curves & Optimization</title>
-  <meta name="description" content="Practical SVG tutorials covering viewBox and scaling, path editing, Bézier curves, SVG optimization, and converting shapes into editable paths.">
+  <title>Practical SVG Guides: Paths, Layout, Paint and Access</title>
+  <meta name="description" content="Thirteen practical SVG guides covering paths, transforms, viewBox, responsive sizing, strokes, gradients, accessibility, clipping, and debugging.">
   <meta name="robots" content="index, follow">
   <meta name="author" content="SVG Vector Lab">
   <meta name="theme-color" content="#2f6fed">
@@ -13,18 +13,18 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/content.css?v=20260719b">
+  <link rel="stylesheet" href="/content.css?v=20260805a">
   <script src="/js/layout.js" defer></script>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SVG Vector Lab">
-  <meta property="og:title" content="SVG Guides — viewBox, Paths, Curves & Optimization">
-  <meta property="og:description" content="Learn SVG viewBox, paths, Bézier curves, optimization, and shape conversion with practical examples.">
+  <meta property="og:title" content="Practical SVG Guides: Paths, Layout, Paint and Access">
+  <meta property="og:description" content="Learn SVG geometry, layout, paint, accessibility, and debugging through practical examples.">
   <meta property="og:url" content="https://svgvectorlab.com/guides/">
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SVG Guides — viewBox, Paths, Curves & Optimization">
-  <meta name="twitter:description" content="Practical tutorials for SVG scaling, path editing, Bézier curves, shape conversion, and optimization.">
+  <meta name="twitter:title" content="Practical SVG Guides">
+  <meta name="twitter:description" content="Thirteen practical tutorials for SVG geometry, layout, paint, accessibility, and debugging.">
   <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta name="twitter:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <script type="application/ld+json">
@@ -33,7 +33,7 @@
     "@type": "CollectionPage",
     "name": "SVG Guides",
     "url": "https://svgvectorlab.com/guides/",
-    "description": "Practical tutorials for understanding and editing SVG files."
+    "description": "Thirteen practical tutorials for understanding, editing, debugging, and publishing SVG files."
   }
   </script>
 </head>
@@ -42,37 +42,102 @@
 
   <main class="content-main wide">
     <section class="content-hero">
-      <p class="eyebrow">Learn SVG</p>
-      <h1>Practical SVG guides for designers and developers.</h1>
-      <p class="lede">Understand the markup behind vector graphics, edit paths with confidence, and create smaller, cleaner files for the web.</p>
+      <p class="eyebrow">SVG field guide</p>
+      <h1>Understand the SVG you are editing, not just the picture.</h1>
+      <p class="lede">Thirteen focused guides connect SVG source to what appears on the canvas. Start with a task, copy a working example, and use the troubleshooting checks when the result does not match your intent.</p>
     </section>
 
-    <section class="card-grid" aria-label="SVG guides">
+    <section aria-labelledby="geometry-guides">
+      <p class="eyebrow">Geometry and paths</p>
+      <h2 id="geometry-guides">Build and reshape vector geometry</h2>
+      <div class="card-grid" aria-label="Geometry and path guides">
+      <a class="guide-card" href="/guides/path-commands/">
+        <p class="guide-topic">Reference</p>
+        <h3>Read every SVG path command</h3>
+        <p>Decode M, L, H, V, C, S, Q, T, A, and Z, including relative coordinates and arc flags.</p>
+      </a>
       <a class="guide-card" href="/guides/svg-viewbox/">
-        <h2>Understand the SVG viewBox</h2>
+        <p class="guide-topic">Coordinates</p>
+        <h3>Understand the SVG viewBox</h3>
         <p>Learn how four values control coordinates, responsive scaling, alignment, whitespace, zoom, and cropping.</p>
       </a>
       <a class="guide-card" href="/guides/edit-svg-paths/">
-        <h2>Edit SVG paths point by point</h2>
+        <p class="guide-topic">Workflow</p>
+        <h3>Edit SVG paths point by point</h3>
         <p>Read path commands, move anchors and control points, and verify the result in source.</p>
       </a>
       <a class="guide-card" href="/guides/bezier-curves/">
-        <h2>Understand cubic Bézier curves</h2>
+        <p class="guide-topic">Curves</p>
+        <h3>Understand cubic Bézier curves</h3>
         <p>Learn how C and S commands use control points to produce smooth, predictable curves.</p>
       </a>
       <a class="guide-card" href="/guides/convert-shapes-to-paths/">
-        <h2>Convert SVG shapes to paths</h2>
+        <p class="guide-topic">Conversion</p>
+        <h3>Convert SVG shapes to paths</h3>
         <p>Know when conversion helps and what happens to rects, circles, ellipses, and polygons.</p>
       </a>
-      <a class="guide-card" href="/guides/optimize-svg/">
-        <h2>Optimize SVG for the web</h2>
-        <p>Reduce unnecessary markup while keeping the visual result and accessibility intact.</p>
+      <a class="guide-card" href="/guides/svg-transforms/">
+        <p class="guide-topic">Placement</p>
+        <h3>Translate, scale, and rotate</h3>
+        <p>Predict transform order, choose a pivot, use nested groups, and understand matrix output.</p>
       </a>
+      </div>
     </section>
 
-    <section>
-      <h2>Learn by changing real SVG</h2>
-      <p>Each guide uses standard SVG markup that you can paste directly into <a href="/">SVG Vector Lab</a>. Keep the source panel visible while you edit: it is the fastest way to connect path syntax with the geometry on the canvas.</p>
+    <section aria-labelledby="presentation-guides">
+      <p class="eyebrow">Paint and presentation</p>
+      <h2 id="presentation-guides">Control how SVG looks and fits</h2>
+      <div class="card-grid" aria-label="Paint and presentation guides">
+        <a class="guide-card" href="/guides/svg-strokes/">
+          <p class="guide-topic">Outlines</p>
+          <h3>Master SVG strokes</h3>
+          <p>Compare linecaps and joins, build dash patterns, control miter spikes, and keep strokes stable while scaling.</p>
+        </a>
+        <a class="guide-card" href="/guides/svg-gradients/">
+          <p class="guide-topic">Color</p>
+          <h3>Build reusable SVG gradients</h3>
+          <p>Use linear and radial gradients with deliberate stops, units, spread methods, transforms, and IDs.</p>
+        </a>
+        <a class="guide-card" href="/guides/clipping-and-masking/">
+          <p class="guide-topic">Visibility</p>
+          <h3>Choose clipping or masking</h3>
+          <p>Use hard boundaries, soft fades, correct coordinate units, and regions that do not crop effects.</p>
+        </a>
+        <a class="guide-card" href="/guides/responsive-svg/">
+          <p class="guide-topic">Layout</p>
+          <h3>Make SVG responsive</h3>
+          <p>Combine viewBox, intrinsic ratio, CSS sizing, embedding choices, and preserveAspectRatio.</p>
+        </a>
+      </div>
+    </section>
+
+    <section aria-labelledby="publishing-guides">
+      <p class="eyebrow">Quality and publishing</p>
+      <h2 id="publishing-guides">Ship files that stay useful</h2>
+      <div class="card-grid" aria-label="Quality and publishing guides">
+        <a class="guide-card" href="/guides/svg-accessibility/">
+          <p class="guide-topic">Inclusive design</p>
+          <h3>Make SVG accessible</h3>
+          <p>Choose text alternatives, title diagrams, label controls, preserve focus, and respect reduced motion.</p>
+        </a>
+        <a class="guide-card" href="/guides/optimize-svg/">
+          <p class="guide-topic">Performance</p>
+          <h3>Optimize SVG for the web</h3>
+          <p>Reduce unnecessary markup while keeping the visual result, references, and accessibility intact.</p>
+        </a>
+        <a class="guide-card" href="/guides/debug-invisible-svg/">
+          <p class="guide-topic">Troubleshooting</p>
+          <h3>Debug an invisible SVG</h3>
+          <p>Isolate layout, viewBox, paint, geometry, transforms, references, clips, masks, and filters in the right order.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="info-card guide-start">
+      <h2>Learn by changing a real file</h2>
+      <p>Each guide uses standard markup that you can paste into <a href="/">SVG Vector Lab</a>. Keep the source and canvas visible together. Change one value at a time, identify the visual consequence, then undo and try the next value.</p>
+      <p>If you are new to SVG, begin with <a href="/guides/svg-viewbox/">viewBox and coordinate scaling</a>, continue with the <a href="/guides/path-commands/">path command reference</a>, and finish with the <a href="/guides/edit-svg-paths/">point-by-point editing workflow</a>. If you already have a broken file, start with the <a href="/guides/debug-invisible-svg/">systematic debugging checklist</a>.</p>
+      <p>The editor processes SVG in your browser. You can inspect, modify, and export without creating an account or uploading artwork to an application server.</p>
     </section>
   </main>
 

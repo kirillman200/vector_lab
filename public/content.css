@@ -344,6 +344,27 @@ site-footer {
   font-size: 15px;
 }
 
+.guide-card .guide-topic {
+  margin-bottom: 8px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.content-main.wide > section + section {
+  margin-top: 56px;
+}
+
+.content-main.wide > section > h2 {
+  margin-top: 8px;
+}
+
+.guide-start {
+  margin-top: 64px !important;
+}
+
 .breadcrumbs {
   margin-bottom: 24px;
   color: var(--muted);
