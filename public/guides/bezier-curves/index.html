@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/content.css?v=20260805a">
+  <link rel="stylesheet" href="/content.css?v=20260806b">
   <script src="/js/layout.js" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
   <script src="/js/ads.js?v=20260718b" defer></script>
@@ -25,7 +25,7 @@
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta property="article:published_time" content="2026-07-16">
-  <meta property="article:modified_time" content="2026-07-17">
+  <meta property="article:modified_time" content="2026-08-06">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Understanding Cubic Bézier Curves in SVG">
   <meta name="twitter:description" content="Learn control points, smooth joins, and SVG C and S path commands.">
@@ -37,7 +37,7 @@
     "@type": ["Article", "TechArticle"],
     "headline": "Understanding Cubic Bézier Curves in SVG",
     "datePublished": "2026-07-16",
-    "dateModified": "2026-07-17",
+    "dateModified": "2026-08-06",
     "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
     "author": { "@type": "Organization", "name": "SVG Vector Lab" },
     "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
@@ -66,7 +66,7 @@
         <p class="eyebrow">Curve geometry</p>
         <h1>Understanding cubic Bézier curves in SVG</h1>
         <p class="lede">A cubic Bézier curve is controlled by two endpoints and two handles. The handles pull the curve's direction and tension without becoming points on the visible outline.</p>
-        <p class="article-meta">Published July 16, 2026 · Updated July 17, 2026 · About 6 minutes</p>
+        <p class="article-meta">Published July 16, 2026 · Updated August 6, 2026 · About 9 minutes</p>
       </header>
 
       <section>
@@ -125,6 +125,19 @@ S 210 180, 240 100</code></pre>
         <p>You do not need to convert every quadratic curve into a cubic one. Choose the representation that makes the shape understandable and easy to maintain.</p>
       </section>
 
+      <section>
+        <h2>Calculate a point and tangent at t</h2>
+        <p>A cubic curve can be evaluated at a parameter <code>t</code> between zero and one. Four polynomial weights blend the start, two control points, and endpoint. At zero the result is the start; at one it is the endpoint.</p>
+        <pre><code>B(t) = (1-t)^3 P0
+     + 3(1-t)^2 t P1
+     + 3(1-t)t^2 P2
+     + t^3 P3</code></pre>
+        <p>The derivative produces a tangent vector used to orient markers or understand the curve's direction. Equal steps in t do not usually travel equal distances. Constant-speed motion needs an arc-length approximation or lookup table rather than t alone.</p>
+        <div class="callout">
+          <p><strong>Calculate it:</strong> enter four points in the <a href="/cubic-bezier-calculator/">cubic Bezier curve calculator</a> to get the point at t, tangent angle, approximate length, live preview, and SVG <code>C</code> path data.</p>
+        </div>
+      </section>
+
       <aside class="article-ad ad-slot" aria-label="Advertisement">
         <span class="ad-label">Advertisements</span>
         <ins class="adsbygoogle"
@@ -144,7 +157,7 @@ S 210 180, 240 100</code></pre>
       </section>
 
       <div class="callout">
-        <p><strong>Practice:</strong> paste the two-segment example into <a href="/">SVG Vector Lab</a>. Drag each handle separately, then replace <code>S</code> with an explicit <code>C</code> command and compare the available controls.</p>
+        <p><strong>Practice:</strong> paste the two-segment example into <a href="/">SVG Vector Lab</a>. Drag each handle separately, then replace <code>S</code> with an explicit <code>C</code> command and compare the available controls. Use the <a href="/cubic-bezier-calculator/">curve calculator</a> when you need exact geometry before editing.</p>
       </div>
 
       <p>Return to the <a href="/guides/edit-svg-paths/">path-editing guide</a> or learn how to <a href="/guides/convert-shapes-to-paths/">convert basic SVG shapes into paths</a>.</p>

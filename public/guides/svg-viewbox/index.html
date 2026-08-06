@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/content.css?v=20260805a">
+  <link rel="stylesheet" href="/content.css?v=20260806b">
   <script src="/js/layout.js" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
   <script src="/js/ads.js?v=20260718b" defer></script>
@@ -25,7 +25,7 @@
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta property="article:published_time" content="2026-07-17">
-  <meta property="article:modified_time" content="2026-07-17">
+  <meta property="article:modified_time" content="2026-08-06">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SVG viewBox Explained">
   <meta name="twitter:description" content="Learn SVG coordinates, responsive scaling, aspect ratio, zoom, and cropping with practical examples.">
@@ -38,7 +38,7 @@
     "headline": "SVG viewBox Explained — Coordinates, Scaling & Aspect Ratio",
     "description": "A practical guide to SVG viewBox coordinates, responsive scaling, alignment, zoom, and cropping.",
     "datePublished": "2026-07-17",
-    "dateModified": "2026-07-17",
+    "dateModified": "2026-08-06",
     "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
     "author": { "@type": "Organization", "name": "SVG Vector Lab" },
     "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
@@ -67,7 +67,7 @@
         <p class="eyebrow">SVG coordinate systems</p>
         <h1>SVG viewBox explained: coordinates, scaling, and aspect ratio</h1>
         <p class="lede">The <code>viewBox</code> defines the part of an SVG coordinate system that appears inside its viewport. Once its four values make sense, responsive scaling, whitespace, cropping, and alignment become much easier to predict.</p>
-        <p class="article-meta">Published July 17, 2026 · About 8 minutes</p>
+        <p class="article-meta">Published July 17, 2026 · Updated August 6, 2026 · About 10 minutes</p>
       </header>
 
       <section>
@@ -96,6 +96,17 @@
 &lt;/svg&gt;</code></pre>
         <p>Here, each internal unit initially maps to two CSS pixels because both viewport dimensions are twice their matching <code>viewBox</code> dimensions. If CSS later renders the same SVG at 240 by 160 pixels, each unit maps to one pixel. The artwork keeps the same proportions because its geometry still uses the same internal coordinates.</p>
         <p>For responsive graphics, a common pattern is to keep the <code>viewBox</code>, set the displayed width with CSS, and allow the height to follow the intrinsic aspect ratio.</p>
+      </section>
+
+      <section>
+        <h2>Convert SVG coordinates to viewport pixels</h2>
+        <p>When the viewBox and viewport have matching aspect ratios, conversion is a scale plus an origin adjustment. For x, subtract <code>minX</code> from the SVG coordinate and multiply by viewport width divided by viewBox width. Apply the matching formula to y.</p>
+        <pre><code>pixelX = (svgX - minX) * viewportWidth / viewBoxWidth
+pixelY = (svgY - minY) * viewportHeight / viewBoxHeight</code></pre>
+        <p>With <code>meet</code> or <code>slice</code>, both axes use one uniform scale. Alignment can then add an x or y offset. Reversing the conversion requires removing that offset before dividing by scale. A pointer event also needs to be made relative to the SVG element rather than the page.</p>
+        <div class="callout">
+          <p><strong>Calculate it:</strong> use the <a href="/svg-coordinate-calculator/">SVG coordinate and viewBox calculator</a> to convert points in both directions with meet, slice, x/y alignment, or independent stretching.</p>
+        </div>
       </section>
 
       <section>
@@ -149,6 +160,7 @@ viewBox="60 40 120 80"</code></pre>
           <li>Choose <code>meet</code> or <code>slice</code> intentionally when the ratios differ.</li>
         </ol>
         <p>Paste the SVG into the <a href="/">free online SVG editor</a> to inspect its source and canvas together. If the file still has excess markup after its framing is correct, continue with the guide to <a href="/guides/optimize-svg/">optimizing SVG for the web</a>.</p>
+        <p>For exact placement work, open the <a href="/svg-coordinate-calculator/">SVG coordinate calculator</a> beside your file and test the current viewBox, viewport dimensions, and fitting rule.</p>
       </section>
     </article>
   </main>

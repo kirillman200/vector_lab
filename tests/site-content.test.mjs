@@ -15,6 +15,8 @@ const routes = new Map([
   ["/svg-path-editor/", "svg-path-editor/index.html"],
   ["/convert-shapes-to-paths/", "convert-shapes-to-paths/index.html"],
   ["/svg-to-png/", "svg-to-png/index.html"],
+  ["/svg-coordinate-calculator/", "svg-coordinate-calculator/index.html"],
+  ["/cubic-bezier-calculator/", "cubic-bezier-calculator/index.html"],
   ["/about/", "about/index.html"],
   ["/guides/", "guides/index.html"],
   ["/guides/svg-viewbox/", "guides/svg-viewbox/index.html"],
@@ -222,13 +224,16 @@ test("content pages avoid loading editor-only dependencies", () => {
     assert.doesNotMatch(html, /href="\/?styles\.css"/, `${file} loads the editor stylesheet`);
     const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
     const isGuideArticle = file.startsWith("guides/") && file !== "guides/index.html";
+    const isCalculator = file === "svg-coordinate-calculator/index.html" || file === "cubic-bezier-calculator/index.html";
     const expectedScripts = isGuideArticle
       ? [
           "/js/layout.js",
           "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951",
           "/js/ads.js?v=20260718b",
         ]
-      : ["/js/layout.js"];
+      : isCalculator
+        ? ["/js/layout.js", "/js/svg-calculators.mjs"]
+        : ["/js/layout.js"];
     assert.deepEqual(scripts, expectedScripts, `${file} loads an unexpected script`);
   }
 
@@ -362,6 +367,25 @@ test("the guide library links to substantial task-specific articles", () => {
   }
 });
 
+test("SVG calculators answer coordinate and curve queries without ads near controls", () => {
+  const guideIndex = read("guides/index.html");
+  const coordinatePage = read("svg-coordinate-calculator/index.html");
+  const bezierPage = read("cubic-bezier-calculator/index.html");
+
+  assert.match(guideIndex, /href="\/svg-coordinate-calculator\/"/);
+  assert.match(guideIndex, /href="\/cubic-bezier-calculator\/"/);
+  assert.match(coordinatePage, /data-calculator="coordinates"/);
+  assert.match(coordinatePage, /viewportX = offsetX/);
+  assert.match(coordinatePage, /"@type": "FAQPage"/);
+  assert.match(bezierPage, /data-calculator="bezier"/);
+  assert.match(bezierPage, /B\(t\) = \(1-t\)\^3 P0/);
+  assert.match(bezierPage, /"@type": "FAQPage"/);
+  for (const html of [coordinatePage, bezierPage]) {
+    assert.doesNotMatch(html, /class="adsbygoogle"|pagead2\.googlesyndication\.com/);
+    assert.match(html, /type="module" src="\/js\/svg-calculators\.mjs"/);
+  }
+});
+
 test("sitemap and robots expose every indexable route", () => {
   const sitemap = read("sitemap.xml");
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
@@ -473,6 +497,8 @@ test("Google Analytics is consent-gated and excludes artwork data", () => {
   assert.match(analytics, /"site_click"/);
   assert.match(analytics, /click_target: clickTargets/);
   assert.match(analytics, /navigation_target/);
+  assert.match(analytics, /"\/svg-coordinate-calculator\/": "coordinate_calculator"/);
+  assert.match(analytics, /"\/cubic-bezier-calculator\/": "bezier_calculator"/);
   assert.match(analytics, /control\.closest\("\.ad-slot, ins\.adsbygoogle"\)/);
   assert.doesNotMatch(analytics, /svgInput|file\.name|clipboardMarkup|clientX|clientY/);
   assert.match(app, /editor_document_load/);

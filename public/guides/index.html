@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Practical SVG Guides: Paths, Layout, Paint and Access</title>
-  <meta name="description" content="Thirteen practical SVG guides covering paths, transforms, viewBox, responsive sizing, strokes, gradients, accessibility, clipping, and debugging.">
+  <title>Practical SVG Guides and Geometry Calculators</title>
+  <meta name="description" content="Thirteen practical SVG guides plus coordinate and cubic Bezier calculators for paths, viewBox, transforms, responsive sizing, paint, access, and debugging.">
   <meta name="robots" content="index, follow">
   <meta name="author" content="SVG Vector Lab">
   <meta name="theme-color" content="#2f6fed">
@@ -13,18 +13,18 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/content.css?v=20260805a">
+  <link rel="stylesheet" href="/content.css?v=20260806b">
   <script src="/js/layout.js" defer></script>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SVG Vector Lab">
-  <meta property="og:title" content="Practical SVG Guides: Paths, Layout, Paint and Access">
-  <meta property="og:description" content="Learn SVG geometry, layout, paint, accessibility, and debugging through practical examples.">
+  <meta property="og:title" content="Practical SVG Guides and Geometry Calculators">
+  <meta property="og:description" content="Learn SVG geometry, layout, paint, accessibility, and debugging with practical guides and live calculators.">
   <meta property="og:url" content="https://svgvectorlab.com/guides/">
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Practical SVG Guides">
-  <meta name="twitter:description" content="Thirteen practical tutorials for SVG geometry, layout, paint, accessibility, and debugging.">
+  <meta name="twitter:description" content="Thirteen practical SVG tutorials plus live coordinate and cubic Bezier calculators.">
   <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta name="twitter:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <script type="application/ld+json">
@@ -33,7 +33,7 @@
     "@type": "CollectionPage",
     "name": "SVG Guides",
     "url": "https://svgvectorlab.com/guides/",
-    "description": "Thirteen practical tutorials for understanding, editing, debugging, and publishing SVG files."
+    "description": "Thirteen practical tutorials and two interactive calculators for understanding, editing, debugging, and publishing SVG files."
   }
   </script>
 </head>
@@ -44,7 +44,24 @@
     <section class="content-hero">
       <p class="eyebrow">SVG field guide</p>
       <h1>Understand the SVG you are editing, not just the picture.</h1>
-      <p class="lede">Thirteen focused guides connect SVG source to what appears on the canvas. Start with a task, copy a working example, and use the troubleshooting checks when the result does not match your intent.</p>
+      <p class="lede">Thirteen focused guides connect SVG source to what appears on the canvas. Two browser-local calculators handle coordinate conversion and cubic curve geometry when the answer needs exact numbers.</p>
+    </section>
+
+    <section aria-labelledby="calculator-tools">
+      <p class="eyebrow">Interactive SVG tools</p>
+      <h2 id="calculator-tools">Calculate coordinates and curve geometry</h2>
+      <div class="card-grid" aria-label="SVG calculators">
+        <a class="guide-card" href="/svg-coordinate-calculator/">
+          <p class="guide-topic">viewBox and coordinates</p>
+          <h3>Convert SVG units and viewport pixels</h3>
+          <p>Apply viewBox scale, meet, slice, alignment, and stretching in both conversion directions.</p>
+        </a>
+        <a class="guide-card" href="/cubic-bezier-calculator/">
+          <p class="guide-topic">Curve geometry</p>
+          <h3>Calculate a cubic Bezier curve</h3>
+          <p>Find the point, tangent, angle, approximate length, and SVG path data from four curve points.</p>
+        </a>
+      </div>
     </section>
 
     <section aria-labelledby="geometry-guides">

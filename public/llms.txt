@@ -12,6 +12,8 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 - [SVG Path Editor](https://svgvectorlab.com/svg-path-editor/): Edit anchors, Bézier handles, path commands, and coordinates.
 - [Convert SVG Shapes to Paths](https://svgvectorlab.com/convert-shapes-to-paths/): Convert basic SVG elements into editable path data.
 - [Convert SVG to PNG](https://svgvectorlab.com/svg-to-png/): Preview and export SVG as PNG at multiple resolutions.
+- [SVG Coordinate Calculator](https://svgvectorlab.com/svg-coordinate-calculator/): Convert points between SVG user units and viewport pixels using viewBox scale and alignment rules.
+- [Cubic Bezier Calculator](https://svgvectorlab.com/cubic-bezier-calculator/): Calculate a point, tangent, angle, approximate length, and SVG path command from four curve points.
 - [About SVG Vector Lab](https://svgvectorlab.com/about/): Project purpose, principles, local processing, supported SVG elements, and open-source licensing.
 
 ## SVG Guides

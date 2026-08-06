@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SVG Coordinate and viewBox Calculator</title>
+  <meta name="description" content="Convert SVG user coordinates to viewport pixels and back while accounting for viewBox, viewport size, alignment, meet, slice, and stretching.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/svg-coordinate-calculator/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/content.css?v=20260806b">
+  <script src="/js/layout.js" defer></script>
+  <script type="module" src="/js/svg-calculators.mjs"></script>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="SVG Coordinate and viewBox Calculator">
+  <meta property="og:description" content="Convert points between SVG user units and viewport pixels with the actual viewBox fitting rules.">
+  <meta property="og:url" content="https://svgvectorlab.com/svg-coordinate-calculator/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source and an editable vector curve">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SVG Coordinate and viewBox Calculator">
+  <meta name="twitter:description" content="Convert SVG coordinates to viewport pixels and back with meet, slice, alignment, and stretching.">
+  <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta name="twitter:image:alt" content="SVG Vector Lab social preview showing SVG source and an editable vector curve">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SVG Coordinate and viewBox Calculator",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any modern web browser",
+    "url": "https://svgvectorlab.com/svg-coordinate-calculator/",
+    "description": "A browser-based calculator for converting between SVG user coordinates and viewport pixels.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "SVG Vector Lab", "item": "https://svgvectorlab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "SVG Guides", "item": "https://svgvectorlab.com/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "SVG Coordinate Calculator", "item": "https://svgvectorlab.com/svg-coordinate-calculator/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the difference between an SVG viewport and viewBox?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The viewport is the displayed CSS pixel area. The viewBox is the internal SVG coordinate rectangle mapped into that area." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I convert a screen point to SVG coordinates?",
+        "acceptedAnswer": { "@type": "Answer", "text": "First express the point relative to the SVG viewport. Remove any alignment offset, divide by the rendered scale, and add the viewBox minimum coordinates." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do meet and slice give different SVG coordinates?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Meet uses the smaller uniform scale and may add empty space. Slice uses the larger uniform scale and may crop content, so their alignment offsets differ." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="content-page">
+  <site-header></site-header>
+
+  <main class="content-main wide">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / SVG coordinate calculator</nav>
+    <header class="content-hero calculator-hero">
+      <p class="eyebrow">SVG coordinate calculator</p>
+      <h1>Convert SVG coordinates to viewport pixels and back</h1>
+      <p class="lede">Enter a <code>viewBox</code>, rendered viewport, fitting rule, and two test points. The calculator applies the browser's scale and alignment math in both directions, so you can place overlays, interpret pointer positions, or debug unexpected whitespace.</p>
+      <ul class="trust-list" aria-label="Calculator characteristics">
+        <li>Runs entirely in your browser</li>
+        <li>Handles meet, slice, alignment, and none</li>
+        <li>Updates immediately without uploading a file</li>
+      </ul>
+    </header>
+
+    <section class="calculator-shell" data-calculator="coordinates" aria-labelledby="coordinate-inputs">
+      <div class="calculator-controls">
+        <form>
+          <fieldset>
+            <legend id="coordinate-inputs">1. Define the SVG frame</legend>
+            <div class="calculator-field-grid four-up">
+              <label>Minimum x<input type="number" name="minX" value="0" step="any"></label>
+              <label>Minimum y<input type="number" name="minY" value="0" step="any"></label>
+              <label>viewBox width<input type="number" name="viewBoxWidth" value="240" min="0.000001" step="any"></label>
+              <label>viewBox height<input type="number" name="viewBoxHeight" value="160" min="0.000001" step="any"></label>
+              <label>Viewport width in px<input type="number" name="viewportWidth" value="480" min="0.000001" step="any"></label>
+              <label>Viewport height in px<input type="number" name="viewportHeight" value="320" min="0.000001" step="any"></label>
+              <label class="field-span-two">preserveAspectRatio
+                <select name="preserveAspectRatio">
+                  <option value="xMidYMid meet">xMidYMid meet</option>
+                  <option value="xMinYMin meet">xMinYMin meet</option>
+                  <option value="xMaxYMax meet">xMaxYMax meet</option>
+                  <option value="xMidYMid slice">xMidYMid slice</option>
+                  <option value="xMinYMin slice">xMinYMin slice</option>
+                  <option value="xMaxYMax slice">xMaxYMax slice</option>
+                  <option value="none">none</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="calculator-pair">
+            <fieldset>
+              <legend>2. SVG point to viewport</legend>
+              <div class="calculator-field-grid">
+                <label>SVG x<input type="number" name="svgX" value="120" step="any"></label>
+                <label>SVG y<input type="number" name="svgY" value="80" step="any"></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>3. Viewport point to SVG</legend>
+              <div class="calculator-field-grid">
+                <label>Viewport x in px<input type="number" name="viewportX" value="240" step="any"></label>
+                <label>Viewport y in px<input type="number" name="viewportY" value="160" step="any"></label>
+              </div>
+            </fieldset>
+          </div>
+          <button class="calculator-reset" type="reset">Reset example</button>
+        </form>
+      </div>
+
+      <div class="calculator-results" aria-label="Coordinate results">
+        <div class="calculator-preview-wrap">
+          <svg data-coordinate-preview class="calculator-preview coordinate-preview" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Preview of the SVG viewBox and the two calculated points">
+            <rect data-role="frame" class="preview-frame" x="0" y="0" width="240" height="160"></rect>
+            <path class="preview-axis" d="M 0 80 H 240 M 120 0 V 160"></path>
+            <circle data-role="source-point" class="preview-point source-point" cx="120" cy="80" r="4"></circle>
+            <circle data-role="converted-point" class="preview-point converted-point" cx="120" cy="80" r="4"></circle>
+          </svg>
+          <div class="preview-key" aria-hidden="true"><span class="source-key">SVG input</span><span class="converted-key">Viewport input converted back</span></div>
+        </div>
+        <dl class="result-grid">
+          <div><dt>Rendered scale</dt><dd data-output="scale">2 px per SVG unit</dd></div>
+          <div><dt>Alignment offset</dt><dd data-output="offset">0, 0 px</dd></div>
+          <div><dt>SVG point in viewport</dt><dd data-output="viewportPoint">240, 160 px</dd></div>
+          <div><dt>Viewport point in SVG</dt><dd data-output="svgPoint">120, 80 SVG units</dd></div>
+        </dl>
+        <p class="calculator-status" data-output="status" role="status" aria-live="polite">Results updated</p>
+      </div>
+    </section>
+
+    <article class="calculator-article">
+      <section>
+        <h2>What the SVG coordinate calculator is doing</h2>
+        <p>An SVG has at least two coordinate spaces. Its viewport is the rectangle the browser lays out in CSS pixels. Its <code>viewBox</code> is the internal rectangle where paths, shapes, and points are defined. A <code>viewBox="0 0 240 160"</code> rendered into a 480 by 320 pixel viewport has a scale of two pixels per SVG unit.</p>
+        <p>That simple ratio changes when the two rectangles have different aspect ratios. The default <code>xMidYMid meet</code> rule chooses the smaller scale, keeps the whole viewBox visible, and centers the unused space. The <code>slice</code> rule chooses the larger scale, fills the viewport, and crops the excess. The <code>none</code> rule stretches x and y independently.</p>
+      </section>
+
+      <section>
+        <h2>Formulas for converting SVG and viewport points</h2>
+        <p>Once scale and alignment offset are known, an SVG point becomes a viewport point with these formulas:</p>
+        <pre><code>viewportX = offsetX + (svgX - minX) * scaleX
+viewportY = offsetY + (svgY - minY) * scaleY</code></pre>
+        <p>To reverse the conversion, remove the offset, divide by scale, and restore the viewBox minimum:</p>
+        <pre><code>svgX = minX + (viewportX - offsetX) / scaleX
+svgY = minY + (viewportY - offsetY) / scaleY</code></pre>
+        <p>Browser pointer events report client coordinates relative to the page, not automatically relative to the SVG. Subtract the SVG element's bounding rectangle before entering a pointer position here. In application code, <code>getScreenCTM().inverse()</code> is often the safest general conversion because it also accounts for transforms elsewhere in the document.</p>
+      </section>
+
+      <section>
+        <h2>Worked example with letterboxing</h2>
+        <p>Suppose a <code>viewBox="0 0 200 100"</code> is shown in a 300 by 300 pixel viewport with <code>xMidYMid meet</code>. The horizontal scale is 1.5, while the vertical candidate is 3. Meet chooses 1.5, producing artwork that is 300 pixels wide and 150 pixels tall. Center alignment places 75 pixels of empty space above it.</p>
+        <p>The SVG point 100,50 maps to viewport point 150,150. A viewport point at 150,75 maps to SVG point 100,0. A viewport point above y 75 is in the letterboxed region and converts to a negative SVG y value, which correctly indicates that it lies outside the visible viewBox.</p>
+      </section>
+
+      <section>
+        <h2>When CSS changes the viewport</h2>
+        <p>CSS width and height define the rendered viewport even when the SVG element also has width and height attributes. Responsive layouts can therefore change the coordinate mapping without changing any path data. Measure the element at the moment of interaction, especially after resizing, zooming, or changing device orientation.</p>
+        <p>The CSS <code>view-box</code> property is different from the SVG <code>viewBox</code> attribute and still has limited practical use compared with the established attribute. For normal inline SVG work, set the SVG attribute and use CSS for the displayed size. Read the full <a href="/guides/svg-viewbox/">SVG viewBox guide</a> for cropping, whitespace, and responsive sizing patterns.</p>
+      </section>
+
+      <section class="faq-list" aria-labelledby="coordinate-faq">
+        <h2 id="coordinate-faq">SVG coordinate questions</h2>
+        <details>
+          <summary>What is the difference between an SVG viewport and viewBox?</summary>
+          <p>The viewport is the displayed CSS pixel area. The viewBox is the internal SVG coordinate rectangle mapped into that area. A viewport can resize while the path coordinates remain unchanged.</p>
+        </details>
+        <details>
+          <summary>How do I convert a screen point to SVG coordinates?</summary>
+          <p>First express the point relative to the SVG viewport by subtracting its bounding rectangle. Then remove alignment offset, divide by rendered scale, and add the viewBox minimum. Use an inverse screen transformation matrix when ancestor transforms are involved.</p>
+        </details>
+        <details>
+          <summary>Why do meet and slice give different coordinates?</summary>
+          <p>Meet uses the smaller uniform scale and may add empty space. Slice uses the larger uniform scale and may crop content. Their scale and alignment offsets can therefore map the same viewport pixel to different SVG coordinates.</p>
+        </details>
+      </section>
+
+      <section class="landing-final-cta">
+        <h2>Apply the coordinates to a real file</h2>
+        <p>Open the <a href="/free-svg-editor/">free SVG editor</a> to inspect a file's viewBox, move shapes, and edit point coordinates while watching the rendered result.</p>
+        <div class="landing-actions"><a class="landing-button landing-button-primary" href="/">Open SVG Vector Lab</a><a class="landing-button landing-button-secondary" href="/guides/responsive-svg/">Read the responsive SVG guide</a></div>
+      </section>
+    </article>
+  </main>
+
+  <site-footer></site-footer>
+</body>
+</html>

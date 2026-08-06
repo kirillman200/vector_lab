@@ -127,9 +127,10 @@
     ]),
     click_target: clickTargets,
     navigation_target: new Set([
-      "about", "contact", "edit_svg", "editor", "email_share", "external",
-      "features", "github", "guide_article", "guides", "path_editor", "png_converter",
-      "privacy", "shape_converter", "social_share", "terms"
+      "about", "bezier_calculator", "contact", "coordinate_calculator", "edit_svg",
+      "editor", "email_share", "external", "features", "github", "guide_article",
+      "guides", "path_editor", "png_converter", "privacy", "shape_converter",
+      "social_share", "terms"
     ]),
     document_source: new Set([
       "autosave", "checkpoint", "clipboard", "drag_drop", "file_picker", "sample",
@@ -256,12 +257,14 @@
     const routes = {
       "/": "editor",
       "/about/": "about",
+      "/cubic-bezier-calculator/": "bezier_calculator",
       "/contact/": "contact",
       "/convert-shapes-to-paths/": "shape_converter",
       "/edit-svg-online/": "edit_svg",
       "/free-svg-editor/": "features",
       "/guides/": "guides",
       "/privacy/": "privacy",
+      "/svg-coordinate-calculator/": "coordinate_calculator",
       "/svg-path-editor/": "path_editor",
       "/svg-to-png/": "png_converter",
       "/terms/": "terms"

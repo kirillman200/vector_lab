@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cubic Bezier Curve Calculator for SVG</title>
+  <meta name="description" content="Calculate a point, tangent, angle, approximate length, and SVG C path command for any cubic Bezier curve, with a live visual preview.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="SVG Vector Lab">
+  <meta name="theme-color" content="#2f6fed">
+  <link rel="canonical" href="https://svgvectorlab.com/cubic-bezier-calculator/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/content.css?v=20260806b">
+  <script src="/js/layout.js" defer></script>
+  <script type="module" src="/js/svg-calculators.mjs"></script>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SVG Vector Lab">
+  <meta property="og:title" content="Cubic Bezier Curve Calculator for SVG">
+  <meta property="og:description" content="Calculate points, tangents, curve length, and SVG path data from four cubic Bezier points.">
+  <meta property="og:url" content="https://svgvectorlab.com/cubic-bezier-calculator/">
+  <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source and an editable vector curve">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cubic Bezier Curve Calculator for SVG">
+  <meta name="twitter:description" content="Enter four points to get the SVG path command, point at t, tangent, angle, and approximate length.">
+  <meta name="twitter:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
+  <meta name="twitter:image:alt" content="SVG Vector Lab social preview showing SVG source and an editable vector curve">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Cubic Bezier Curve Calculator for SVG",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any modern web browser",
+    "url": "https://svgvectorlab.com/cubic-bezier-calculator/",
+    "description": "A browser-based cubic Bezier curve calculator with SVG path output and a live preview.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "SVG Vector Lab", "item": "https://svgvectorlab.com/" },
+      { "@type": "ListItem", "position": 2, "name": "SVG Guides", "item": "https://svgvectorlab.com/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "Cubic Bezier Calculator", "item": "https://svgvectorlab.com/cubic-bezier-calculator/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What are the four points of a cubic Bezier curve?",
+        "acceptedAnswer": { "@type": "Answer", "text": "P0 and P3 are visible endpoints. P1 controls the direction leaving P0, and P2 controls the direction approaching P3." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does t equal distance along a Bezier curve?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Equal changes in t usually cover unequal distances because t is the polynomial parameter, not normalized arc length." }
+      },
+      {
+        "@type": "Question",
+        "name": "How is cubic Bezier curve length calculated?",
+        "acceptedAnswer": { "@type": "Answer", "text": "This calculator samples many short line segments along the curve and adds their lengths, producing a close numerical approximation." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="content-page">
+  <site-header></site-header>
+
+  <main class="content-main wide">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/guides/">Guides</a> / Cubic Bezier calculator</nav>
+    <header class="content-hero calculator-hero">
+      <p class="eyebrow">SVG cubic Bezier calculator</p>
+      <h1>Calculate a cubic Bezier curve and its SVG path data</h1>
+      <p class="lede">Set the start point, two control points, endpoint, and a value of <code>t</code>. The calculator returns the exact point and tangent at that parameter, the tangent angle, an approximate curve length, and a ready-to-use SVG <code>C</code> command.</p>
+      <ul class="trust-list" aria-label="Calculator characteristics">
+        <li>Live geometric preview</li>
+        <li>Browser-local calculation</li>
+        <li>SVG path output with no signup</li>
+      </ul>
+    </header>
+
+    <section class="calculator-shell" data-calculator="bezier" aria-labelledby="bezier-inputs">
+      <div class="calculator-controls">
+        <form>
+          <fieldset>
+            <legend id="bezier-inputs">1. Enter the four curve points</legend>
+            <div class="point-input-grid">
+              <div class="point-input-group"><h3>P0 start</h3><label>x<input type="number" name="p0x" value="20" step="any"></label><label>y<input type="number" name="p0y" value="140" step="any"></label></div>
+              <div class="point-input-group"><h3>P1 control</h3><label>x<input type="number" name="p1x" value="70" step="any"></label><label>y<input type="number" name="p1y" value="20" step="any"></label></div>
+              <div class="point-input-group"><h3>P2 control</h3><label>x<input type="number" name="p2x" value="170" step="any"></label><label>y<input type="number" name="p2y" value="20" step="any"></label></div>
+              <div class="point-input-group"><h3>P3 end</h3><label>x<input type="number" name="p3x" value="220" step="any"></label><label>y<input type="number" name="p3y" value="140" step="any"></label></div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>2. Choose a position on the curve</legend>
+            <label class="range-field"><span>Parameter t, from 0 at P0 to 1 at P3</span><input type="range" name="t" value="0.5" min="0" max="1" step="0.01"></label>
+          </fieldset>
+          <button class="calculator-reset" type="reset">Reset example</button>
+        </form>
+      </div>
+
+      <div class="calculator-results" aria-label="Bezier curve results">
+        <div class="calculator-preview-wrap">
+          <svg data-bezier-preview class="calculator-preview bezier-preview" viewBox="-8 -8 256 176" role="img" aria-label="Cubic Bezier curve with endpoints, control handles, selected point, and tangent">
+            <line data-role="handle-one" class="preview-handle" x1="20" y1="140" x2="70" y2="20"></line>
+            <line data-role="handle-two" class="preview-handle" x1="170" y1="20" x2="220" y2="140"></line>
+            <path data-role="curve" class="preview-curve" d="M 20 140 C 70 20, 170 20, 220 140"></path>
+            <line data-role="tangent" class="preview-tangent" x1="88" y1="80" x2="152" y2="80"></line>
+            <circle data-role="p0" class="preview-point anchor-point" cx="20" cy="140" r="3.7"></circle>
+            <circle data-role="p1" class="preview-point control-point" cx="70" cy="20" r="3.7"></circle>
+            <circle data-role="p2" class="preview-point control-point" cx="170" cy="20" r="3.7"></circle>
+            <circle data-role="p3" class="preview-point anchor-point" cx="220" cy="140" r="3.7"></circle>
+            <circle data-role="curve-point" class="preview-point curve-point" cx="120" cy="50" r="4.6"></circle>
+          </svg>
+          <div class="preview-key" aria-hidden="true"><span class="anchor-key">Endpoints</span><span class="control-key">Control points</span><span class="curve-key">Point at t</span></div>
+        </div>
+        <dl class="result-grid">
+          <div><dt>Point at t</dt><dd data-output="point">120, 50</dd></div>
+          <div><dt>Tangent vector</dt><dd data-output="derivative">225, 0</dd></div>
+          <div><dt>Tangent angle</dt><dd data-output="angle">0 degrees</dd></div>
+          <div><dt>Approximate length</dt><dd data-output="length">268.034 SVG units</dd></div>
+          <div class="result-span"><dt>SVG path data</dt><dd><code data-output="pathData">M 20 140 C 70 20, 170 20, 220 140</code></dd></div>
+        </dl>
+        <p class="calculator-status" data-output="status" role="status" aria-live="polite">Results updated</p>
+      </div>
+    </section>
+
+    <article class="calculator-article">
+      <section>
+        <h2>How a cubic Bezier curve becomes an SVG path</h2>
+        <p>A cubic Bezier segment uses four points. P0 is its start, P1 is the first control point, P2 is the second control point, and P3 is its endpoint. In SVG path data, a preceding <code>M</code> command establishes P0. The <code>C</code> command then lists P1, P2, and P3:</p>
+        <pre><code>M P0x P0y
+C P1x P1y, P2x P2y, P3x P3y</code></pre>
+        <p>The visible curve normally passes through P0 and P3 but not P1 or P2. The line from P0 toward P1 determines the departure direction. The line from P2 toward P3 determines the arrival direction. Longer control handles generally extend their influence through more of the curve.</p>
+      </section>
+
+      <section>
+        <h2>The cubic Bezier point formula</h2>
+        <p>The parameter <code>t</code> runs from zero to one. At zero, the formula returns P0. At one, it returns P3. Between them, four polynomial weights blend the points:</p>
+        <pre><code>B(t) = (1-t)^3 P0
+     + 3(1-t)^2 t P1
+     + 3(1-t)t^2 P2
+     + t^3 P3</code></pre>
+        <p>At <code>t = 0.5</code>, the weights are one eighth for P0, three eighths for P1, three eighths for P2, and one eighth for P3. The calculator applies this formula independently to x and y.</p>
+        <p>Parameter t is not the same as percentage of distance traveled. A point at <code>t = 0.5</code> is the polynomial midpoint, but the curve length before and after it may differ. Motion that needs constant speed requires an arc-length lookup or another reparameterization step.</p>
+      </section>
+
+      <section>
+        <h2>Tangent direction and angle</h2>
+        <p>The derivative of the cubic formula produces a vector tangent to the curve. Its x and y components describe the instantaneous direction at t. The calculator turns that vector into an angle with <code>atan2(y, x)</code>, using screen-style SVG coordinates where positive y points downward.</p>
+        <p>This tangent is useful for orienting arrowheads, labels, sprites, or markers along a curve. Remember that a mathematical angle appears vertically flipped when compared with a coordinate system where positive y points upward. SVG transforms also use the current element coordinate system, so nested transforms can change the final screen direction.</p>
+      </section>
+
+      <section>
+        <h2>Why the curve length is approximate</h2>
+        <p>General cubic Bezier arc length has no simple elementary formula. This calculator samples 160 evenly spaced t values, connects adjacent points with short line segments, and adds their lengths. That is usually a close practical estimate for design and debugging. Extremely tight loops or high-precision manufacturing work may need adaptive subdivision or numerical integration.</p>
+        <p>In browser code, an actual rendered path can also report a user-agent measurement through <code>getTotalLength()</code>. Results are expressed in current SVG user units, not CSS pixels. Transforms and responsive scaling can therefore change the rendered pixel length even while the untransformed path length remains the same.</p>
+      </section>
+
+      <section>
+        <h2>Making connected cubic curves smooth</h2>
+        <p>For two cubic segments to meet without a visible corner, align the incoming and outgoing handles through their shared endpoint. The handles can have different lengths, but they should point in opposite directions along the same line for tangent continuity.</p>
+        <p>SVG's <code>S</code> command reflects the previous control point across the current endpoint and uses that reflection as the next segment's first control point. It is compact for smooth sequences. Use explicit <code>C</code> commands when each handle needs independent control or when readable source matters more than a shorter path string.</p>
+      </section>
+
+      <section class="faq-list" aria-labelledby="bezier-faq">
+        <h2 id="bezier-faq">Cubic Bezier questions</h2>
+        <details>
+          <summary>What are the four points of a cubic Bezier curve?</summary>
+          <p>P0 and P3 are the visible endpoints. P1 controls the direction leaving P0, while P2 controls the direction approaching P3. The curve is pulled toward the control points without normally passing through them.</p>
+        </details>
+        <details>
+          <summary>Does t equal distance along the curve?</summary>
+          <p>No. Equal changes in t usually cover unequal distances. Use sampled arc length, a lookup table, or a path measurement API when an object must travel at roughly constant speed.</p>
+        </details>
+        <details>
+          <summary>How is the approximate curve length calculated?</summary>
+          <p>The calculator evaluates many points from t equals zero through one, treats each neighboring pair as a short straight segment, and adds those segment lengths.</p>
+        </details>
+      </section>
+
+      <section class="landing-final-cta">
+        <h2>Edit the calculated curve visually</h2>
+        <p>Copy the path data into the <a href="/free-svg-editor/">free SVG editor</a>, select the path, and drag its anchors and control handles. The <a href="/guides/bezier-curves/">cubic Bezier guide</a> explains smooth joins and deliberate handle placement in more detail.</p>
+        <div class="landing-actions"><a class="landing-button landing-button-primary" href="/svg-path-editor/">Open the SVG path editor</a><a class="landing-button landing-button-secondary" href="/guides/path-commands/">Read the path command reference</a></div>
+      </section>
+    </article>
+  </main>
+
+  <site-footer></site-footer>
+</body>
+</html>
