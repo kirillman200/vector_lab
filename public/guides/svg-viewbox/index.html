@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-adsense-account" content="ca-pub-7469113252837951">
   <title>SVG viewBox Explained — Coordinates, Scaling & Aspect Ratio</title>
   <meta name="description" content="Learn how the SVG viewBox controls coordinates, responsive scaling, zoom, cropping, and aspect ratio, with practical examples and debugging tips.">
   <meta name="robots" content="index, follow">
@@ -13,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/content.css?v=20260806b">
+  <link rel="stylesheet" href="/content.css?v=20260809a">
   <script src="/js/layout.js" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469113252837951" crossorigin="anonymous"></script>
   <script src="/js/ads.js?v=20260718b" defer></script>
@@ -40,7 +41,7 @@
     "datePublished": "2026-07-17",
     "dateModified": "2026-08-06",
     "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
-    "author": { "@type": "Organization", "name": "SVG Vector Lab" },
+    "author":{"@type":"Organization","name":"SVG Vector Lab","url":"https://svgvectorlab.com/about/"},
     "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
     "mainEntityOfPage": "https://svgvectorlab.com/guides/svg-viewbox/"
   }
@@ -68,7 +69,7 @@
         <h1>SVG viewBox explained: coordinates, scaling, and aspect ratio</h1>
         <p class="lede">The <code>viewBox</code> defines the part of an SVG coordinate system that appears inside its viewport. Once its four values make sense, responsive scaling, whitespace, cropping, and alignment become much easier to predict.</p>
         <p class="article-meta">Published July 17, 2026 · Updated August 6, 2026 · About 10 minutes</p>
-      </header>
+      </header><div class="article-byline"><p>Published and maintained by <a href="/about/">SVG Vector Lab</a>. See the <a href="/editorial-policy/">editorial policy</a> for research, review, and correction standards.</p></div>
 
       <section>
         <h2>The four viewBox values</h2>
@@ -141,13 +142,7 @@ viewBox="60 40 120 80"</code></pre>
         <p>Use <code>slice</code> when filling the frame matters more than showing every edge. Use <code>meet</code> for logos, diagrams, and icons that must remain fully visible.</p>
       </section>
 
-      <aside class="article-ad ad-slot" aria-label="Advertisement">
-        <span class="ad-label">Advertisements</span>
-        <ins class="adsbygoogle"
-             style="display:block;width:100%;height:250px"
-             data-ad-client="ca-pub-7469113252837951"
-             data-ad-slot="2173866609"></ins>
-      </aside>
+
 
       <section>
         <h2>A practical viewBox debugging checklist</h2>

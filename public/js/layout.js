@@ -32,8 +32,32 @@
     }
   };
 
+  const mountAdPrivacySettings = () => {
+    const buttons = [...document.querySelectorAll("[data-ad-privacy-settings]")];
+    if (!buttons.length) return;
+
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+    window.googlefc.callbackQueue.push({
+      CONSENT_API_READY: () => {
+        if (typeof window.__tcfapi !== "function") return;
+        window.__tcfapi("addEventListener", 0, (tcData, success) => {
+          buttons.forEach((button) => {
+            button.hidden = !(success && tcData?.gdprApplies);
+          });
+        });
+      },
+    });
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        window.googlefc?.showRevocationMessage?.();
+      });
+    });
+  };
+
   void Promise.all([
     hydrate("site-header", "/partials/site-header.html"),
     hydrate("site-footer", "/partials/site-footer.html"),
-  ]);
+  ]).then(mountAdPrivacySettings);
 })();

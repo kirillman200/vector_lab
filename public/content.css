@@ -688,6 +688,20 @@ site-footer {
   font-size: 14px;
 }
 
+.article-byline {
+  margin: -20px 0 36px;
+  border-left: 3px solid var(--teal);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 12px 16px;
+}
+
+.article-byline p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .step-list {
   counter-reset: guide-step;
   list-style: none;
@@ -918,6 +932,30 @@ site-footer {
   font-size: 12.5px;
   line-height: 1.35;
   text-decoration: none;
+}
+
+.footer-privacy-control {
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: #2359c4;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.footer-privacy-control:hover {
+  color: #174398;
+  text-decoration: underline;
+}
+
+.footer-privacy-control[hidden] {
+  display: none;
 }
 
 .footer-menu-grid a:hover {

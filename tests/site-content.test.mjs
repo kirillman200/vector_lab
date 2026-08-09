@@ -18,6 +18,7 @@ const routes = new Map([
   ["/svg-coordinate-calculator/", "svg-coordinate-calculator/index.html"],
   ["/cubic-bezier-calculator/", "cubic-bezier-calculator/index.html"],
   ["/about/", "about/index.html"],
+  ["/editorial-policy/", "editorial-policy/index.html"],
   ["/guides/", "guides/index.html"],
   ["/guides/svg-viewbox/", "guides/svg-viewbox/index.html"],
   ["/guides/edit-svg-paths/", "guides/edit-svg-paths/index.html"],
@@ -33,6 +34,7 @@ const routes = new Map([
   ["/guides/clipping-and-masking/", "guides/clipping-and-masking/index.html"],
   ["/guides/debug-invisible-svg/", "guides/debug-invisible-svg/index.html"],
   ["/privacy/", "privacy/index.html"],
+  ["/cookies/", "cookies/index.html"],
   ["/terms/", "terms/index.html"],
   ["/contact/", "contact/index.html"],
 ]);
@@ -448,6 +450,15 @@ test("hosting and advertising files are safe", () => {
   const ads = read("ads.txt").trim();
   assert.match(ads, /^google\.com, pub-\d+, DIRECT, f08c47fec0942fa0$/);
   assert.doesNotMatch(ads, /pub-0{8,}/, "placeholder publisher IDs must not be published");
+  const publisherId = matchOne(ads, /^google\.com, (pub-\d+), DIRECT,/m, "a publisher ID", "ads.txt");
+  for (const file of [...routes.values(), "404.html"]) {
+    const html = read(file);
+    assert.match(
+      html,
+      new RegExp(`<meta name="google-adsense-account" content="ca-${publisherId}">`),
+      `${file} must expose the same AdSense publisher as ads.txt`,
+    );
+  }
 
   const headers = read("_headers");
   assert.match(headers, /Strict-Transport-Security:/);
@@ -499,6 +510,8 @@ test("Google Analytics is consent-gated and excludes artwork data", () => {
   assert.match(analytics, /navigation_target/);
   assert.match(analytics, /"\/svg-coordinate-calculator\/": "coordinate_calculator"/);
   assert.match(analytics, /"\/cubic-bezier-calculator\/": "bezier_calculator"/);
+  assert.match(analytics, /"\/cookies\/": "cookies"/);
+  assert.match(analytics, /"\/editorial-policy\/": "editorial_policy"/);
   assert.match(analytics, /control\.closest\("\.ad-slot, ins\.adsbygoogle"\)/);
   assert.doesNotMatch(analytics, /svgInput|file\.name|clipboardMarkup|clientX|clientY/);
   assert.match(app, /editor_document_load/);
@@ -507,6 +520,45 @@ test("Google Analytics is consent-gated and excludes artwork data", () => {
   assert.match(privacy, /never receives SVG contents/i);
   assert.match(privacy, /Analytics choices/);
   assert.match(privacy, /does not intercept clicks inside ads/i);
+});
+
+test("legal and editorial trust surfaces are explicit and connected", () => {
+  const privacy = read("privacy/index.html");
+  const cookies = read("cookies/index.html");
+  const terms = read("terms/index.html");
+  const editorial = read("editorial-policy/index.html");
+  const about = read("about/index.html");
+  const contact = read("contact/index.html");
+  const footer = read("partials/site-footer.html");
+  const layout = read("js/layout.js");
+
+  assert.match(privacy, /Operator and scope/);
+  assert.match(privacy, /Purposes and legal grounds/);
+  assert.match(privacy, /Service providers and international processing/);
+  assert.match(privacy, /Your privacy choices and rights/);
+  assert.match(privacy, /contact@svgvectorlab\.com/);
+  assert.match(cookies, /svg-vector-lab:autosave/);
+  assert.match(cookies, /svg-vector-lab:analytics-consent/);
+  assert.match(cookies, /Google-certified consent management platform/);
+  assert.match(terms, /To the maximum extent permitted by applicable law/);
+  assert.match(terms, /Nothing in these terms excludes or limits liability/);
+  assert.match(editorial, /Ownership and responsibility/);
+  assert.match(editorial, /Research and technical review/);
+  assert.match(editorial, /Advertising and editorial independence/);
+  assert.match(about, /Who maintains SVG Vector Lab/);
+  assert.match(contact, /project maintainer/);
+  assert.match(footer, /href="\/editorial-policy\/"/);
+  assert.match(footer, /href="\/cookies\/"/);
+  assert.match(footer, /data-ad-privacy-settings/);
+  assert.match(layout, /CONSENT_API_READY/);
+  assert.match(layout, /showRevocationMessage/);
+});
+
+test("reader-facing pages contain no drafting or internal process residue", () => {
+  const prohibited = /\b(?:TODO|TBD|lorem ipsum|internal note|content brief|keyword map|source ledger)\b/i;
+  for (const file of [...routes.values(), "404.html", "partials/site-header.html", "partials/site-footer.html", "llms.txt"]) {
+    assert.doesNotMatch(read(file), prohibited, `${file} exposes drafting or internal process language`);
+  }
 });
 
 test("ad diagnostics never intercept or synthesize ad clicks", () => {
@@ -725,18 +777,22 @@ test("text bounding-box clicks select objects instead of clearing the canvas", (
   assert.match(css, /@media \(max-width: 1120px\)[\s\S]*?\.work-area \{[\s\S]*?align-self: stretch;[\s\S]*?height: auto;/);
 });
 
-test("guide articles include two stable, clearly labeled ad placements", () => {
+test("guide articles include one stable labeled ad and visible publisher attribution", () => {
   const guideFiles = [...routes.entries()]
     .filter(([route]) => route.startsWith("/guides/") && route !== "/guides/")
     .map(([, file]) => file);
 
   for (const file of guideFiles) {
     const html = read(file);
-    assert.equal((html.match(/class="article-ad ad-slot"/g) || []).length, 2, `${file} must have two article ads`);
-    assert.equal((html.match(/class="ad-label">Advertisements<\/span>/g) || []).length, 2, `${file} must label both ads`);
-    assert.equal((html.match(/class="adsbygoogle"/g) || []).length, 2, `${file} must have two responsive ad units`);
-    assert.equal((html.match(/style="display:block;width:100%;height:250px"/g) || []).length, 2, `${file} must reserve both ad heights`);
+    assert.equal((html.match(/class="article-ad ad-slot"/g) || []).length, 1, `${file} must have one article ad`);
+    assert.equal((html.match(/class="ad-label">Advertisements<\/span>/g) || []).length, 1, `${file} must label its ad`);
+    assert.equal((html.match(/class="adsbygoogle"/g) || []).length, 1, `${file} must have one responsive ad unit`);
+    assert.equal((html.match(/style="display:block;width:100%;height:250px"/g) || []).length, 1, `${file} must reserve its ad height`);
     assert.equal((html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/g) || []).length, 1, `${file} must load AdSense once`);
+    assert.match(html, /class="article-byline"/);
+    assert.match(html, /href="\/about\/">SVG Vector Lab<\/a>/);
+    assert.match(html, /href="\/editorial-policy\/">editorial policy<\/a>/);
+    assert.match(html, /"author":\{"@type":"Organization","name":"SVG Vector Lab","url":"https:\/\/svgvectorlab\.com\/about\/"\}/);
   }
 
   const css = read("content.css");

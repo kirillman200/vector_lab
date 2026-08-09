@@ -127,9 +127,9 @@
     ]),
     click_target: clickTargets,
     navigation_target: new Set([
-      "about", "bezier_calculator", "contact", "coordinate_calculator", "edit_svg",
+      "about", "bezier_calculator", "contact", "cookies", "coordinate_calculator", "edit_svg",
       "editor", "email_share", "external", "features", "github", "guide_article",
-      "guides", "path_editor", "png_converter", "privacy", "shape_converter",
+      "guides", "editorial_policy", "path_editor", "png_converter", "privacy", "shape_converter",
       "social_share", "terms"
     ]),
     document_source: new Set([
@@ -259,8 +259,10 @@
       "/about/": "about",
       "/cubic-bezier-calculator/": "bezier_calculator",
       "/contact/": "contact",
+      "/cookies/": "cookies",
       "/convert-shapes-to-paths/": "shape_converter",
       "/edit-svg-online/": "edit_svg",
+      "/editorial-policy/": "editorial_policy",
       "/free-svg-editor/": "features",
       "/guides/": "guides",
       "/privacy/": "privacy",
