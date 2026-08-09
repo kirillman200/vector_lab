@@ -26,7 +26,7 @@
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta property="article:published_time" content="2026-07-17">
-  <meta property="article:modified_time" content="2026-08-06">
+  <meta property="article:modified_time" content="2026-08-09">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SVG viewBox Explained">
   <meta name="twitter:description" content="Learn SVG coordinates, responsive scaling, aspect ratio, zoom, and cropping with practical examples.">
@@ -39,7 +39,7 @@
     "headline": "SVG viewBox Explained — Coordinates, Scaling & Aspect Ratio",
     "description": "A practical guide to SVG viewBox coordinates, responsive scaling, alignment, zoom, and cropping.",
     "datePublished": "2026-07-17",
-    "dateModified": "2026-08-06",
+    "dateModified": "2026-08-09",
     "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
     "author":{"@type":"Organization","name":"SVG Vector Lab","url":"https://svgvectorlab.com/about/"},
     "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
@@ -68,7 +68,7 @@
         <p class="eyebrow">SVG coordinate systems</p>
         <h1>SVG viewBox explained: coordinates, scaling, and aspect ratio</h1>
         <p class="lede">The <code>viewBox</code> defines the part of an SVG coordinate system that appears inside its viewport. Once its four values make sense, responsive scaling, whitespace, cropping, and alignment become much easier to predict.</p>
-        <p class="article-meta">Published July 17, 2026 · Updated August 6, 2026 · About 10 minutes</p>
+        <p class="article-meta">Published July 17, 2026 · Updated August 9, 2026 · About 10 minutes</p>
       </header><div class="article-byline"><p>Published and maintained by <a href="/about/">SVG Vector Lab</a>. See the <a href="/editorial-policy/">editorial policy</a> for research, review, and correction standards.</p></div>
 
       <section>
@@ -140,6 +140,7 @@ viewBox="60 40 120 80"</code></pre>
   ...
 &lt;/svg&gt;</code></pre>
         <p>Use <code>slice</code> when filling the frame matters more than showing every edge. Use <code>meet</code> for logos, diagrams, and icons that must remain fully visible.</p>
+        <p><code>preserveAspectRatio</code> only controls this fit when the element establishes an aspect ratio with a <code>viewBox</code>. Without a <code>viewBox</code>, it does not change normal SVG scaling, apart from the separate behavior of the <code>image</code> element. The <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/preserveAspectRatio" rel="noopener noreferrer">MDN preserveAspectRatio reference</a> lists every alignment keyword and the elements that support it.</p>
       </section>
 
 

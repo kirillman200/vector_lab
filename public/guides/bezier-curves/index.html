@@ -26,7 +26,7 @@
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta property="article:published_time" content="2026-07-16">
-  <meta property="article:modified_time" content="2026-08-06">
+  <meta property="article:modified_time" content="2026-08-09">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Understanding Cubic Bézier Curves in SVG">
   <meta name="twitter:description" content="Learn control points, smooth joins, and SVG C and S path commands.">
@@ -38,7 +38,7 @@
     "@type": ["Article", "TechArticle"],
     "headline": "Understanding Cubic Bézier Curves in SVG",
     "datePublished": "2026-07-16",
-    "dateModified": "2026-08-06",
+    "dateModified": "2026-08-09",
     "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
     "author":{"@type":"Organization","name":"SVG Vector Lab","url":"https://svgvectorlab.com/about/"},
     "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
@@ -67,7 +67,7 @@
         <p class="eyebrow">Curve geometry</p>
         <h1>Understanding cubic Bézier curves in SVG</h1>
         <p class="lede">A cubic Bézier curve is controlled by two endpoints and two handles. The handles pull the curve's direction and tension without becoming points on the visible outline.</p>
-        <p class="article-meta">Published July 16, 2026 · Updated August 6, 2026 · About 9 minutes</p>
+        <p class="article-meta">Published July 16, 2026 · Updated August 9, 2026 · About 10 minutes</p>
       </header><div class="article-byline"><p>Published and maintained by <a href="/about/">SVG Vector Lab</a>. See the <a href="/editorial-policy/">editorial policy</a> for research, review, and correction standards.</p></div>
 
       <section>
@@ -105,7 +105,8 @@ C 50 20, 130 20, 160 100</code></pre>
         <pre><code>M 20 100
 C 50 20, 100 20, 130 100
 S 210 180, 240 100</code></pre>
-        <p>The <code>S</code> command only contains the second handle and endpoint. Its missing first handle is calculated automatically. This keeps smooth sequences compact, although explicit <code>C</code> commands can be clearer when you need independent control over every handle.</p>
+        <p>The <code>S</code> command only contains the second handle and endpoint. Its missing first handle is calculated automatically. This keeps smooth sequences compact, although explicit <code>C</code> commands can be clearer when you need independent control over every handle. The <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/d" rel="noopener noreferrer">MDN path command reference</a> shows the exact reflection rule for <code>S</code> and its relative form <code>s</code>.</p>
+        <p>Aligned handles provide tangent continuity, which removes a visible corner, but they do not guarantee identical curvature on both sides of the anchor. If a join is technically smooth yet still looks pinched, adjust the two handle lengths while keeping them collinear and inspect the outline at its final display size.</p>
       </section>
 
       <section>

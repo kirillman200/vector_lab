@@ -352,6 +352,23 @@ test("guides expose article dates, social metadata, and breadcrumb JSON-LD", () 
   }
 });
 
+test("refreshed guides expose authoritative references and a visible update date", () => {
+  const guideFiles = [...routes.entries()]
+    .filter(([route]) => route.startsWith("/guides/") && route !== "/guides/")
+    .map(([, file]) => file);
+
+  for (const file of guideFiles) {
+    const html = read(file);
+    assert.match(html, /Updated August 9, 2026/, `${file} is missing its visible refresh date`);
+    assert.match(html, /property="article:modified_time" content="2026-08-09"/, `${file} has stale article metadata`);
+    assert.match(
+      html,
+      /href="https:\/\/(?:developer\.mozilla\.org|www\.w3\.org|svgo\.dev|inkscape-manuals\.readthedocs\.io)\//,
+      `${file} is missing an authoritative external reference`,
+    );
+  }
+});
+
 test("the guide library links to substantial task-specific articles", () => {
   const guideEntries = [...routes.entries()].filter(([route]) => route.startsWith("/guides/") && route !== "/guides/");
   const guideIndex = read("guides/index.html");

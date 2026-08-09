@@ -26,7 +26,7 @@
   <meta property="og:image" content="https://svgvectorlab.com/docs/og-card-1200x630.png">
   <meta property="og:image:alt" content="SVG Vector Lab social preview showing SVG source, an editable curve, and vector design controls">
   <meta property="article:published_time" content="2026-07-16">
-  <meta property="article:modified_time" content="2026-07-17">
+  <meta property="article:modified_time" content="2026-08-09">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="How to Optimize SVG Files for the Web">
   <meta name="twitter:description" content="Reduce SVG size while preserving appearance, behavior, and accessibility.">
@@ -38,7 +38,7 @@
     "@type": ["Article", "TechArticle"],
     "headline": "How to Optimize SVG Files for the Web",
     "datePublished": "2026-07-16",
-    "dateModified": "2026-07-17",
+    "dateModified": "2026-08-09",
     "image": "https://svgvectorlab.com/docs/og-card-1200x630.png",
     "author":{"@type":"Organization","name":"SVG Vector Lab","url":"https://svgvectorlab.com/about/"},
     "publisher": { "@type": "Organization", "name": "SVG Vector Lab" },
@@ -67,7 +67,7 @@
         <p class="eyebrow">Web performance</p>
         <h1>How to optimize SVG files for the web</h1>
         <p class="lede">Good SVG optimization removes information the browser does not need while preserving the appearance, behavior, accessibility, and maintainability that your project does need.</p>
-        <p class="article-meta">Published July 16, 2026 · Updated July 17, 2026 · About 7 minutes</p>
+        <p class="article-meta">Published July 16, 2026 · Updated August 9, 2026 · About 9 minutes</p>
       </header><div class="article-byline"><p>Published and maintained by <a href="/about/">SVG Vector Lab</a>. See the <a href="/editorial-policy/">editorial policy</a> for research, review, and correction standards.</p></div>
 
       <section>
@@ -101,8 +101,14 @@
 
       <section>
         <h2>Remove editor-specific data carefully</h2>
-        <p>Vector applications may add metadata, named-view information, unused definitions, comments, and proprietary attributes. These can increase size without affecting browser rendering. Remove them only after confirming that the file does not need to return to the originating editor with all editing features intact.</p>
+        <p>Vector applications may add metadata, named-view information, unused definitions, comments, and proprietary attributes. These can increase size without affecting browser rendering. The <a href="https://svgo.dev/docs/introduction/" rel="noopener noreferrer">official SVGO documentation</a> describes the same common sources of redundant SVG data. Remove them only after confirming that the file does not need to return to the originating editor with all editing features intact.</p>
         <p>Likewise, delete hidden objects and unused gradients, masks, patterns, and symbols, but verify that no <code>url(#id)</code> or <code>href="#id"</code> reference still points to them.</p>
+      </section>
+
+      <section>
+        <h2>Measure raw, compressed, and rendered results</h2>
+        <p>Record the original byte size, optimized byte size, and compressed transfer size. Raw markup is useful for source and cache storage, while gzip or Brotli size is closer to the network cost on a correctly configured server. A change that saves a few raw bytes may make no practical transfer difference after compression.</p>
+        <p>Size is only one acceptance check. Render the before and after files at every real use size, compare transparent edges and filters against contrasting backgrounds, and exercise any CSS, script, animation, or fragment reference that targets an ID or class. For automated pipelines, pin the optimizer version and keep its configuration in source control so a dependency update cannot silently change every asset.</p>
       </section>
 
       <section>
