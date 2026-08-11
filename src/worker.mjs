@@ -157,13 +157,26 @@ export async function composeLayout(html, request, env) {
   return document.replace(/\s*<script\s+src=["']\/js\/layout\.js["']\s+defer><\/script>/i, "");
 }
 
-export function injectAnalytics(html, measurementId = "") {
+export function injectAnalytics(html, measurementId = "", hostname = "svgvectorlab.com") {
   const normalizedId = String(measurementId).trim().toUpperCase();
-  if (!GA_MEASUREMENT_ID_PATTERN.test(normalizedId)) return html;
+  const productionHost = hostname === "svgvectorlab.com" || hostname.endsWith(".svgvectorlab.com");
+  if (!productionHost || !GA_MEASUREMENT_ID_PATTERN.test(normalizedId)) return html;
   const bootstrap = [
     `<link rel="stylesheet" href="/analytics.css?v=20260729a">`,
-    `<script>window.SVG_VECTOR_LAB_GA_ID=${JSON.stringify(normalizedId)}</script>`,
-    `<script src="/js/analytics.js?v=20260729a"></script>`,
+    `<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(normalizedId)}"></script>`,
+    `<script>`,
+    `window.SVG_VECTOR_LAB_GA_ID=${JSON.stringify(normalizedId)};`,
+    `window.dataLayer=window.dataLayer||[];`,
+    `function gtag(){dataLayer.push(arguments);}`,
+    `let analyticsStorage="denied";`,
+    `try{if(navigator.globalPrivacyControl!==true&&localStorage.getItem("svg-vector-lab:analytics-consent")==="granted")analyticsStorage="granted";}catch{}`,
+    `gtag("consent","default",{ad_personalization:"denied",ad_storage:"denied",ad_user_data:"denied",analytics_storage:analyticsStorage});`,
+    `gtag("set","ads_data_redaction",true);`,
+    `gtag("set","url_passthrough",false);`,
+    `gtag("js",new Date());`,
+    `gtag("config",${JSON.stringify(normalizedId)},{allow_ad_personalization_signals:false,allow_google_signals:false,page_location:location.origin+location.pathname,page_referrer:document.referrer?new URL(document.referrer).origin:"",page_title:document.title});`,
+    `</script>`,
+    `<script src="/js/analytics.js?v=20260811b"></script>`,
   ].join("");
   return html.replace(/<head(\s[^>]*)?>/i, (head) => `${head}${bootstrap}`);
 }
@@ -223,7 +236,7 @@ export default {
     }
 
     const composedHtml = await composeLayout(await response.text(), request, env);
-    const html = injectAnalytics(composedHtml, env.GA_MEASUREMENT_ID);
+    const html = injectAnalytics(composedHtml, env.GA_MEASUREMENT_ID, hostname);
     headers.set("Content-Type", "text/html; charset=utf-8");
     for (const name of ["Content-Encoding", "Content-Length", "ETag", "Last-Modified", "Transfer-Encoding"]) {
       headers.delete(name);

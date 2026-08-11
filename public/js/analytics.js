@@ -7,7 +7,7 @@
   const consentKey = "svg-vector-lab:analytics-consent";
   const gpcEnabled = navigator.globalPrivacyControl === true;
   let consent = "unset";
-  let tagLoaded = false;
+  let analyticsStarted = false;
 
   const clickTargetById = Object.freeze({
     addNodeBtn: "path_add_node",
@@ -178,31 +178,9 @@
     };
   }
 
-  function safeReferrer() {
-    if (!document.referrer) return "";
-    try {
-      return new URL(document.referrer).origin;
-    } catch {
-      return "";
-    }
-  }
-
-  function loadGoogleTag() {
-    if (!configured || tagLoaded) return;
-    tagLoaded = true;
-    gtag("js", new Date());
-    gtag("config", measurementId, {
-      allow_ad_personalization_signals: false,
-      allow_google_signals: false,
-      page_location: `${location.origin}${location.pathname}`,
-      page_referrer: safeReferrer(),
-      page_title: document.title,
-      send_page_view: true
-    });
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
-    document.head.append(script);
+  function startAnalytics() {
+    if (!configured || analyticsStarted) return;
+    analyticsStarted = true;
     track("editor_session_start", {
       action_surface: location.pathname === "/" ? "startup" : "menu",
       outcome: "success"
@@ -371,7 +349,7 @@
     consent = gpcEnabled ? "denied" : nextConsent;
     writeConsent(consent);
     gtag("consent", "update", consentState(consent));
-    if (consent === "granted") loadGoogleTag();
+    if (consent === "granted") startAnalytics();
     syncConsentUi();
     closeConsentUi();
   }
@@ -386,7 +364,7 @@
       <div class="analytics-consent__card">
         <p class="analytics-consent__eyebrow">Privacy choice</p>
         <h2>Help improve SVG Vector Lab?</h2>
-        <p>With your permission, Google Analytics records page visits and broad editor actions such as imports, tools, and exports. It never receives SVG contents, typed values, filenames, clipboard data, or pointer coordinates.</p>
+        <p>The Google tag sends cookieless page-view and consent-state signals with analytics storage off by default. If you allow analytics, it can also record broad editor actions such as imports, tools, and exports. It never receives SVG contents, typed values, filenames, clipboard data, or pointer coordinates.</p>
         <p class="analytics-consent__status" data-analytics-consent-status></p>
         <div class="analytics-consent__actions">
           <button type="button" data-consent-accept>Allow analytics</button>
@@ -422,12 +400,9 @@
 
   if (!configured) return;
   consent = readConsent();
-  gtag("consent", "default", consentState("denied"));
-  gtag("set", "ads_data_redaction", true);
-  gtag("set", "url_passthrough", false);
   if (consent === "granted") {
     gtag("consent", "update", consentState("granted"));
-    loadGoogleTag();
+    startAnalytics();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {

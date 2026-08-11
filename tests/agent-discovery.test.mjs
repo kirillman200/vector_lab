@@ -125,9 +125,15 @@ test("analytics injection requires a valid GA4 measurement ID", () => {
   const html = "<!doctype html><html><head><title>Test</title></head><body></body></html>";
   assert.equal(injectAnalytics(html, ""), html);
   assert.equal(injectAnalytics(html, "not-an-id"), html);
+  assert.equal(injectAnalytics(html, "G-ABC123DEF4", "localhost"), html);
   const injected = injectAnalytics(html, "g-abc123def4");
   assert.match(injected, /window\.SVG_VECTOR_LAB_GA_ID="G-ABC123DEF4"/);
-  assert.match(injected, /\/js\/analytics\.js\?v=20260729a/);
+  assert.match(injected, /<script async src="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-ABC123DEF4"><\/script>/);
+  assert.match(injected, /window\.dataLayer=window\.dataLayer\|\|\[\]/);
+  assert.match(injected, /function gtag\(\)\{dataLayer\.push\(arguments\);\}/);
+  assert.match(injected, /gtag\("config","G-ABC123DEF4"/);
+  assert.ok(injected.indexOf('gtag("consent","default"') < injected.indexOf('gtag("config"'));
+  assert.match(injected, /\/js\/analytics\.js\?v=20260811b/);
   assert.match(injected, /\/analytics\.css\?v=20260729a/);
   assert.ok(injected.indexOf("analytics.css") < injected.indexOf("<title>"));
 });

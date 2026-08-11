@@ -507,19 +507,22 @@ test("hosting and advertising files are safe", () => {
   assert.ok((worker.match(/appendVary\(headers, "Accept"\)/g) || []).length >= 2);
 });
 
-test("Google Analytics is consent-gated and excludes artwork data", () => {
+test("Google Analytics uses denied-by-default consent mode and excludes artwork data", () => {
   const analytics = read("js/analytics.js");
   const privacy = read("privacy/index.html");
   const app = read("js/app.js");
+  const worker = readFileSync(join(root, "src", "worker.mjs"), "utf8");
 
   assert.match(analytics, /analytics_storage: analyticsStorage/);
   assert.match(analytics, /ad_storage: "denied"/);
   assert.match(analytics, /ad_user_data: "denied"/);
   assert.match(analytics, /ad_personalization: "denied"/);
   assert.match(analytics, /navigator\.globalPrivacyControl === true/);
-  assert.match(analytics, /allow_google_signals: false/);
-  assert.match(analytics, /allow_ad_personalization_signals: false/);
-  assert.match(analytics, /page_location: `\$\{location\.origin\}\$\{location\.pathname\}`/);
+  assert.match(worker, /googletagmanager\.com\/gtag\/js\?id=/);
+  assert.match(worker, /allow_google_signals:false/);
+  assert.match(worker, /allow_ad_personalization_signals:false/);
+  assert.match(worker, /page_location:location\.origin\+location\.pathname/);
+  assert.doesNotMatch(analytics, /document\.createElement\("script"\)|googletagmanager\.com\/gtag\/js/);
   assert.match(analytics, /allowedEvents/);
   assert.match(analytics, /allowedValues/);
   assert.match(analytics, /"site_click"/);
@@ -534,7 +537,7 @@ test("Google Analytics is consent-gated and excludes artwork data", () => {
   assert.match(app, /editor_document_load/);
   assert.match(app, /editor_action/);
   assert.match(app, /editor_export/);
-  assert.match(privacy, /never receives SVG contents/i);
+  assert.match(privacy, /cookieless page-view and consent-state signals/i);
   assert.match(privacy, /Analytics choices/);
   assert.match(privacy, /does not intercept clicks inside ads/i);
 });
