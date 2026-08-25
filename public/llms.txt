@@ -29,6 +29,7 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 - [SVG Transforms](https://svgvectorlab.com/guides/svg-transforms/): Understand transform order, pivot points, nested groups, and matrices.
 - [SVG Strokes](https://svgvectorlab.com/guides/svg-strokes/): Control stroke width, linecaps, joins, dash patterns, and scaling.
 - [SVG Gradients](https://svgvectorlab.com/guides/svg-gradients/): Build linear and radial gradients with deliberate units, stops, and reusable IDs.
+- [SVG Filters](https://svgvectorlab.com/guides/svg-filters/): Build blur, shadow, colour, composite, and merge effects with explicit filter regions and input chains.
 - [Accessible SVG](https://svgvectorlab.com/guides/svg-accessibility/): Choose text alternatives, titles, focus behavior, contrast, and motion settings.
 - [Responsive SVG](https://svgvectorlab.com/guides/responsive-svg/): Combine viewBox, CSS sizing, intrinsic ratio, and embedding methods.
 - [SVG Clipping and Masking](https://svgvectorlab.com/guides/clipping-and-masking/): Choose hard clips or soft masks and debug their bounds and coordinate systems.

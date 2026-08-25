@@ -42,7 +42,7 @@ Your work is autosaved to the browser's `localStorage` and restored on the next 
 
 Alongside the editor, the project includes About, Privacy, Terms, Contact, and SVG guide pages. Every indexable route has a unique title, description, canonical URL, Open Graph metadata, internal navigation, and appropriate structured data. The sitemap contains all public routes.
 
-Content routes use the small `content.css` bundle and no production page JavaScript. A tiny shared-layout script remains in the HTML only as a direct-file/static-host fallback; the Cloudflare Worker removes it after composing the header and footer.
+Content routes use the small `content.css` bundle and no production page JavaScript beyond shared layout, advertising, and consent support. A tiny shared-layout script remains in the HTML as a direct-file/static-host fallback; the Cloudflare Worker removes it after composing the header and footer.
 
 ## Deploying / SEO
 

@@ -29,6 +29,7 @@ const routes = new Map([
   ["/guides/svg-transforms/", "guides/svg-transforms/index.html"],
   ["/guides/svg-strokes/", "guides/svg-strokes/index.html"],
   ["/guides/svg-gradients/", "guides/svg-gradients/index.html"],
+  ["/guides/svg-filters/", "guides/svg-filters/index.html"],
   ["/guides/svg-accessibility/", "guides/svg-accessibility/index.html"],
   ["/guides/responsive-svg/", "guides/responsive-svg/index.html"],
   ["/guides/clipping-and-masking/", "guides/clipping-and-masking/index.html"],
@@ -352,15 +353,17 @@ test("guides expose article dates, social metadata, and breadcrumb JSON-LD", () 
   }
 });
 
-test("refreshed guides expose authoritative references and a visible update date", () => {
+test("guides expose authoritative references and a visible update date", () => {
   const guideFiles = [...routes.entries()]
     .filter(([route]) => route.startsWith("/guides/") && route !== "/guides/")
     .map(([, file]) => file);
 
   for (const file of guideFiles) {
     const html = read(file);
-    assert.match(html, /Updated August 9, 2026/, `${file} is missing its visible refresh date`);
-    assert.match(html, /property="article:modified_time" content="2026-08-09"/, `${file} has stale article metadata`);
+    const modified = matchOne(html, /property="article:modified_time" content="(\d{4}-\d{2}-\d{2})"/, "article modified time", file);
+    const visibleDate = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })
+      .format(new Date(`${modified}T00:00:00Z`));
+    assert.match(html, new RegExp(`Updated ${visibleDate}`), `${file} is missing its visible update date`);
     assert.match(
       html,
       /href="https:\/\/(?:developer\.mozilla\.org|www\.w3\.org|svgo\.dev|inkscape-manuals\.readthedocs\.io)\//,
