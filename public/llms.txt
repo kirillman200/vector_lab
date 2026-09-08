@@ -46,3 +46,5 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 
 - [Sitemap](https://svgvectorlab.com/sitemap.xml): XML index of all public, indexable pages.
 - [robots.txt](https://svgvectorlab.com/robots.txt): Crawler access policy.
+
+- [SVG fill-rule](https://svgvectorlab.com/guides/svg-fill-rule/): evenodd, nonzero, winding direction and transparent holes.
