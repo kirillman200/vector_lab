@@ -4,10 +4,39 @@
   const measurementId = String(window.SVG_VECTOR_LAB_GA_ID || "").trim();
   const productionHost = location.hostname === "svgvectorlab.com" || location.hostname.endsWith(".svgvectorlab.com");
   const configured = productionHost && /^G-[A-Z0-9]{6,20}$/.test(measurementId);
-  const consentKey = "svg-vector-lab:analytics-consent";
+  // Ask again when adding session replay to the previous GA-only choice.
+  const consentKey = "svg-vector-lab:analytics-consent:v2";
+  const clarityProjectId = "yfcj2q2je6";
   const gpcEnabled = navigator.globalPrivacyControl === true;
   let consent = "unset";
   let analyticsStarted = false;
+  let clarityStarted = false;
+
+  function syncClarity() {
+    if (!configured || document.readyState === "loading") return;
+    if (consent !== "granted") {
+      if (clarityStarted) {
+        window.clarity("consentv2", { analytics_Storage: "denied", ad_Storage: "denied" });
+        window.clarity("stop");
+        // Unload the recorder, including a tag that may still be downloading.
+        location.reload();
+      }
+      return;
+    }
+    // Session replay must never capture artwork, calculator values, or URL inputs.
+    if (clarityStarted || location.search || location.hash ||
+        location.pathname === "/" || location.pathname === "/index.html" ||
+        document.querySelector(".app-shell, [data-calculator]")) return;
+    clarityStarted = true;
+    window.clarity = window.clarity || function () {
+      (window.clarity.q = window.clarity.q || []).push(arguments);
+    };
+    window.clarity("consentv2", { analytics_Storage: "granted", ad_Storage: "denied" });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.clarity.ms/tag/${clarityProjectId}?ref=bwt`;
+    document.head.append(script);
+  }
 
   const clickTargetById = Object.freeze({
     addNodeBtn: "path_add_node",
@@ -350,6 +379,7 @@
     writeConsent(consent);
     gtag("consent", "update", consentState(consent));
     if (consent === "granted") startAnalytics();
+    syncClarity();
     syncConsentUi();
     closeConsentUi();
   }
@@ -364,7 +394,7 @@
       <div class="analytics-consent__card">
         <p class="analytics-consent__eyebrow">Privacy choice</p>
         <h2>Help improve SVG Vector Lab?</h2>
-        <p>The Google tag sends cookieless page-view and consent-state signals with analytics storage off by default. If you allow analytics, it can also record broad editor actions such as imports, tools, and exports. It never receives SVG contents, typed values, filenames, clipboard data, or pointer coordinates.</p>
+        <p>The Google tag sends cookieless page-view and consent-state signals with analytics storage off by default. If you allow analytics, Google can record broad editor actions such as imports, tools, and exports. Microsoft Clarity can also record interactions on content pages for heatmaps and session replay. Clarity stays off in the editor and calculators, and Google never receives your artwork or typed values.</p>
         <p class="analytics-consent__status" data-analytics-consent-status></p>
         <div class="analytics-consent__actions">
           <button type="button" data-consent-accept>Allow analytics</button>
@@ -408,9 +438,11 @@
     document.addEventListener("DOMContentLoaded", () => {
       mountConsentUi();
       installClickTracking();
+      syncClarity();
     }, { once: true });
   } else {
     mountConsentUi();
     installClickTracking();
+    syncClarity();
   }
 })();

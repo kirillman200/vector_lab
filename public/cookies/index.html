@@ -32,7 +32,7 @@
       <p class="eyebrow">Legal</p>
       <h1>Cookie and similar technologies policy</h1>
       <p class="lede">This policy explains how SVG Vector Lab uses cookies, local storage, web beacons, and comparable technologies on the website.</p>
-      <p class="article-meta">Effective: August 11, 2026</p>
+      <p class="article-meta">Effective: September 8, 2026</p>
     </section>
 
     <section>
@@ -47,7 +47,7 @@
         <li><code>svg-vector-lab:autosave</code> stores the active SVG so it can be restored in that browser.</li>
         <li><code>svg-vector-lab:manual-save</code> stores a checkpoint that you request.</li>
         <li><code>svg-vector-lab:manual-save-time</code> stores the checkpoint time.</li>
-        <li><code>svg-vector-lab:analytics-consent</code> stores whether analytics was allowed or declined.</li>
+        <li><code>svg-vector-lab:analytics-consent:v2</code> stores whether Google Analytics and Microsoft Clarity were allowed or declined. The earlier <code>svg-vector-lab:analytics-consent</code> choice is superseded so returning visitors can review the addition of session replay.</li>
       </ul>
       <p>These entries remain until you replace them, clear site data, use a private browsing session that removes them, or the browser removes them. SVG artwork stored this way remains on your device and is not transmitted to SVG Vector Lab.</p>
     </section>
@@ -55,7 +55,8 @@
     <section>
       <h2>Analytics technologies</h2>
       <p>The Google Analytics 4 tag loads with analytics storage denied by default. Before you select <strong>Allow analytics</strong>, Google may receive cookieless page-view and consent-state signals, but the site does not grant analytics cookie storage. If enabled, Google may set or read analytics cookies and process device, browser, approximate location, referral, page, and permitted interaction information. SVG Vector Lab configures analytics without Google Signals or advertising personalization signals and excludes SVG source, artwork values, filenames, clipboard contents, image data, pointer coordinates, and keystrokes from its analytics events.</p>
-      <p>You may withdraw analytics permission at any time by selecting <strong>Analytics choices</strong> on the site and choosing <strong>Keep analytics off</strong>. Enabling Global Privacy Control also keeps this analytics collection off.</p>
+      <p>Microsoft Clarity loads only after you select <strong>Allow analytics</strong>. It may use <code>_clck</code> and <code>_clsk</code> cookies to associate visits and page views for heatmaps and session replay. Clarity stays off in the SVG editor, interactive calculators, and on pages containing a query string or URL fragment. Clarity advertising storage remains denied. See <a href="https://learn.microsoft.com/en-us/clarity/setup-and-installation/cookie-list" rel="noopener noreferrer">Microsoft's Clarity cookie documentation</a> for cookie details.</p>
+      <p>You may withdraw analytics permission at any time by selecting <strong>Analytics choices</strong> on the site and choosing <strong>Keep analytics off</strong>. If Clarity is running, the page reloads to unload its recorder. Enabling Global Privacy Control also keeps this optional analytics collection off.</p>
     </section>
 
     <section>
@@ -68,7 +69,7 @@
     <section>
       <h2>Your controls</h2>
       <ul>
-        <li>Use <strong>Analytics choices</strong> to allow or disable Google Analytics.</li>
+        <li>Use <strong>Analytics choices</strong> to allow or disable optional Google Analytics events and Microsoft Clarity.</li>
         <li>Use your browser settings to block, delete, or restrict cookies and local storage.</li>
         <li>Use <a href="https://adssettings.google.com/" rel="noopener noreferrer">Google Ads Settings</a> to manage Google ad personalization.</li>
         <li>Where the certified consent interface is available, use the control below or the corresponding footer control to review advertising privacy choices.</li>

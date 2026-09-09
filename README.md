@@ -52,7 +52,9 @@ Cloudflare publishes only the `public/` directory. Repository metadata, tests, d
 
 For Cloudflare Workers Builds, connect the GitHub repository once and use Git-integrated deployments. The included `wrangler.jsonc` points to the Worker and the `public/` asset directory, and disables public `workers.dev` and preview URLs so the custom domain remains the only production address. Future pushes deploy automatically; no local deploy command is required.
 
-Google Analytics 4 is loaded through `public/js/analytics.js`. The Worker injects it into every HTML response only when `GA_MEASUREMENT_ID` is a valid GA4 web-stream ID. The client defaults all Google consent signals to denied, waits for an explicit analytics choice before loading `gtag.js`, honors Global Privacy Control, and provides a persistent Analytics choices button.
+The Worker injects the Google Analytics 4 tag into production HTML responses when `GA_MEASUREMENT_ID` is valid. Storage defaults to denied; `public/js/analytics.js` enables optional events after consent, honors Global Privacy Control, and provides a persistent Analytics choices button.
+
+Microsoft Clarity project loads through the same consent controller, only after opt-in and DOM readiness. It records content pages for heatmaps and session replay. The editor, interactive calculators, local/preview hosts, and URLs containing queries or fragments are excluded to keep artwork and user inputs private. Clarity uses Consent V2 with analytics storage granted and advertising storage denied. Withdrawal denies storage, stops Clarity, and reloads the page to unload the recorder. The versioned `svg-vector-lab:analytics-consent:v2` choice asks returning visitors to review the new session-replay disclosure. After deployment, verify a consenting content-page visit in the Clarity dashboard.
 
 The event contract is deliberately narrow:
 

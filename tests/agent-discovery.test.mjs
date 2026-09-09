@@ -133,7 +133,7 @@ test("analytics injection requires a valid GA4 measurement ID", () => {
   assert.match(injected, /function gtag\(\)\{dataLayer\.push\(arguments\);\}/);
   assert.match(injected, /gtag\("config","G-ABC123DEF4"/);
   assert.ok(injected.indexOf('gtag("consent","default"') < injected.indexOf('gtag("config"'));
-  assert.match(injected, /\/js\/analytics\.js\?v=20260811b/);
+  assert.match(injected, /\/js\/analytics\.js\?v=20260908a/);
   assert.match(injected, /\/analytics\.css\?v=20260729a/);
   assert.ok(injected.indexOf("analytics.css") < injected.indexOf("<title>"));
 });

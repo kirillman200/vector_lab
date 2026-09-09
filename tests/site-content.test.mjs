@@ -526,7 +526,7 @@ test("Google Analytics uses denied-by-default consent mode and excludes artwork 
   assert.match(worker, /allow_google_signals:false/);
   assert.match(worker, /allow_ad_personalization_signals:false/);
   assert.match(worker, /page_location:location\.origin\+location\.pathname/);
-  assert.doesNotMatch(analytics, /document\.createElement\("script"\)|googletagmanager\.com\/gtag\/js/);
+  assert.doesNotMatch(analytics, /googletagmanager\.com\/gtag\/js/);
   assert.match(analytics, /allowedEvents/);
   assert.match(analytics, /allowedValues/);
   assert.match(analytics, /"site_click"/);

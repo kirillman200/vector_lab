@@ -169,14 +169,14 @@ export function injectAnalytics(html, measurementId = "", hostname = "svgvectorl
     `window.dataLayer=window.dataLayer||[];`,
     `function gtag(){dataLayer.push(arguments);}`,
     `let analyticsStorage="denied";`,
-    `try{if(navigator.globalPrivacyControl!==true&&localStorage.getItem("svg-vector-lab:analytics-consent")==="granted")analyticsStorage="granted";}catch{}`,
+    `try{if(navigator.globalPrivacyControl!==true&&localStorage.getItem("svg-vector-lab:analytics-consent:v2")==="granted")analyticsStorage="granted";}catch{}`,
     `gtag("consent","default",{ad_personalization:"denied",ad_storage:"denied",ad_user_data:"denied",analytics_storage:analyticsStorage});`,
     `gtag("set","ads_data_redaction",true);`,
     `gtag("set","url_passthrough",false);`,
     `gtag("js",new Date());`,
     `gtag("config",${JSON.stringify(normalizedId)},{allow_ad_personalization_signals:false,allow_google_signals:false,page_location:location.origin+location.pathname,page_referrer:document.referrer?new URL(document.referrer).origin:"",page_title:document.title});`,
     `</script>`,
-    `<script src="/js/analytics.js?v=20260811b"></script>`,
+    `<script src="/js/analytics.js?v=20260908a"></script>`,
   ].join("");
   return html.replace(/<head(\s[^>]*)?>/i, (head) => `${head}${bootstrap}`);
 }
