@@ -262,8 +262,23 @@ test("every HTML page exposes raster favicon fallbacks", () => {
     const html = read(file);
     assert.match(html, /rel="icon"[^>]+href="\/?favicon\.ico"/, `${file} is missing the ICO fallback`);
     assert.match(html, /type="image\/png"[^>]+href="\/?favicon-32\.png"/, `${file} is missing the PNG fallback`);
+    assert.match(html, /rel="icon" type="image\/png" sizes="192x192" href="\/?favicon-192\.png"/, `${file} is missing a large PNG favicon in its head`);
+    assert.match(html, /href="\/?favicon\.ico" sizes="16x16 32x32 48x48 64x64 128x128 256x256"/, `${file} must declare the ICO's actual sizes`);
     assert.match(html, /rel="apple-touch-icon"[^>]+href="\/?apple-touch-icon\.png"/, `${file} is missing the Apple touch icon`);
   }
+
+  const png = readFileSync(join(siteRoot, "favicon-192.png"));
+  assert.equal(png.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+  assert.equal(png.readUInt32BE(16), 192);
+  assert.equal(png.readUInt32BE(20), 192);
+
+  const ico = readFileSync(join(siteRoot, "favicon.ico"));
+  assert.equal(ico.readUInt16LE(2), 1);
+  const icoSizes = Array.from({ length: ico.readUInt16LE(4) }, (_, index) => {
+    const offset = 6 + index * 16;
+    return `${ico[offset] || 256}x${ico[offset + 1] || 256}`;
+  });
+  assert.deepEqual(icoSizes, ["16x16", "32x32", "48x48", "64x64", "128x128", "256x256"]);
 
   const manifest = JSON.parse(read("site.webmanifest"));
   assert.ok(manifest.icons.some((icon) => icon.src === "favicon-192.png" && icon.type === "image/png"));
