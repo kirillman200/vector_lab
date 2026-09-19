@@ -31,6 +31,7 @@ const routes = new Map([
   ["/guides/svg-gradients/", "guides/svg-gradients/index.html"],
   ["/guides/svg-filters/", "guides/svg-filters/index.html"],
   ["/guides/svg-fill-rule/", "guides/svg-fill-rule/index.html"],
+  ["/guides/change-svg-color/", "guides/change-svg-color/index.html"],
   ["/guides/svg-accessibility/", "guides/svg-accessibility/index.html"],
   ["/guides/responsive-svg/", "guides/responsive-svg/index.html"],
   ["/guides/clipping-and-masking/", "guides/clipping-and-masking/index.html"],

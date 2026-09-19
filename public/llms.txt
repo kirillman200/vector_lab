@@ -35,6 +35,8 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 - [SVG Clipping and Masking](https://svgvectorlab.com/guides/clipping-and-masking/): Choose hard clips or soft masks and debug their bounds and coordinate systems.
 - [Debug Invisible SVG](https://svgvectorlab.com/guides/debug-invisible-svg/): Isolate size, viewBox, paint, geometry, transforms, references, and effects.
 
+- [Change SVG Color](https://svgvectorlab.com/guides/change-svg-color/): Use fill, stroke and currentColor, resolve CSS overrides, and compare inline SVG with external images and masks.
+
 ## Site Information
 
 - [Privacy Policy](https://svgvectorlab.com/privacy/): Local browser storage, hosting, analytics, advertising, cookies, and privacy choices.
