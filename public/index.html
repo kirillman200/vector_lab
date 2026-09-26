@@ -139,6 +139,8 @@
             <label>Height <input id="pngHeightInput" type="number" min="1" step="1" placeholder="auto"></label>
           </div>
           <button id="downloadPngBtn" class="button-icon-pending" title="Download current image as PNG">Download PNG</button>
+          <output id="pngSizePreview" class="export-preview" aria-live="polite"></output>
+          <p class="export-hint">Leave one dimension blank to keep proportions. Clear both to use the scale.</p>
         </div>
       </details>
       <details class="action-menu">
@@ -204,15 +206,16 @@
 
       <div class="tab-panel" id="left-add-panel" role="tabpanel" aria-labelledby="left-add-tab" hidden>
         <section class="panel-block add-library">
-          <div class="panel-heading">Add to this design</div>
-          <p class="panel-intro">New elements use the current paint settings and are placed in the center of the canvas.</p>
+          <div class="panel-heading">Make it yours</div>
+          <p class="panel-intro">Choose a shape or icon. It lands in the center, ready to edit.</p>
           <div class="add-section">
             <div class="add-section-title">Shapes</div>
             <div class="add-grid">
               <button data-add-shape="rect">Rectangle</button>
+              <button data-add-shape="circle">Circle</button>
               <button data-add-shape="ellipse">Ellipse</button>
               <button data-add-shape="line">Line</button>
-              <button data-add-shape="polygon">Polygon</button>
+              <button data-add-shape="polygon">Triangle</button>
               <button data-add-shape="text">Text</button>
             </div>
           </div>
@@ -222,15 +225,22 @@
               <button data-add-shape="star">Star</button>
               <button data-add-shape="heart">Heart</button>
               <button data-add-shape="check">Check</button>
+              <button data-add-shape="arrow">Arrow</button>
+              <button data-add-shape="bolt">Bolt</button>
+              <button data-add-shape="plus">Plus</button>
+              <button data-add-shape="diamond">Diamond</button>
+              <button data-add-shape="tag">Tag</button>
+              <button data-add-shape="pin">Map pin</button>
             </div>
           </div>
           <div class="add-section">
             <div class="add-section-title">Draw and import</div>
-            <div class="add-grid">
-              <button id="freehandToolBtn">Freehand</button>
-              <button id="penToolBtn">Pen / Bezier</button>
-              <label class="file-button image-file-button">Insert image<input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+            <div class="add-grid add-tools">
+              <button id="freehandToolBtn" aria-pressed="false" title="Draw by dragging on the canvas">Freehand</button>
+              <button id="penToolBtn" aria-pressed="false" title="Click to place points. Press Enter to finish or Escape to cancel.">Pen / Bezier</button>
+              <label class="file-button image-file-button"><svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="2"/><path d="M3 17l6-6 4 4 3-3 5 5"/></svg><span>Insert image</span><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="Insert image"></label>
             </div>
+            <p class="add-tool-hint">Pen: click to place points, Enter to finish. Escape cancels a drawing.</p>
           </div>
         </section>
       </div>
@@ -256,6 +266,7 @@
         <button id="handToolBtn" class="button-icon-pending icon-only" title="Hand tool: drag the canvas to pan (H or hold Space)" aria-pressed="false">Hand tool</button>
         <button id="fitBtn" class="button-icon-pending" title="Fit SVG to view (Space-drag pans, Ctrl+wheel zooms)">Fit</button>
         <button id="mobileSourceBtn" class="mobile-panel-toggle" type="button" aria-pressed="false">Source</button>
+        <button id="mobileAddBtn" class="mobile-panel-toggle" type="button" aria-controls="left-add-panel">Add</button>
         <button id="mobileInspectorBtn" class="mobile-panel-toggle" type="button" aria-pressed="false">Inspector</button>
         <details class="toolbar-menu">
           <summary>Zoom</summary>
@@ -278,6 +289,7 @@
         <details class="toolbar-menu">
           <summary>Edit</summary>
           <div class="menu-popover canvas-popover menu-button-stack">
+            <button id="selectAllBtn" title="Select all visible, unlocked objects (Ctrl/Cmd+A)">Select all</button>
             <button id="convertPathBtn" class="button-icon-pending" title="Convert selected basic shape into editable SVG path commands">Convert to path</button>
             <button id="groupBtn" title="Group selected objects (Ctrl+G)">Group selection</button>
             <button id="ungroupBtn" title="Ungroup the selected group (Ctrl+Shift+G)">Ungroup</button>
@@ -321,6 +333,7 @@
             <kbd>Ctrl+Shift+Z</kbd><span>Redo</span>
             <kbd>Ctrl+C / Ctrl+V</kbd><span>Copy / paste objects</span>
             <kbd>Ctrl+D</kbd><span>Duplicate</span>
+            <kbd>Ctrl/Cmd+A</kbd><span>Select all visible, unlocked objects</span>
             <kbd>Ctrl+G</kbd><span>Group selection</span>
             <kbd>Delete</kbd><span>Delete selection</span>
             <kbd>Arrow keys</kbd><span>Nudge selection</span>
@@ -333,7 +346,7 @@
           </div>
         </details>
       </div>
-      <div id="stage" class="stage">
+      <div id="stage" class="stage" tabindex="-1" aria-label="SVG canvas">
         <div id="precisionHud" class="precision-hud">x: -, y: -</div>
         <div id="svgMount" class="svg-mount"></div>
       </div>

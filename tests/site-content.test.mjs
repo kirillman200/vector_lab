@@ -590,8 +590,9 @@ test("legal and editorial trust surfaces are explicit and connected", () => {
   assert.match(footer, /href="\/editorial-policy\/"/);
   assert.match(footer, /href="\/cookies\/"/);
   assert.match(footer, /data-ad-privacy-settings/);
-  assert.match(layout, /CONSENT_API_READY/);
-  assert.match(layout, /showRevocationMessage/);
+  assert.match(read("js/analytics.js"), /CONSENT_API_READY/);
+  assert.match(read("js/analytics.js"), /showRevocationMessage/);
+  assert.match(layout, /window\.svgAnalytics\.openPreferences/);
 });
 
 test("reader-facing pages contain no drafting or internal process residue", () => {

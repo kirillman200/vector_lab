@@ -1,6 +1,23 @@
 // Inline icon set and button decoration helpers.
 
 const ICONS = {
+  rect: '<rect x="3" y="5" width="18" height="14" rx="2"/>',
+  circle: '<circle cx="12" cy="12" r="8"/>',
+  ellipse: '<ellipse cx="12" cy="12" rx="9" ry="6"/>',
+  line: '<path d="M4 19L20 5"/><circle cx="4" cy="19" r="1"/><circle cx="20" cy="5" r="1"/>',
+  polygon: '<path d="M12 3L22 21H2Z"/>',
+  text: '<path d="M4 5h16M12 5v15M8 20h8M4 5v3M20 5v3"/>',
+  star: '<path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>',
+  heart: '<path d="M12 20S2 14 2 8a5 5 0 0 1 10-1 5 5 0 0 1 10 1c0 6-10 12-10 12z"/>',
+  arrow: '<path d="M3 9h10V4l8 8-8 8v-5H3z"/>',
+  bolt: '<path d="M14 2L4 13h7l-1 9 10-12h-7z"/>',
+  plus: '<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+  diamond: '<path d="M12 2l8 10-8 10-8-10z"/>',
+  tag: '<path d="M3 5h10l8 7-8 7H3z"/><circle cx="7" cy="12" r="1.5"/>',
+  pin: '<path d="M19 9c0 5-7 12-7 12S5 14 5 9a7 7 0 1 1 14 0z"/><circle cx="12" cy="9" r="2"/>',
+  freehand: '<path d="M3 17C1 7 9 2 10 8s-6 13-1 13 6-17 9-16-1 12 3 11"/>',
+  pen: '<path d="M12 3L4 17l3 3 14-8zM7 20l5-8"/><circle cx="13" cy="11" r="2"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="2"/><path d="M3 17l6-6 4 4 3-3 5 5"/>',
   sample: '<path d="M12 3l1.7 5.2H19l-4.3 3.1 1.7 5.2L12 13.3l-4.4 3.2 1.7-5.2L5 8.2h5.3z"/>',
   load: '<path d="M4 20h16"/><path d="M12 4v12"/><path d="M7 9l5-5 5 5"/>',
   copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/>',

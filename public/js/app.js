@@ -266,10 +266,14 @@ function setTool(tool) {
   els.handToolBtn.setAttribute("aria-pressed", String(tool === "hand"));
   els.freehandToolBtn.classList.toggle("active", tool === "freehand");
   els.penToolBtn.classList.toggle("active", tool === "pen");
+  els.freehandToolBtn.setAttribute("aria-pressed", String(tool === "freehand"));
+  els.penToolBtn.setAttribute("aria-pressed", String(tool === "pen"));
   els.stage.classList.toggle("hand-tool", handActive);
   updatePanCursor(handActive);
   if (tool !== "pen") finishDrawing(true);
-  setStatus(`${tool === "select" ? "Select" : tool[0].toUpperCase() + tool.slice(1)} tool active.`);
+  setStatus(tool === "pen" ? "Pen: click to place points. Enter finishes; Escape cancels."
+    : tool === "freehand" ? "Freehand: drag on the canvas to draw. Escape cancels."
+    : `${tool === "select" ? "Select" : tool[0].toUpperCase() + tool.slice(1)} tool active.`);
   if (tool !== previousTool) {
     window.svgAnalytics?.track("editor_action", {
       action: "select_tool",
@@ -2009,6 +2013,7 @@ function serializeCurrentSvg() {
 
 function syncSource() {
   if (!state.svg) return;
+  updatePngPreview();
   if (sourceSyncTimer) {
     clearTimeout(sourceSyncTimer);
     sourceSyncTimer = 0;
@@ -2447,51 +2452,62 @@ function getCanvasFrame() {
 
 function addBasicShape(kind) {
   if (!state.svg) return;
+  setTool("select");
   const frame = getCanvasFrame();
   const cx = frame.x + frame.width / 2;
   const cy = frame.y + frame.height / 2;
-  const node = document.createElementNS(SVG_NS, kind === "star" || kind === "heart" || kind === "check" ? "path" : kind);
+  const paths = {
+    star: "M 0 -58 L 13 -18 L 55 -18 L 21 7 L 34 48 L 0 23 L -34 48 L -21 7 L -55 -18 L -13 -18 Z",
+    heart: "M 0 48 C -62 14 -66 -28 -34 -44 C -13 -54 0 -36 0 -25 C 0 -36 13 -54 34 -44 C 66 -28 62 14 0 48 Z",
+    check: "M -54 0 L -18 36 L 58 -42",
+    arrow: "M -58 -18 H 12 V -48 L 60 0 L 12 48 V 18 H -58 Z",
+    bolt: "M 8 -60 L -44 8 H -6 L -16 60 L 44 -10 H 6 Z",
+    plus: "M -18 -54 H 18 V -18 H 54 V 18 H 18 V 54 H -18 V 18 H -54 V -18 H -18 Z",
+    diamond: "M 0 -60 L 48 0 L 0 60 L -48 0 Z",
+    tag: "M -56 -42 H 12 L 58 0 L 12 42 H -56 Z M -32 -9 A 9 9 0 1 0 -32 9 A 9 9 0 1 0 -32 -9 Z",
+    pin: "M 0 60 C -16 36 -44 8 -44 -16 A 44 44 0 0 1 44 -16 C 44 8 16 36 0 60 Z M 0 -34 A 18 18 0 1 0 0 2 A 18 18 0 1 0 0 -34 Z"
+  };
+  const scale = Math.min(1, frame.width * 0.4 / 160, frame.height * 0.4 / 140);
+  const s = (value) => round(value * scale);
+  const node = document.createElementNS(SVG_NS, Object.hasOwn(paths, kind) ? "path" : kind);
   const fill = els.fillInput.value || "#4e7cff";
   const stroke = els.strokeInput.value || "#1d2733";
   if (kind === "rect") {
-    node.setAttribute("x", round(cx - 80));
-    node.setAttribute("y", round(cy - 55));
-    node.setAttribute("width", "160");
-    node.setAttribute("height", "110");
-    node.setAttribute("rx", "12");
+    node.setAttribute("x", round(cx - s(80)));
+    node.setAttribute("y", round(cy - s(55)));
+    node.setAttribute("width", s(160));
+    node.setAttribute("height", s(110));
+    node.setAttribute("rx", s(12));
     node.setAttribute("fill", fill);
-  } else if (kind === "ellipse") {
+  } else if (kind === "ellipse" || kind === "circle") {
     node.setAttribute("cx", round(cx));
     node.setAttribute("cy", round(cy));
-    node.setAttribute("rx", "80");
-    node.setAttribute("ry", "55");
+    if (kind === "circle") node.setAttribute("r", s(55));
+    else { node.setAttribute("rx", s(80)); node.setAttribute("ry", s(55)); }
     node.setAttribute("fill", fill);
   } else if (kind === "line") {
-    node.setAttribute("x1", round(cx - 80));
+    node.setAttribute("x1", round(cx - s(80)));
     node.setAttribute("y1", round(cy));
-    node.setAttribute("x2", round(cx + 80));
+    node.setAttribute("x2", round(cx + s(80)));
     node.setAttribute("y2", round(cy));
     node.setAttribute("stroke", stroke);
-    node.setAttribute("stroke-width", els.strokeWidthInput.value || "3");
+    node.setAttribute("stroke-width", s(3));
+    node.setAttribute("stroke-linecap", "round");
   } else if (kind === "polygon") {
-    node.setAttribute("points", `${round(cx)},${round(cy - 70)} ${round(cx + 72)},${round(cy + 58)} ${round(cx - 72)},${round(cy + 58)}`);
+    node.setAttribute("points", `${round(cx)},${round(cy - s(70))} ${round(cx + s(72))},${round(cy + s(58))} ${round(cx - s(72))},${round(cy + s(58))}`);
     node.setAttribute("fill", fill);
   } else if (kind === "text") {
     node.setAttribute("x", round(cx));
     node.setAttribute("y", round(cy));
     node.setAttribute("text-anchor", "middle");
-    node.setAttribute("font-size", "32");
+    node.setAttribute("font-size", s(32));
     node.setAttribute("font-family", "Arial, sans-serif");
     node.setAttribute("fill", fill);
     node.textContent = "Edit text";
   } else {
-    const paths = {
-      star: "M 0 -58 L 13 -18 L 55 -18 L 21 7 L 34 48 L 0 23 L -34 48 L -21 7 L -55 -18 L -13 -18 Z",
-      heart: "M 0 48 C -62 14 -66 -28 -34 -44 C -13 -54 0 -36 0 -25 C 0 -36 13 -54 34 -44 C 66 -28 62 14 0 48 Z",
-      check: "M -54 0 L -18 36 L 58 -42"
-    };
     node.setAttribute("d", paths[kind]);
-    node.setAttribute("transform", `translate(${round(cx)} ${round(cy)})`);
+    node.setAttribute("transform", `translate(${round(cx)} ${round(cy)}) scale(${scale})`);
+    node.setAttribute("fill-rule", "evenodd");
     node.setAttribute("fill", kind === "check" ? "none" : fill);
     if (kind === "check") {
       node.setAttribute("stroke", stroke);
@@ -2503,8 +2519,17 @@ function addBasicShape(kind) {
   insertVector(node);
   setSelection([node]);
   afterMutation();
-  setStatus(`${kind[0].toUpperCase() + kind.slice(1)} added.`);
+  revealAddedObject();
+  const name = kind === "polygon" ? "Triangle" : kind === "pin" ? "Map pin" : kind[0].toUpperCase() + kind.slice(1);
+  setStatus(`${name} added.`);
   trackEditorAction("add_shape", "toolbar", "success", [node]);
+}
+
+function revealAddedObject() {
+  if (window.matchMedia("(max-width: 760px)").matches) {
+    setPanelVisible("source", false);
+    els.stage.focus({ preventScroll: true });
+  }
 }
 
 function applyCanvasSize() {
@@ -2659,8 +2684,10 @@ function downloadBlob(blob, filename) {
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
+  document.body.append(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 async function copyText(text) {
@@ -2811,7 +2838,23 @@ async function insertImageFile(file) {
   setSelection([node]);
   afterMutation();
   setStatus(`Inserted ${file.name} as an embedded local image.`);
+  revealAddedObject();
   trackEditorAction("add_image", "toolbar", "success", [node]);
+}
+
+function updatePngPreview() {
+  if (!state.svg) return;
+  const preview = document.querySelector("#pngSizePreview");
+  try {
+    const size = getPngExportSize(getSvgBaseSize(state.svg), state.pngScale, els.pngWidthInput.value, els.pngHeightInput.value);
+    preview.textContent = `${size.width} x ${size.height} px`;
+    preview.classList.remove("invalid");
+    els.downloadPngBtn.disabled = false;
+  } catch (error) {
+    preview.textContent = error.message;
+    preview.classList.add("invalid");
+    els.downloadPngBtn.disabled = true;
+  }
 }
 
 async function downloadPng() {
@@ -2819,17 +2862,12 @@ async function downloadPng() {
   const svgText = serializeCurrentSvg();
   const size = getSvgBaseSize(state.svg);
   const scale = Math.max(1, Number(state.pngScale || 1));
+  const dimensions = getPngExportSize(size, scale, els.pngWidthInput.value, els.pngHeightInput.value);
   const canvas = document.createElement("canvas");
-  const customWidth = Number(els.pngWidthInput.value || 0);
-  const customHeight = Number(els.pngHeightInput.value || 0);
-  if (customWidth || customHeight) {
-    canvas.width = Math.round(customWidth || customHeight * (size.width / size.height));
-    canvas.height = Math.round(customHeight || customWidth * (size.height / size.width));
-  } else {
-    canvas.width = Math.round(size.width * scale);
-    canvas.height = Math.round(size.height * scale);
-  }
+  canvas.width = dimensions.width;
+  canvas.height = dimensions.height;
   const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("This browser could not create the image. Try a smaller size.");
   const color = getSvgBackground();
   if (color) {
     ctx.fillStyle = color;
@@ -2839,27 +2877,35 @@ async function downloadPng() {
   const image = new Image();
   const blob = new Blob([svgText], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
-  await new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
-    image.src = url;
-  });
-  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  URL.revokeObjectURL(url);
-
-  canvas.toBlob((pngBlob) => {
-    if (!pngBlob) {
-      setStatus("PNG export failed.", true);
-      return;
-    }
-    downloadBlob(pngBlob, `vector-lab-export-${scale}x.png`);
-    setStatus(`PNG downloaded at ${canvas.width}x${canvas.height}.`);
-    window.svgAnalytics?.track("editor_export", {
-      action_surface: "toolbar",
-      export_format: "png",
-      outcome: "success"
+  try {
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        image.onload = null;
+        image.onerror = null;
+        image.src = "";
+        reject(new Error("Rendering timed out. Try downloading the SVG or using a smaller image."));
+      }, 15000);
+      image.onload = () => { clearTimeout(timeout); resolve(); };
+      image.onerror = () => {
+        clearTimeout(timeout);
+        reject(new Error("The SVG could not be rendered as an image."));
+      };
+      image.src = url;
     });
-  }, "image/png");
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+
+  const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (!pngBlob) throw new Error("The browser could not encode the image. Try a smaller size.");
+  downloadBlob(pngBlob, `vector-lab-export-${canvas.width}x${canvas.height}.png`);
+  setStatus(`PNG downloaded at ${canvas.width}x${canvas.height}.`);
+  window.svgAnalytics?.track("editor_export", {
+    action_surface: "toolbar",
+    export_format: "png",
+    outcome: "success"
+  });
 }
 
 /* -------------------------------------------------------------------- wire */
@@ -2932,15 +2978,30 @@ els.fileInput.addEventListener("change", async () => {
 });
 els.imageInput.addEventListener("change", async () => {
   const file = els.imageInput.files[0];
-  if (file) await insertImageFile(file);
-  els.imageInput.value = "";
+  try {
+    if (file) await insertImageFile(file);
+  } catch {
+    setStatus("The image could not be opened. Choose a PNG, JPEG, WebP, or GIF file and try again.", true);
+  } finally {
+    els.imageInput.value = "";
+  }
 });
 document.querySelectorAll("[data-add-shape]").forEach((button) => {
+  decorateButton(button, button.dataset.addShape);
+  button.title = `Add ${button.textContent.trim().toLowerCase()}`;
   button.addEventListener("click", () => addBasicShape(button.dataset.addShape));
 });
+decorateButton(els.freehandToolBtn, "freehand");
+decorateButton(els.penToolBtn, "pen");
 els.handToolBtn.addEventListener("click", () => setTool(state.tool === "hand" ? "select" : "hand"));
-els.freehandToolBtn.addEventListener("click", () => setTool(state.tool === "freehand" ? "select" : "freehand"));
-els.penToolBtn.addEventListener("click", () => setTool(state.tool === "pen" ? "select" : "pen"));
+els.freehandToolBtn.addEventListener("click", () => {
+  setTool(state.tool === "freehand" ? "select" : "freehand");
+  revealAddedObject();
+});
+els.penToolBtn.addEventListener("click", () => {
+  setTool(state.tool === "pen" ? "select" : "pen");
+  revealAddedObject();
+});
 els.groupBtn.addEventListener("click", () => groupSelection("toolbar"));
 els.ungroupBtn.addEventListener("click", () => ungroupSelection("toolbar"));
 document.querySelectorAll("[data-align]").forEach((button) => button.addEventListener("click", () => alignSelection(button.dataset.align)));
@@ -2968,14 +3029,29 @@ els.downloadSvgBtn.addEventListener("click", () => {
   });
 });
 els.downloadPngBtn.addEventListener("click", () => {
+  setStatus("Rendering PNG...");
   downloadPng().catch((error) => {
     setStatus(`PNG export failed: ${error.message}`, true);
   });
 });
 els.pngScaleInput.addEventListener("change", () => {
   state.pngScale = Number(els.pngScaleInput.value || 1);
+  updatePngPreview();
   setStatus(`PNG export scale set to ${state.pngScale}x.`);
 });
+els.pngWidthInput.addEventListener("input", updatePngPreview);
+els.pngHeightInput.addEventListener("input", updatePngPreview);
+
+function selectAllObjects() {
+  const nodes = getVectors().filter((node) => {
+    if (isNodeLocked(node) || node.closest("defs,clipPath,mask,pattern,marker,symbol")) return false;
+    const style = getComputedStyle(node);
+    return style.display !== "none" && style.visibility === "visible" && node.getClientRects().length > 0;
+  });
+  setSelection(nodes.filter((node) => !nodes.some((parent) => parent !== node && parent.contains(node))));
+  setStatus(`Selected ${state.selection.length} object${state.selection.length === 1 ? "" : "s"}.`);
+}
+document.querySelector("#selectAllBtn").addEventListener("click", selectAllObjects);
 
 function normalizeHexColor(value) {
   const raw = String(value || "").trim().replace(/^#/, "");
@@ -3055,6 +3131,13 @@ function togglePanel(panel) {
   const className = panel === "source" ? "hide-source" : "hide-inspector";
   setPanelVisible(panel, els.appShell.classList.contains(className));
 }
+
+document.querySelector("#mobileAddBtn").addEventListener("click", () => {
+  setPanelVisible("source", true);
+  const tab = document.querySelector("#left-add-tab");
+  tab.click();
+  tab.focus();
+});
 
 els.toggleSourceBtn.addEventListener("click", () => togglePanel("source"));
 els.mobileSourceBtn.addEventListener("click", () => togglePanel("source"));
@@ -3300,8 +3383,13 @@ els.pasteDialog.addEventListener("close", () => {
 document.addEventListener("keydown", (event) => {
   // Never hijack shortcuts while the user is typing. Native undo in the
   // source textarea and inputs must keep working.
-  if (event.target.matches?.("input,textarea,select")) return;
+  if (event.defaultPrevented || event.target.isContentEditable || event.target.matches?.("input,textarea,select") || event.target.closest?.("dialog[open]")) return;
   const mod = event.ctrlKey || event.metaKey;
+  if (mod && event.key.toLowerCase() === "a") {
+    event.preventDefault();
+    selectAllObjects();
+    return;
+  }
   if (state.drawing?.type === "pen" && event.key === "Enter") {
     event.preventDefault();
     finishDrawing(true);
@@ -3350,6 +3438,7 @@ document.addEventListener("keydown", (event) => {
     return;
   }
   if (event.code === "Space") {
+    if (event.target.closest?.("button,a,summary,[role='button'],[role='tab']")) return;
     event.preventDefault();
     if (!event.repeat) {
       state.spacePan = true;

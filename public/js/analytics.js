@@ -11,6 +11,7 @@
   let consent = "unset";
   let analyticsStarted = false;
   let clarityStarted = false;
+  let privacyReturnFocus = null;
 
   function syncClarity() {
     if (!configured || document.readyState === "loading") return;
@@ -320,6 +321,11 @@
 
   function installClickTracking() {
     document.addEventListener("click", (event) => {
+      if (event.target.closest?.("[data-ad-privacy-settings]")) {
+        event.preventDefault();
+        openConsentUi();
+        return;
+      }
       const control = event.target.closest?.('a[href], button, summary, [role="tab"]');
       if (!control || control.closest(".ad-slot, ins.adsbygoogle")) return;
       const classified = classifyClick(control);
@@ -351,7 +357,9 @@
     const panel = document.querySelector("[data-analytics-consent]");
     const status = document.querySelector("[data-analytics-consent-status]");
     if (status) {
-      status.textContent = gpcEnabled
+      status.textContent = !configured
+        ? "Analytics is not active on this preview. Your artwork stays on this device."
+        : gpcEnabled
         ? "Analytics is off because Global Privacy Control is enabled."
         : consent === "granted"
           ? "Analytics is on."
@@ -359,16 +367,28 @@
             ? "Analytics is off."
             : "Choose whether to allow analytics.";
     }
-    panel?.querySelector("[data-consent-accept]")?.toggleAttribute("disabled", gpcEnabled);
+    panel?.querySelector("[data-consent-accept]")?.toggleAttribute("disabled", gpcEnabled || !configured);
+    const adButton = panel?.querySelector("[data-ad-consent]");
+    const adAvailable = typeof window.googlefc?.showRevocationMessage === "function";
+    adButton?.toggleAttribute("disabled", !adAvailable);
+    const adStatus = panel?.querySelector("[data-ad-consent-status]");
+    if (adStatus) adStatus.textContent = adAvailable
+      ? "Review advertising cookies in Google's privacy message."
+      : "Advertising settings are unavailable for this visit. See the cookie policy for details.";
   }
 
   function closeConsentUi() {
-    document.querySelector("[data-analytics-consent]")?.removeAttribute("data-open");
+    const panel = document.querySelector("[data-analytics-consent]");
+    panel?.removeAttribute("data-open");
+    if (panel?.open) panel.close();
+    privacyReturnFocus?.focus?.();
   }
 
   function openConsentUi() {
     const panel = document.querySelector("[data-analytics-consent]");
     if (!panel) return;
+    privacyReturnFocus = document.activeElement;
+    if (typeof panel.showModal === "function" && !panel.open) panel.showModal();
     panel.setAttribute("data-open", "");
     syncConsentUi();
     panel.querySelector("button:not([disabled])")?.focus();
@@ -385,21 +405,28 @@
   }
 
   function mountConsentUi() {
-    if (!configured || document.querySelector("[data-analytics-consent]")) return;
-    const panel = document.createElement("section");
+    if (document.querySelector("[data-analytics-consent]")) return;
+    const panel = document.createElement("dialog");
     panel.className = "analytics-consent";
     panel.dataset.analyticsConsent = "";
-    panel.setAttribute("aria-label", "Analytics choices");
+    panel.setAttribute("aria-label", "Privacy and cookie settings");
     panel.innerHTML = `
       <div class="analytics-consent__card">
-        <p class="analytics-consent__eyebrow">Privacy choice</p>
-        <h2>Help improve SVG Vector Lab?</h2>
+        <div class="analytics-consent__heading"><p class="analytics-consent__eyebrow">Your privacy</p><button type="button" data-consent-close aria-label="Close privacy settings">Close</button></div>
+        <h2>Privacy and cookie settings</h2>
+        <h3>Optional analytics</h3>
         <p>The Google tag sends cookieless page-view and consent-state signals with analytics storage off by default. If you allow analytics, Google can record broad editor actions such as imports, tools, and exports. Microsoft Clarity can also record interactions on content pages for heatmaps and session replay. Clarity stays off in the editor and calculators, and Google never receives your artwork or typed values.</p>
         <p class="analytics-consent__status" data-analytics-consent-status></p>
         <div class="analytics-consent__actions">
           <button type="button" data-consent-accept>Allow analytics</button>
           <button type="button" data-consent-decline>Keep analytics off</button>
           <a href="/privacy/">Privacy policy</a>
+        </div>
+        <div class="analytics-consent__advertising">
+          <h3>Advertising cookies</h3>
+          <p data-ad-consent-status></p>
+          <button type="button" data-ad-consent>Manage advertising cookies</button>
+          <a href="/cookies/">Cookie policy</a>
         </div>
       </div>`;
     document.body.append(panel);
@@ -409,15 +436,25 @@
     preferences.className = "analytics-preferences";
     preferences.textContent = "Analytics choices";
     preferences.addEventListener("click", openConsentUi);
-    document.body.append(preferences);
+    if (configured) document.body.append(preferences);
 
     panel.querySelector("[data-consent-accept]").addEventListener("click", () => updateConsent("granted"));
     panel.querySelector("[data-consent-decline]").addEventListener("click", () => updateConsent("denied"));
+    panel.querySelector("[data-consent-close]").addEventListener("click", closeConsentUi);
+    panel.querySelector("[data-ad-consent]").addEventListener("click", () => {
+      if (typeof window.googlefc?.showRevocationMessage !== "function") { syncConsentUi(); return; }
+      closeConsentUi();
+      window.googlefc.showRevocationMessage();
+    });
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+    window.googlefc.callbackQueue.push({ CONSENT_API_READY: syncConsentUi });
+    panel.addEventListener("cancel", (event) => { event.preventDefault(); closeConsentUi(); });
     panel.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && consent !== "unset") closeConsentUi();
+      if (event.key === "Escape") { event.preventDefault(); closeConsentUi(); }
     });
     syncConsentUi();
-    if (consent === "unset") openConsentUi();
+    if (configured && consent === "unset") openConsentUi();
   }
 
   window.svgAnalytics = Object.freeze({
@@ -428,7 +465,6 @@
     track
   });
 
-  if (!configured) return;
   consent = readConsent();
   if (consent === "granted") {
     gtag("consent", "update", consentState("granted"));

@@ -128,3 +128,22 @@ function shapeToPath(node) {
   }
   return "";
 }
+// Validate derived dimensions before allocating an export canvas.
+function getPngExportSize(size, scale, widthInput = "", heightInput = "") {
+  const parse = (value) => {
+    if (String(value).trim() === "") return null;
+    const number = Number(value);
+    if (!Number.isFinite(number) || number <= 0 || !Number.isInteger(number)) {
+      throw new Error("Enter positive whole pixels for PNG width and height.");
+    }
+    return number;
+  };
+  const customWidth = parse(widthInput);
+  const customHeight = parse(heightInput);
+  const width = Math.round(customWidth ?? (customHeight !== null ? customHeight * size.width / size.height : size.width * scale));
+  const height = Math.round(customHeight ?? (customWidth !== null ? customWidth * size.height / size.width : size.height * scale));
+  if (![width, height].every((value) => Number.isFinite(value) && value >= 1 && value <= 16384) || width * height > 32_000_000) {
+    throw new Error("Use dimensions up to 16,384 px per side and 32 million pixels total.");
+  }
+  return { width, height };
+}

@@ -16,8 +16,10 @@ function visit({ saved, legacy, gpc = false, hostname = "svgvectorlab.com", path
   function element() {
     return {
       dataset: {},
+      attributes: new Map(),
       handlers: new Map(),
-      setAttribute() {}, removeAttribute() {}, toggleAttribute() {}, focus() {},
+      setAttribute(name, value) { this.attributes.set(name, value); },
+      removeAttribute(name) { this.attributes.delete(name); }, toggleAttribute() {}, focus() {},
       addEventListener(name, callback) { this.handlers.set(name, callback); },
       querySelector(selector) {
         if (!controls.has(selector)) controls.set(selector, element());
@@ -48,12 +50,56 @@ function visit({ saved, legacy, gpc = false, hostname = "svgvectorlab.com", path
   });
   return {
     window, scripts, storage,
+    get panel() { return panel; },
     get reloads() { return reloads; },
     ready() { document.readyState = "complete"; listeners.get("DOMContentLoaded")?.(); },
     choose(accept) { controls.get(accept ? "[data-consent-accept]" : "[data-consent-decline]").handlers.get("click")(); },
+    close() { controls.get("[data-consent-close]").handlers.get("click")(); },
+    openFooter() {
+      listeners.get("click")({ preventDefault() {}, target: { closest: (selector) => selector === "[data-ad-privacy-settings]" ? {} : null } });
+    },
+    openAds() { controls.get("[data-ad-consent]").handlers.get("click")(); },
     clarityCalls() { return Array.from(window.clarity?.q || [], (args) => JSON.parse(JSON.stringify(Array.from(args)))); }
   };
 }
+
+test("privacy preferences remain usable on static previews without enabling tracking", () => {
+  const page = visit({ hostname: "localhost" });
+  page.ready();
+  page.window.svgAnalytics.openPreferences();
+  assert.ok(page.panel, "privacy settings must exist without production analytics");
+  assert.ok(page.panel.attributes.has("data-open"));
+  page.choose(false);
+  assert.equal(page.panel.attributes.has("data-open"), false);
+  assert.equal(page.scripts.length, 0);
+});
+
+test("production footer opens preferences without the removed layout script", () => {
+  const page = visit({ saved: "denied" });
+  page.ready();
+  page.openFooter();
+  assert.ok(page.panel.attributes.has("data-open"));
+  page.close();
+  assert.equal(page.panel.attributes.has("data-open"), false);
+  assert.equal(page.storage.get(consentKey), "denied");
+  page.openFooter();
+  assert.ok(page.panel.attributes.has("data-open"));
+  assert.equal(page.scripts.length, 0);
+});
+
+test("advertising preferences invoke the provider when it becomes available", () => {
+  const page = visit({ saved: "denied" });
+  page.ready();
+  page.openFooter();
+  page.openAds();
+  assert.ok(page.panel.attributes.has("data-open"), "unavailable provider must leave settings open");
+  let opened = 0;
+  page.window.googlefc.showRevocationMessage = () => { opened++; };
+  page.window.googlefc.callbackQueue[0].CONSENT_API_READY();
+  page.openAds();
+  assert.equal(opened, 1);
+  assert.equal(page.panel.attributes.has("data-open"), false);
+});
 
 test("Clarity waits for a new opt-in, then loads the supplied project once", () => {
   const page = visit({ legacy: "granted" });

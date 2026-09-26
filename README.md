@@ -30,6 +30,7 @@ Your work is autosaved to the browser's `localStorage` and restored on the next 
 | --- | --- |
 | Ctrl/Cmd+Z · Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y | Undo · Redo (canvas edits; text fields keep native undo) |
 | Ctrl/Cmd+D | Duplicate selection |
+| Ctrl/Cmd+A | Select all visible, unlocked objects |
 | Delete / Backspace | Delete selection |
 | Arrow keys | Nudge selection (or the active path point) by 1 unit |
 | Shift+Arrows / Alt+Arrows | Nudge by 10 / 0.1 units |

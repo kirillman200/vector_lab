@@ -5,7 +5,24 @@
   display: none;
   justify-content: center;
   pointer-events: none;
+  margin: auto;
+  width: min(680px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100svh - 32px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: auto;
 }
+
+.analytics-consent::backdrop { background: rgb(7 29 61 / 42%); }
+.analytics-consent__heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.analytics-consent__heading button { padding: 7px 12px; border: 1px solid #d5e1f0; border-radius: 8px; background: #f4f8fe; color: #071d3d; cursor: pointer; }
+.analytics-consent__card h3 { margin: 18px 0 8px; font-size: 1rem; }
+.analytics-consent__advertising { margin-top: 20px; padding-top: 4px; border-top: 1px solid #d5e1f0; }
+.analytics-consent__advertising button { padding: 9px 12px; margin-right: 12px; border: 1px solid #8ba2c4; border-radius: 8px; background: white; color: #071d3d; cursor: pointer; }
+.analytics-consent__advertising button:disabled { opacity: .55; cursor: not-allowed; }
+.analytics-consent button:focus-visible, .analytics-consent a:focus-visible { outline: 2px solid #276ef1; outline-offset: 3px; }
 
 .analytics-consent[data-open] {
   display: flex;

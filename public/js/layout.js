@@ -36,22 +36,29 @@
     const buttons = [...document.querySelectorAll("[data-ad-privacy-settings]")];
     if (!buttons.length) return;
 
-    window.googlefc = window.googlefc || {};
-    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
-    window.googlefc.callbackQueue.push({
-      CONSENT_API_READY: () => {
-        if (typeof window.__tcfapi !== "function") return;
-        window.__tcfapi("addEventListener", 0, (tcData, success) => {
-          buttons.forEach((button) => {
-            button.hidden = !(success && tcData?.gdprApplies);
-          });
-        });
-      },
-    });
-
+    let loading;
     buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        window.googlefc?.showRevocationMessage?.();
+      button.addEventListener("click", async (event) => {
+        // Production analytics handles the same link by event delegation.
+        if (window.svgAnalytics) return;
+        event.preventDefault();
+        if (!loading) loading = new Promise((resolve, reject) => {
+          const style = document.createElement("link");
+          style.rel = "stylesheet";
+          style.href = "/analytics.css";
+          document.head.append(style);
+          const script = document.createElement("script");
+          script.src = "/js/analytics.js";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.append(script);
+        });
+        try {
+          await loading;
+          window.svgAnalytics.openPreferences();
+        } catch {
+          window.location.href = button.href;
+        }
       });
     });
   };
