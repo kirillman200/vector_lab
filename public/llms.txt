@@ -19,6 +19,8 @@ SVG Vector Lab is available at https://svgvectorlab.com. It requires no signup o
 
 ## SVG Guides
 
+- [SVG arrowheads with marker: alignment, size and direction](https://svgvectorlab.com/guides/svg-arrowheads-markers/): Marker definitions, arrowhead sizing, alignment, direction and export checks.
+
 - [SVG symbol and use: reuse artwork without copying paths](https://svgvectorlab.com/guides/svg-symbol-use/): Local symbols, use references, instance sizing, inheritance and export checks.
 
 - [SVG Guide Library](https://svgvectorlab.com/guides/): Index of practical SVG tutorials.
