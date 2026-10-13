@@ -31,9 +31,13 @@ function sanitizeSvg(svg) {
 }
 
 function parseSvgLength(value) {
-  if (!value || /%$/.test(value.trim())) return null;
-  const number = parseFloat(value);
-  return Number.isFinite(number) ? number : null;
+  // Absolute SVG lengths use CSS pixels (96 px per inch). Relative lengths
+  // need a viewport/font context, so let callers fall back to the viewBox.
+  const match = String(value ?? "").trim().match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(px|in|cm|mm|q|pt|pc)?$/i);
+  if (!match) return null;
+  const units = { px: 1, in: 96, cm: 96 / 2.54, mm: 96 / 25.4, q: 96 / 101.6, pt: 96 / 72, pc: 16 };
+  const number = Number(match[1]) * units[(match[2] || "px").toLowerCase()];
+  return Number.isFinite(number) && number > 0 ? number : null;
 }
 
 function getSvgBaseSize(svg) {

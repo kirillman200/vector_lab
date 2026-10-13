@@ -412,8 +412,7 @@ function loadSvg(markup, options = {}) {
     const imported = document.importNode(parsedSvg, true);
     sanitizeSvg(imported);
     if (!imported.getAttribute("viewBox")) {
-      const width = parseFloat(imported.getAttribute("width")) || 640;
-      const height = parseFloat(imported.getAttribute("height")) || 420;
+      const { width, height } = getSvgBaseSize(imported);
       imported.setAttribute("viewBox", `0 0 ${width} ${height}`);
     }
     if (!imported.getAttribute("width") || !imported.getAttribute("height")) {
