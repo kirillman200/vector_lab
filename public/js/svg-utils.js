@@ -106,9 +106,12 @@ function shapeToPath(node) {
     const y = n("y");
     const w = n("width");
     const h = n("height");
-    const rx = Math.min(n("rx"), w / 2);
-    const ry = Math.min(n("ry", rx), h / 2);
-    if (!rx && !ry) return `M ${x} ${y} H ${x + w} V ${y + h} H ${x} Z`;
+    // A missing radius inherits the other radius before either axis is clamped.
+    const rawRx = node.getAttribute("rx");
+    const rawRy = node.getAttribute("ry");
+    const rx = Math.min(Number(rawRx ?? rawRy ?? 0), w / 2);
+    const ry = Math.min(Number(rawRy ?? rawRx ?? 0), h / 2);
+    if (!rx || !ry) return `M ${x} ${y} H ${x + w} V ${y + h} H ${x} Z`;
     return `M ${x + rx} ${y} H ${x + w - rx} A ${rx} ${ry} 0 0 1 ${x + w} ${y + ry} V ${y + h - ry} A ${rx} ${ry} 0 0 1 ${x + w - rx} ${y + h} H ${x + rx} A ${rx} ${ry} 0 0 1 ${x} ${y + h - ry} V ${y + ry} A ${rx} ${ry} 0 0 1 ${x + rx} ${y} Z`;
   }
   if (tag === "circle") {
